@@ -3,14 +3,11 @@ mariagab orangejuic3box
 
 asenthi1 Abhi-61
 
-<<<<<<< HEAD
-asenthi1 Abhi-61
-
 teymurlu Aykhan03
-=======
+
 ekeys ethanman102
 
 echiew echiewe
 
 dschen DeStCheny
->>>>>>> 96e39c8bf1bedbdd77b6277568240ffbb0636b21
+
