@@ -10,7 +10,7 @@ public class Tag {
     public String getTagName(){
         return tagName;
     }
-    
+
     public void setTagName(String newName){
         tagName = newName;
     }
