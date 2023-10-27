@@ -1,3 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Dwelventory</string>
+    <string name="description">Description (Name)</string>
+    <string name="estValue">Est Value</string>
+    <string name="imageDescription">Item Image</string>
 </resources>
