@@ -4,4 +4,6 @@
 
 
     <string name="tag_hint">New Tag Name</string>
+    <string name="tag_title">Tags</string>
+    <string name="confirm_button">Confirm</string>
 </resources>
