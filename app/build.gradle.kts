@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace = "com.example.dwelventory"
-    compileSdk = 34
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "com.example.dwelventory"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
