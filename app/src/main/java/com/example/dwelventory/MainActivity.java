@@ -29,6 +29,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements AddItemFragment.OnFragmentInteractionListener {
@@ -135,5 +144,11 @@ public class MainActivity extends AppCompatActivity implements AddItemFragment.O
                 }
             }
         });
+    }
+
+    @Override
+    public void onOKPressed(Item item) {
+        dataList.add(item);
+        itemAdapter.notifyDataSetChanged();
     }
 }
