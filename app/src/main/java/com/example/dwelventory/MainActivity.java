@@ -16,14 +16,27 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity {
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity implements AddItemFragment.OnFragmentInteractionListener {
+
+    private ArrayList<Item> dataList;
+    private ListView itemList;
+    private ArrayAdapter<Item> itemAdapter;
+
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private CollectionReference usersRef;
@@ -37,6 +50,18 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
+        dataList = new ArrayList<>();
+
+        itemAdapter = new CustomList(this, dataList);
+        itemList = findViewById(R.id.item_list);
+        itemList.setAdapter(itemAdapter);
+
+        final FloatingActionButton addButton = findViewById(R.id.add_item_button);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
     }
 
     @Override
@@ -52,6 +77,12 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
             checkUsers(mAuth.getCurrentUser());
         }
+    }
+
+    @Override
+    public void onOKPressed(Item item) {
+        dataList.add(item);
+        itemAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -105,5 +136,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 }
