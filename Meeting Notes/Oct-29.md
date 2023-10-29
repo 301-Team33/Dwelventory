@@ -9,6 +9,6 @@ Assignments:
 - Aykhan: Filter Button and Functionality. Implement filter for each category as much as possible by Thursday.
 - Derrick: Sorting Items. Implement sort for each category as much as possible by Thursday.
 - Maggie: Adding Items to the ListView. Works on Edit Activity
-- Evie: TBD
+- Evie: Deleting Items from ListView. Total estimated value of Items. Delete selected Items by Thursday if possible. 
 
 Next Meeting on Thursday November 2.
