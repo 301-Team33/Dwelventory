@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent">
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="#D8C9B7" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/item_name_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toBottomOf="@id/top_border"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/date_button"
+        android:layout_marginTop="50dp"
+        app:cornerRadius="0dp"
+        android:backgroundTint="#8E7A6B"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/date_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toBottomOf="@id/item_name_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="15dp"
+        app:cornerRadius="0dp"
+        android:backgroundTint="#8E7A6B"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/make_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toBottomOf="@id/date_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/model_button"
+        android:layout_marginTop="15dp"
+        app:cornerRadius="0dp"
+        android:backgroundTint="#8E7A6B"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/model_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toBottomOf="@id/make_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/serial_number_button"
+        android:layout_marginTop="15dp"
+        app:cornerRadius="0dp"
+        android:backgroundTint="#8E7A6B"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/serial_number_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toBottomOf="@id/model_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/estimated_val_button"
+        android:layout_marginTop="15dp"
+        app:cornerRadius="0dp"
+        android:backgroundTint="#8E7A6B"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/estimated_val_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toBottomOf="@id/serial_number_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/comment_button"
+        android:layout_marginTop="15dp"
+        app:cornerRadius="0dp"
+        android:backgroundTint="#8E7A6B"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/comment_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toBottomOf="@id/estimated_val_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf=""
+        android:layout_marginTop="15dp"
+        app:cornerRadius="0dp"
+        android:backgroundTint="#8E7A6B"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/photo_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toBottomOf="@id/comment_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="15dp"
+        app:cornerRadius="0dp"
+        android:backgroundTint="#8E7A6B"/>
+
+
+    <RelativeLayout
+        android:id="@+id/top_border"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:background="#8E7A6B"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cornerRadius="8dp"
+            android:text="Edit Tag"
+            android:textColor="@color/black"
+            android:id="@+id/button1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:backgroundTint="@color/white"
+
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"/>
+
+
+
+    </RelativeLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
