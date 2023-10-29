@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "556598149791",
+    "project_id": "dwelventory",
+    "storage_bucket": "dwelventory.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:556598149791:android:f0c25175602a1e8dc898aa",
+        "android_client_info": {
+          "package_name": "com.example.dwelventory"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXMhM_esCqy76h1DcDDuEWMiATK_uW3VE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
