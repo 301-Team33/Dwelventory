@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private CollectionReference usersRef;
+    private ArrayList<Item> dataList;
+    private ArrayAdapter<Item> itemAdapter;
 
 
     @Override
@@ -61,9 +63,11 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
-        dataList = new ArrayList<>();
 
+        dataList = new ArrayList<>();
+      
         ArrayList<Item> dataList = new ArrayList<>();
+
         // fake data
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
         String date11 = "7-Jun-2013";
@@ -88,15 +92,12 @@ public class MainActivity extends AppCompatActivity {
         dataList.add(item2);
 
 
-        ArrayAdapter<Item> itemAdapter = new ItemList(this, dataList);
+        itemAdapter = new ItemList(this, dataList);
         ListView itemList = findViewById(R.id.item_list);
         itemList.setAdapter(itemAdapter);
 
 
-        final FloatingActionButton addButton = findViewById(R.id.add_item_button)
-
-
-
+        final FloatingActionButton addButton = findViewById(R.id.add_item_button);
 
     @Override
     public void onStart() {
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
+
     public void onOKPressed(Item item) {
         dataList.add(item);
         itemAdapter.notifyDataSetChanged();
@@ -170,4 +171,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+}
 
