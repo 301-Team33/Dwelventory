@@ -9,6 +9,7 @@
     <string name="serialNumber">Serial Number</string>
     <string name="estValue">Est Value</string>
     <string name="comment">Comment</string>
+    <string name="photos">Photos</string>
     <string name="imageDescription">Item Image</string>
     <string name="selectMake">Select Make</string>
     <string name="selectTags">Select Tags</string>
