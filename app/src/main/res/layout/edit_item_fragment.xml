@@ -107,6 +107,20 @@
         app:cornerRadius="0dp"
         android:backgroundTint="#8E7A6B"/>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/confirm_button"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="15dp"
+        app:cornerRadius="0dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@color/white"
+        android:text="Confirm"
+        app:layout_constraintTop_toBottomOf="@id/photo_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/black" />
+
 
     <RelativeLayout
         android:id="@+id/top_border"
@@ -118,19 +132,51 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.button.MaterialButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:cornerRadius="8dp"
-            android:text="Edit Tag"
-            android:textColor="@color/black"
-            android:id="@+id/button1"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/edit_tag_button"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="15dp"
+            app:cornerRadius="0dp"
+            android:layout_marginTop="10dp"
             android:backgroundTint="@color/white"
+            android:text="Edit Tag"
+            android:textColor="@color/black" />
 
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"/>
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:text="tag 1"
+            android:textSize="10dp"
+            app:cornerRadius="0dp"
+            android:textColor="@color/black"
+            android:backgroundTint="#2D814F"
+            android:id="@+id/tag_display_1"
+            android:layout_marginStart="135dp"
+            android:layout_marginTop="15dp"/>
 
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:text="tag 2"
+            android:textSize="10dp"
+            app:cornerRadius="0dp"
+            android:textColor="@color/black"
+            android:backgroundTint="#2D814F"
+            android:id="@+id/tag_display_2"
+            android:layout_marginStart="225dp"
+            android:layout_marginTop="15dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:text="tag 3"
+            android:textSize="7dp"
+            app:cornerRadius="0dp"
+            android:textColor="@color/black"
+            android:backgroundTint="#2D814F"
+            android:id="@+id/tag_display_3"
+            android:layout_marginStart="315dp"
+            android:layout_marginTop="15dp"/>
 
 
     </RelativeLayout>
