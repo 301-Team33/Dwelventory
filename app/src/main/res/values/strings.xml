@@ -10,10 +10,10 @@
     <string name="estValue">Est Value</string>
     <string name="comment">Comment</string>
     <string name="imageDescription">Item Image</string>
-
     <string name="selectMake">Select Make</string>
     <string name="selectTags">Select Tags</string>
     <string name="selectDRange">Select Date Range</string>
     <string name="selectkWords">Select Keywords</string>
     <string name="done">Done</string>
+    <string name="separate">(separate keywords with spaces)</string>
 </resources>
