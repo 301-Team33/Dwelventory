@@ -114,10 +114,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //@Override
-    public void onOKPressed(Item item) {
+    /*public void onOKPressed(Item item) {
         dataList.add(item);
         itemAdapter.notifyDataSetChanged();
-    }
+    }*/
 
     /**
      *  This method will attempt to sign on anonymously, if the user is not already signed in
@@ -171,9 +171,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
+    /*@Override
     public void onOKPressed(Item item) {
         dataList.add(item);
         itemAdapter.notifyDataSetChanged();
-    }
+    }*/
 }
