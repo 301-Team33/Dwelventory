@@ -38,13 +38,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements AddItemFragment.OnFragmentInteractionListener {
-
-    private ArrayList<Item> dataList;
-    private ListView itemList;
-    private ArrayAdapter<Item> itemAdapter;
+public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -55,14 +55,40 @@ public class MainActivity extends AppCompatActivity implements AddItemFragment.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+<<<<<<< Updated upstream
         // Initialize Firebase authentication
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
         dataList = new ArrayList<>();
+=======
+        ArrayList<Item> dataList = new ArrayList<>();
+        // fake data
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        String date11 = "7-Jun-2013";
+        String date22 = "28-Oct-2023";
+        Date date1;
+        try {
+            date1 = formatter.parse(date11);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        Date date2;
+        try {
+            date2 = formatter.parse(date22);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+>>>>>>> Stashed changes
 
-        itemAdapter = new CustomList(this, dataList);
-        itemList = findViewById(R.id.item_list);
+        Item item1 = new Item("Billy",date1,"Pygmy Goat","Caramel w/ Black Markings",200);
+        Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+        dataList.add(item1);
+        dataList.add(item2);
+
+
+        ArrayAdapter<Item> itemAdapter = new ItemList(this, dataList);
+        ListView itemList = findViewById(R.id.item_list);
         itemList.setAdapter(itemAdapter);
 
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
@@ -73,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements AddItemFragment.O
         });
     }
 
+<<<<<<< Updated upstream
     @Override
     public void onStart() {
         super.onStart();
@@ -151,4 +178,6 @@ public class MainActivity extends AppCompatActivity implements AddItemFragment.O
         dataList.add(item);
         itemAdapter.notifyDataSetChanged();
     }
+=======
+>>>>>>> Stashed changes
 }

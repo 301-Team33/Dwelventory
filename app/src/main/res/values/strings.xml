@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="game_view_content_description">Game view</string>
+    <string name="app_name">Dwelventory</string>
     <string name="description">Description (Name)</string>
+    <string name="date">Date of Purchase</string>
+    <string name="make">Make</string>
+    <string name="model">Model</string>
+    <string name="serialNumber">Serial Number</string>
     <string name="estValue">Est Value</string>
+    <string name="comment">Comment</string>
     <string name="imageDescription">Item Image</string>
     <string name="selectMake">Select Make</string>
     <string name="selectTags">Select Tags</string>

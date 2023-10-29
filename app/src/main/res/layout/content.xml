@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/itemImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@id/item"
+        android:layout_alignStart="@id/center"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/imageDescription" />
+    <View
+        android:id="@+id/center"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:visibility="invisible"
+        android:layout_centerHorizontal="true"/>
+
+    <LinearLayout
+        android:id="@+id/item"
+        android:layout_width="206dp"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/center"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/descriptionMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:textSize="30sp"
+            android:hint="@string/description"/>
+
+        <TextView
+            android:id="@+id/estValueMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:textSize="30sp"
+            android:hint="@string/estValue"/>
+    </LinearLayout>
+
+</RelativeLayout>
