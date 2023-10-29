@@ -8,46 +8,59 @@
 
     <EditText
         android:id="@+id/description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/description"/>
+        android:layout_width="4888dp"
+        android:layout_height="48dp"
+        android:hint="@string/description"
+        android:inputType="textPersonName"/>
 
     <EditText
         android:id="@+id/date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="488dp"
+        android:layout_height="48dp"
         android:layout_below="@id/description"
-        android:hint="@string/date" />
+        android:hint="@string/date"
+        android:inputType="textPersonName"/>
+
 
     <EditText
         android:id="@+id/make"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="488dp"
+        android:layout_height="48dp"
         android:layout_below="@id/date"
-        android:hint="@string/make" />
+        android:hint="@string/make"
+        android:inputType="textPersonName"/>
+
     <EditText
         android:id="@+id/model"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="488dp"
+        android:layout_height="48dp"
         android:layout_below="@id/make"
-        android:hint="@string/model" />
+        android:hint="@string/model"
+        android:inputType="textPersonName"/>
+
     <EditText
         android:id="@+id/serialNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="488dp"
+        android:layout_height="48dp"
         android:layout_below="@id/model"
-        android:hint="@string/serialNumber" />
+        android:hint="@string/serialNumber"
+        android:inputType="number"/>
+
     <EditText
         android:id="@+id/estimatedValue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="488dp"
+        android:layout_height="48dp"
         android:layout_below="@id/serialNumber"
-        android:hint="@string/estValue" />
+        android:hint="@string/estValue"
+        android:inputType="number"/>
+
     <EditText
         android:id="@+id/comment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="488dp"
+        android:layout_height="48dp"
         android:layout_below="@id/estimatedValue"
-        android:hint="@string/comment" />
+        android:hint="@string/comment"
+        android:inputType="textPersonName"/>
+
 
 </RelativeLayout>
