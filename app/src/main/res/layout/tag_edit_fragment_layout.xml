@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tag_title_bar">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tags"
+            android:textSize="40sp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp">
+        </TextView>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/tag_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            ></com.google.android.material.floatingactionbutton.FloatingActionButton>
+    </RelativeLayout>
+    <ListView
+        android:id="@+id/tag_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"></ListView>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/tag_edittext"
+            android:hint="@string/tag_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:maxWidth="240dp"
+            android:maxLength="30">
+        </EditText>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/tag_create_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/tag_edittext"
+            android:layout_alignParentEnd="true"
+            ></com.google.android.material.floatingactionbutton.FloatingActionButton>
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tag_confirm"
+        android:layout_gravity="center">
+    </Button>
+
+
+
+</LinearLayout>

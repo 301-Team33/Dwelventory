@@ -49,20 +49,25 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private CollectionReference usersRef;
+    private ArrayList<Item> dataList;
+    private ArrayAdapter<Item> itemAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-<<<<<<< Updated upstream
+
         // Initialize Firebase authentication
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
+
         dataList = new ArrayList<>();
-=======
+
         ArrayList<Item> dataList = new ArrayList<>();
+
         // fake data
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
         String date11 = "7-Jun-2013";
@@ -79,27 +84,22 @@ public class MainActivity extends AppCompatActivity {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
->>>>>>> Stashed changes
 
-        Item item1 = new Item("Billy",date1,"Pygmy Goat","Caramel w/ Black Markings",200);
+
+        Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings", 200);
         Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
         dataList.add(item1);
         dataList.add(item2);
 
 
-        ArrayAdapter<Item> itemAdapter = new ItemList(this, dataList);
+        itemAdapter = new ItemList(this, dataList);
         ListView itemList = findViewById(R.id.item_list);
         itemList.setAdapter(itemAdapter);
 
+
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
     }
 
-<<<<<<< Updated upstream
     @Override
     public void onStart() {
         super.onStart();
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
+
     public void onOKPressed(Item item) {
         dataList.add(item);
         itemAdapter.notifyDataSetChanged();
@@ -172,12 +172,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    @Override
-    public void onOKPressed(Item item) {
-        dataList.add(item);
-        itemAdapter.notifyDataSetChanged();
-    }
-=======
->>>>>>> Stashed changes
 }
+
