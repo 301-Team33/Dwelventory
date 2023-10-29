@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="game_view_content_description">Game view</string>
-    <string name="app_name">Dwelventory</string>
+  <string name="app_name">Dwelventory</string>
+
+
+
+    <string name="tag_hint">New Tag Name</string>
+    <string name="tag_confirm">Confirm</string>
+    <string name="tag_remove_toast">Tag Deleted</string>
+    <string name="tag_create_toast">Tag Created</string>
+    <string name="invalid_tag_toast">Invalid Tag</string>
+    <string name="tag_already_exists_toast">Tag Already Exists</string>
+
+
     <string name="description">Description (Name)</string>
     <string name="date">Date of Purchase</string>
     <string name="make">Make</string>
@@ -17,3 +28,4 @@
     <string name="selectkWords">Select Keywords</string>
     <string name="done">Done</string>
 </resources>
+

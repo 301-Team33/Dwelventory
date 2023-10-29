@@ -52,10 +52,12 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Item> dataList;
     private ArrayAdapter<Item> itemAdapter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         // Initialize Firebase authentication
         mAuth = FirebaseAuth.getInstance();
@@ -63,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
         usersRef = db.collection("users");
 
         dataList = new ArrayList<>();
+      
+        ArrayList<Item> dataList = new ArrayList<>();
+
         // fake data
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
         String date11 = "7-Jun-2013";
@@ -80,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
+
         Item item1 = new Item("Billy",date1,"Pygmy Goat","Caramel w/ Black Markings",200);
         Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
         dataList.add(item1);
@@ -90,13 +96,8 @@ public class MainActivity extends AppCompatActivity {
         ListView itemList = findViewById(R.id.item_list);
         itemList.setAdapter(itemAdapter);
 
+
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
-    }
 
     @Override
     public void onStart() {
@@ -170,5 +171,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 }
+
