@@ -20,10 +20,5 @@
         android:layout_gravity="bottom|end"
         app:srcCompat="@android:drawable/ic_input_add"
         android:contentDescription="add_button" />
-<<<<<<< Updated upstream
 
-
-</LinearLayout>
-=======
 </FrameLayout>
->>>>>>> Stashed changes
