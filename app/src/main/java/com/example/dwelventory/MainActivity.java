@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         usersRef = db.collection("users");
 
         dataList = new ArrayList<>();
-      
+
         ArrayList<Item> dataList = new ArrayList<>();
 
         // fake data
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        Item item1 = new Item("Billy",date1,"Pygmy Goat","Caramel w/ Black Markings",200);
+        Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings", 200);
         Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
         dataList.add(item1);
         dataList.add(item2);
@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
+    }
 
     @Override
     public void onStart() {
