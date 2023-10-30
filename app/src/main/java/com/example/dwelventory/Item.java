@@ -1,5 +1,6 @@
 package com.example.dwelventory;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class Item {
     private String comment;
     // optional
     private List photos;
+    private ArrayList<Tag> tags;
 
     // base constructor
     public Item(String description, Date date, String make, String model, int estValue ) {
@@ -87,5 +89,9 @@ public class Item {
 
     public void setPhotos(List photos) {
         this.photos = photos;
+    }
+
+    public void setTags(ArrayList<Tag> tags){
+        this.tags = tags;
     }
 }
