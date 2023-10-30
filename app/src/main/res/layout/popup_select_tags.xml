@@ -3,55 +3,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#c38e67"
+    android:background="@color/caramel"
     android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/selectDRange"
+        android:text="@string/selectTags"
         android:textAlignment="center"
         android:textSize="30dp"
         android:textColor="@color/white"
         android:paddingVertical="10dp"
-        android:background="#8e7a6b"></TextView>
+        android:background="@color/darkBrown"></TextView>
 
     <EditText
-        android:id="@+id/filter_date_cal1"
+        android:id="@+id/filter_tags_etext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Click to select start date"
+        android:hint="Tags"
         android:paddingHorizontal="20dp"
         android:paddingVertical="10dp"
         android:layout_marginHorizontal="40dp"
         android:layout_marginTop="70dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:background="@color/white"
-        android:focusable="false"
         android:textSize="25dp"></EditText>
 
-    <EditText
-        android:id="@+id/filter_date_cal2"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Click to select end date"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="10dp"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="70dp"
-        android:background="@color/white"
-        android:focusable="false"
-        android:textSize="25dp"></EditText>
+        android:text="@string/separate"
+        android:textSize="20dp"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:layout_marginBottom="33dp">
+    </TextView>
 
     <Button
-        android:id="@+id/filter_date_donebtn"
+        android:id="@+id/filter_tags_donebtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/done"
         android:textSize="25dp"
-        android:backgroundTint="#2d814f"
+        android:backgroundTint="@color/green"
         android:layout_marginBottom="20dp"></Button>
 
 </LinearLayout>
