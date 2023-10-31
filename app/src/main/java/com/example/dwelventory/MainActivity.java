@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference usersRef;
     private ArrayList<Item> dataList;
     private ArrayAdapter<Item> itemAdapter;
+    private float estTotal;
 
 
     @Override
@@ -95,6 +96,8 @@ public class MainActivity extends AppCompatActivity {
         itemAdapter = new ItemList(this, dataList);
         ListView itemList = findViewById(R.id.item_list);
         itemList.setAdapter(itemAdapter);
+
+
 
 
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
