@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -96,8 +97,14 @@ public class MainActivity extends AppCompatActivity {
         ListView itemList = findViewById(R.id.item_list);
         itemList.setAdapter(itemAdapter);
 
-
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
+
+        addButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), AddEditActivity.class);
+            intent.putExtra("mode", "add");
+            startActivity(intent);
+        });
+
     }
 
     @Override

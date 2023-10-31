@@ -14,7 +14,7 @@
 
 
     <string name="description">Description (Name)</string>
-    <string name="date">Date of Purchase</string>
+    <string name="date">Date (mm-dd-yyyy)</string>
     <string name="make">Make</string>
     <string name="model">Model</string>
     <string name="serialNumber">Serial Number</string>
