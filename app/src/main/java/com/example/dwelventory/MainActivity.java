@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Item> dataList = new ArrayList<>();
 
         // fake data
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMPM-yyyy", Locale.ENGLISH);
         String date11 = "7-Jun-2013";
         String date22 = "28-Oct-2023";
         Date date1;
