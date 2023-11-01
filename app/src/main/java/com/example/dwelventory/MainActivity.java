@@ -38,6 +38,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -174,6 +176,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void deleteItems(ArrayList<Item> dataList, ArrayList<Item> toremove){
+        if (toremove.size() == 0){
+            Toast.makeText(MainActivity.this, "Select items to delete",
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            for (Item item : toremove) {
+                dataList.remove(item);
+                itemAdapter.notifyDataSetChanged();
+            }
+        }
     }
 }
 
