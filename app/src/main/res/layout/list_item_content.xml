@@ -1,69 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="16dp">
 
-    <View
-        android:id="@+id/center"
-        android:layout_height="match_parent"
-        android:layout_width="0dp"
-        android:visibility="invisible"
-        android:layout_centerHorizontal="true"/>
-
-    <RelativeLayout
-        android:id="@+id/item"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/center"
-        android:layout_toLeftOf="@id/itemImage">
+    <ImageView
+        android:id="@+id/itemImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/goat"
+        android:contentDescription="@string/imageDescription" />
 
     <TextView
         android:id="@+id/description"
-        android:padding="20dp"
-        android:textSize="30sp"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/itemImage"
+        android:layout_toStartOf="@+id/checkbox"
+        android:layout_alignTop="@+id/itemImage"
+        android:textSize="18sp"
         android:text="@string/description" />
 
     <TextView
         android:id="@+id/estValue"
-        android:padding="20dp"
-        android:textSize="30sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/estValue"
-        android:layout_below="@+id/description" />
-
-</RelativeLayout>
-
-    <ImageView
-        android:id="@+id/itemImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="50dp"
-        android:padding="70dp"
-        android:layout_margin="20dp"
-        android:layout_marginBottom="40dp"
-        android:layout_alignBottom="@id/item"
-        android:layout_alignStart="@id/center"
-        android:layout_alignParentTop="true"
-        android:contentDescription="@string/imageDescription"
-        />
+        android:layout_below="@+id/description"
+        android:layout_toEndOf="@+id/itemImage"
+        android:layout_toStartOf="@+id/checkbox"
+        android:textSize="18sp"
+        android:text="@string/estValue" />
 
     <CheckBox
         android:id="@+id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="75dp"
-        android:layout_toRightOf="@+id/itemImage"
-        android:minWidth="32dp"
-        android:minHeight="48dp"
-        android:padding="20dp"
-        android:visibility="invisible"
-        tools:ignore="TouchTargetSizeCheck" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/itemImage" />
 
 </RelativeLayout>

@@ -6,6 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -50,6 +54,12 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference usersRef;
     private ArrayList<Item> dataList;
+<<<<<<< Updated upstream
+=======
+    private ArrayAdapter<Item> itemAdapter;
+    private ListView itemList;
+
+>>>>>>> Stashed changes
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,10 +97,28 @@ public class MainActivity extends AppCompatActivity {
         dataList.add(item2);
 
 
+<<<<<<< Updated upstream
         ArrayAdapter<Item> itemAdapter = new ItemList(this, dataList);
         ListView itemList = findViewById(R.id.item_list);
         itemList.setAdapter(itemAdapter);
 
+=======
+        itemAdapter = new ItemList(this,dataList);
+        itemList = findViewById(R.id.item_list);
+        itemList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        itemList.setAdapter(itemAdapter);
+
+
+        /*itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                return false;
+            }
+        });*/
+
+
+>>>>>>> Stashed changes
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,6 +198,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+<<<<<<< Updated upstream
+=======
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.multiple_items_selected,menu);
+        return true;
+        //return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item){
+        int id = item.getItemId();
+        int count = 0;
+        //final Button delete_btn = findViewById(R.id.)
+        if(id == R.id.delete_selected_items){
+            for(int i = 0; i<itemList.getCount(); i++){
+                if(itemList.isItemChecked(i)){
+                    itemAdapter.remove(dataList.get(i));
+                    dataList.remove(i);
+                    count++;
+                }
+            }
+        }
+        if(count != 0){
+            Toast.makeText(this, "Deleted "+ count+ " Items", Toast.LENGTH_LONG).show();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+}
+>>>>>>> Stashed changes
 
     /*@Override
     public void onOKPressed(Item item) {
