@@ -111,63 +111,66 @@ public class MainActivity extends AppCompatActivity {
         addEditActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
+                    Log.d("resultTag", "activity result opened");
+                    Log.d("resultTag", "result code: " + result.getResultCode());
                     if (result.getResultCode() == ADD_EDIT_CODE_OK) {
-                        // Handle the result here
                         Intent data = result.getData();
                         if (data != null) {
-                            // Extract data from the result Intent and handle it
-                            // For example, you can check request codes to distinguish between add and edit
+                            // Extract item
+                            Item item = data.getParcelableExtra("item");
+                            // Get and set date bc its weird
+                            Date date = (Date) data.getSerializableExtra("date");
+                            item.setDate(date);
                             int requestCode = data.getIntExtra("requestCode", -1);
+                            Log.d("resultTag", "request code: " + requestCode);
                             if (requestCode == ADD_ACTIVITY_CODE) {
                                 // Handle the result for adding
-                                Item newItem = data.getParcelableExtra("item");
-                                // Add the newObject to your list or adapter and update the UI
-
+                                Log.d("resultTag", "i am about to add the item");
+                                dataList.add(item);
+                                itemAdapter.notifyDataSetChanged();
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
                                 // Handle the result for editing
-                                Item updatedItem = data.getParcelableExtra("item");
+                                Log.d("resultTag", "i am about to edit the item");
                                 int position = data.getIntExtra("position", -1);
-                                // Add the newObject to your list or adapter and update the UI
+                                dataList.set(position, item);
+                                itemAdapter.notifyDataSetChanged();
                             }
                         }
                     }
                 }
         );
 
-//        addEditActivityResultLauncher = registerForActivityResult( new ActivityResultContracts.StartActivityForResult(),result->{
-//            if (result.getResultCode() == ADD_EDIT_CODE_OK) {
-//                Intent data = result.getData();
-//                Item newItem = (Item) data.getSerializableExtra("item");
-//                dataList.add(newItem);
-//                itemAdapter.notifyDataSetChanged();
-//            }
-//        });
         // View and/or edit the item when clicked
         itemList.setOnItemClickListener((adapterView, view, i, l)->{
-            Intent intent = new Intent(getApplicationContext(), AddEditActivity.class);
+            Intent intent = new Intent(MainActivity.this, AddEditActivity.class);
             intent.putExtra("mode", "edit");
+            Log.d("mainTag", "position: " + i);
+            Log.d("mainitemclickTag", "date from list " + dataList.get(i).getDate());
             Item copyItem = makeCopy( dataList.get(i) );
+
             Log.d("mainTag", "hi copyDate is " + copyItem.getDate());
 
             intent.putExtra("item", copyItem);
             intent.putExtra("date", copyItem.getDate());
             intent.putExtra("position", i);
+            intent.putExtra("requestCode", EDIT_ACTIVITY_CODE);
             addEditActivityResultLauncher.launch(intent);
 
-//            startActivity(intent);
         });
         // go to add activity
         addButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), AddEditActivity.class);
+            Intent intent = new Intent(MainActivity.this, AddEditActivity.class);
             intent.putExtra("mode", "add");
+            intent.putExtra("requestCode", ADD_ACTIVITY_CODE);
             addEditActivityResultLauncher.launch(intent);
-//            addEditActivityResultLauncher.launch(intent);
-//            startActivity(intent);
-//            new ActivityResultContracts.StartActivityForResult(), result->(intent, ADD_EDIT_CODE);
         });
     }
+
     public Item makeCopy(Item item){
+        Log.d("mainTag", "in copy ");
+        assert item != null;
         String itemName = item.getDescription();
+        Log.d("mainTag", "name is" + itemName);
         Date itemDate = item.getDate();
         String itemMake = item.getMake();
         String itemModel = item.getModel();
@@ -176,26 +179,10 @@ public class MainActivity extends AppCompatActivity {
         String itemComment = item.getComment();
         List itemPhotos = item.getPhotos();
         Log.d("mainTag", "Date is" + itemDate);
+        Log.d("mainTag", "Make is " + itemMake);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment, itemPhotos);
         return copyItem;
     }
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == ADD_ACTIVITY_CODE && resultCode == ADD_EDIT_CODE_OK) {
-//            if (data != null) {
-//                Item newItem = data.getParcelableExtra("item");
-//                // Add the newObject to your list or adapter and update the UI
-//            }
-//        }
-//        if (requestCode == EDIT_ACTIVITY_CODE && resultCode == ADD_EDIT_CODE_OK) {
-//            if (data != null) {
-//                Item updatedItem = data.getParcelableExtra("item");
-//                int position = data.getIntExtra("position", -1);
-//                // Add the newObject to your list or adapter and update the UI
-//            }
-//        }
-//    }
 
     @Override
     public void onStart() {

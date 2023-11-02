@@ -63,6 +63,7 @@ public class AddEditActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String mode = intent.getStringExtra("mode");
         int position = intent.getIntExtra("position", -1);
+        int requestCode = intent.getIntExtra("requestCode", -1);
 
 
         if (mode.equals("edit")){
@@ -94,14 +95,20 @@ public class AddEditActivity extends AppCompatActivity {
             // check for valid inputs
             if (reqInputsValid()){
                 // take info and make item object
+                Log.d("editTag", "before making the new item, date is " + date);
+                
                 Item item = new Item(name, date, make, model, estValue);
                 // put it in intent
                 Intent updatedIntent = new Intent();
                 // go back to main activity
                 updatedIntent.putExtra("item", item);
+                updatedIntent.putExtra("date", date);
                 updatedIntent.putExtra("mode", mode);
                 updatedIntent.putExtra("position", position );
+                updatedIntent.putExtra("requestCode", requestCode);
+
                 setResult(818, updatedIntent);
+                Log.d("aeTag", "finishing aeActivity...");
                 finish();
             }
         });
