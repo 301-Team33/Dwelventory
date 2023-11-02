@@ -27,5 +27,6 @@
     <string name="selectDRange">Select Date Range</string>
     <string name="selectkWords">Select Keywords</string>
     <string name="done">Done</string>
+    <string name="separate">(separate input with spaces)</string>
 </resources>
 
