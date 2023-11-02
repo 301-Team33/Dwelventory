@@ -9,6 +9,6 @@ public class AddEditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_edit);
+        setContentView(R.layout.edit_item_fragment);
     }
 }

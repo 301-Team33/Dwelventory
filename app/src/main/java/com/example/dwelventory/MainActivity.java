@@ -49,6 +49,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,9 +63,10 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference usersRef;
     private ArrayList<Item> dataList;
+  
+    private ArrayAdapter<Item> itemAdapter;
+    private float estTotal;
 
-    //private ArrayAdapter<Item> itemAdapter;
-    //private ListView itemList;
 
 
     @Override
@@ -76,9 +79,11 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
+
         dataList = new ArrayList<>();
 
         ArrayList<Item> dataList = new ArrayList<>();
+
         // fake data
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
         String date11 = "7-Jun-2013";
@@ -96,13 +101,14 @@ public class MainActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
+
         Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings", 200);
         Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
         dataList.add(item1);
         dataList.add(item2);
 
 
-        ArrayAdapter<Item> itemAdapter = new ItemList(this, dataList);
+        itemAdapter = new ItemList(this, dataList);
         ListView itemList = findViewById(R.id.item_list);
         itemList.setAdapter(itemAdapter);
 
@@ -199,27 +205,11 @@ public class MainActivity extends AppCompatActivity {
         itemList.setAdapter(itemAdapter);
         //itemAdapter.notifyDataSetChanged();
 
+
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
     }
 
-   /* private void changeListViewHeight(Boolean b, ListView itemList) {
-        if (b) {
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) itemList.getLayoutParams();
-            layoutParams.topMargin = 75;
-            itemList.setLayoutParams(layoutParams);
-            itemList.requestLayout();
-        } else {
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) itemList.getLayoutParams();
-            layoutParams.topMargin = 0;
-            itemList.setLayoutParams(layoutParams);
-            itemList.requestLayout();
-        }
-    }*/
+
 
     @Override
     public void onStart() {
@@ -235,8 +225,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     //@Override
     /*public void onOKPressed(Item item) {
+
+
+    public void onOKPressed(Item item) {
+
         dataList.add(item);
         itemAdapter.notifyDataSetChanged();
     }*/
@@ -293,23 +288,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.multiple_items_selected, menu);
-        return true;
-        //return super.onCreateOptionsMenu(menu);
-    }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        getMenuInflater().inflate(R.menu.multiple_items_selected, menu);
+   
+    public void deleteItems(ArrayList<Item> dataList, ArrayList<Item> toremove){
+        if (toremove.size() == 0){
+            Toast.makeText(MainActivity.this, "Select items to delete",
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            for (Item item : toremove) {
+                dataList.remove(item);
+                itemAdapter.notifyDataSetChanged();
+            }
+        }
     }
-
 }
-    /*@Override
-    public void onOKPressed(Item item) {
-        dataList.add(item);
-        itemAdapter.notifyDataSetChanged();
-    }*/
+
 
