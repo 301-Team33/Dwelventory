@@ -20,6 +20,7 @@ public class Item implements Parcelable {
     private String comment;
     // optional
     private List photos;
+    private boolean selected;
 
     // base constructor
     public Item(String description, Date date, String make, String model, int estValue ) {
@@ -28,6 +29,7 @@ public class Item implements Parcelable {
         this.make = make;
         this.model = model;
         this.estValue = estValue;
+        this.selected = false;
     }
 
     // full constructor
@@ -141,5 +143,11 @@ public class Item implements Parcelable {
         dest.writeInt(serialNumber);
         dest.writeInt(estValue);
         dest.writeString(comment);
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }
