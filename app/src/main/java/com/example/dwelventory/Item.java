@@ -1,9 +1,14 @@
 package com.example.dwelventory;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.util.Date;
 import java.util.List;
 
-public class Item {
+public class Item implements Parcelable {
     private String description;
     private Date date;
     private String make;
@@ -24,6 +29,40 @@ public class Item {
         this.model = model;
         this.estValue = estValue;
     }
+
+    // full constructor
+    public Item(String description, Date date, String make, String model, int serialNumber, int estValue, String comment, List photos) {
+        this.description = description;
+        this.date = date;
+        this.make = make;
+        this.model = model;
+        this.serialNumber = serialNumber;
+        this.estValue = estValue;
+        this.comment = comment;
+        this.photos = photos;
+    }
+
+    // parcelable constructor
+    protected Item(Parcel in) {
+        description = in.readString();
+        make = in.readString();
+        model = in.readString();
+        serialNumber = in.readInt();
+        estValue = in.readInt();
+        comment = in.readString();
+    }
+
+    public static final Creator<Item> CREATOR = new Creator<Item>() {
+        @Override
+        public Item createFromParcel(Parcel in) {
+            return new Item(in);
+        }
+
+        @Override
+        public Item[] newArray(int size) {
+            return new Item[size];
+        }
+    };
 
     public String getDescription() {
         return description;
@@ -87,5 +126,20 @@ public class Item {
 
     public void setPhotos(List photos) {
         this.photos = photos;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(description);
+        dest.writeString(make);
+        dest.writeString(model);
+        dest.writeInt(serialNumber);
+        dest.writeInt(estValue);
+        dest.writeString(comment);
     }
 }

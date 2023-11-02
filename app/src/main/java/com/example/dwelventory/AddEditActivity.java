@@ -2,8 +2,10 @@ package com.example.dwelventory;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -60,6 +62,33 @@ public class AddEditActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String mode = intent.getStringExtra("mode");
+        int position = intent.getIntExtra("position", -1);
+
+
+        if (mode.equals("edit")){
+            Item item = intent.getParcelableExtra("item");
+            // fill edit texts with information
+            assert item != null;
+            nameButton.setText(item.getDescription());
+            Date date = (Date) intent.getSerializableExtra("date");
+            Log.d("aeTag", "um Date is" + date);
+            assert date != null;
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault());
+            // Format the Date object as a string
+            String strDate = dateFormat.format(date);
+            dateButton.setText(strDate);
+            makeButton.setText(item.getMake());
+            modelButton.setText(item.getModel());
+            Log.d("aeTag", "before serial");
+            Log.d("aeTag", "serial is "+item.getSerialNumber());
+            serialNumButton.setText(String.valueOf(item.getSerialNumber()));
+            Log.d("aeTag", "before est");
+            estValButton.setText(String.valueOf(item.getEstValue()));
+            Log.d("aeTag", "before comment");
+            commentButton.setText(item.getComment());
+            Log.d("aeTag", "made it to the end");
+        }
+
 
         confirmButton.setOnClickListener(v -> {
             // check for valid inputs
@@ -69,6 +98,10 @@ public class AddEditActivity extends AppCompatActivity {
                 // put it in intent
                 Intent updatedIntent = new Intent();
                 // go back to main activity
+                updatedIntent.putExtra("item", item);
+                updatedIntent.putExtra("mode", mode);
+                updatedIntent.putExtra("position", position );
+                setResult(818, updatedIntent);
                 finish();
             }
         });
@@ -120,17 +153,19 @@ public class AddEditActivity extends AppCompatActivity {
         // check estimated value
         String ev = estValButton.getText().toString();
         if (ev.isEmpty()){
-            estValButton.setError("Field cannot be empmty");
+            estValButton.setError("Field cannot be empty");
             estValButton.requestFocus();
             valid = false;
         }
-        estValue = Integer.parseInt(ev);
+        else{
+            estValue = Integer.parseInt(ev);
+        }
         // All inputs valid!!!
         return valid;
     }
 
     private boolean isDateValid(String dateStr) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault());
         dateFormat.setLenient(false); // Disallow lenient date parsing
         try {
             date = dateFormat.parse(dateStr);
@@ -139,13 +174,4 @@ public class AddEditActivity extends AppCompatActivity {
             return false; // Date is invalid
         }
     }
-
 }
-
-//        if (!isDateValid(date)) {
-//        //
-//        Toast.makeText(getApplicationContext(), "Invalid date format", Toast.LENGTH_SHORT).show();
-//        }
-//
-//        String ev = estValButton.getText().toString();
-//        estValue = Integer.parseInt(ev);
