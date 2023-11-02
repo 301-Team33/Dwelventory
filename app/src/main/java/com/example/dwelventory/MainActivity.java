@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -98,6 +98,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TagFragment newFragment = TagFragment.newInstance(mAuth.getUid());
+                newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
+            }
+        });
     }
 
     @Override
@@ -107,8 +114,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             signOnAnonymously();
-        }
-        else {
+        } else {
             Toast.makeText(MainActivity.this, "Already signed in",
                     Toast.LENGTH_SHORT).show();
             checkUsers(mAuth.getCurrentUser());
@@ -122,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     *  This method will attempt to sign on anonymously, if the user is not already signed in
+     * This method will attempt to sign on anonymously, if the user is not already signed in
      */
     private void signOnAnonymously() {
         mAuth.signInAnonymously().addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -147,8 +153,8 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * This method checks the Firestore database to see if a corresponding 'users' document exists
-     * @param user
-     *     This is the given user currently accessing the app/database
+     *
+     * @param user This is the given user currently accessing the app/database
      */
     private void checkUsers(FirebaseUser user) {
         DocumentReference doc = db.collection("users").document(user.getUid());
@@ -172,5 +178,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    @Override
+    public void onCloseAction() {
+        TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
+        tagFragment.dismiss();
+    }
+
+    @Override
+    public void onTagApplyAction(ArrayList<Tag> applyTags) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        String date22 = "28-Oct-2023";
+        Date date2;
+        TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
+        tagFragment.dismiss();
+        try {
+            date2 = formatter.parse(date22);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        Item item3 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+        item3.setTags(applyTags);
+        Log.d("tag", "onTagApplyAction: " + item3.getTags().get(0).getTagName() + item3.getTags().get(1).getTagName());
+    }
+
 }
 

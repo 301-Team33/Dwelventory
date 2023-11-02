@@ -94,4 +94,8 @@ public class Item {
     public void setTags(ArrayList<Tag> tags){
         this.tags = tags;
     }
+
+    public ArrayList<Tag> getTags(){
+        return this.tags;
+    }
 }

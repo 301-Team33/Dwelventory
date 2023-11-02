@@ -1,6 +1,8 @@
 package com.example.dwelventory;
 
-public class Tag {
+import java.io.Serializable;
+
+public class Tag implements Serializable {
     String tagName;
 
     public Tag(String tagName){
