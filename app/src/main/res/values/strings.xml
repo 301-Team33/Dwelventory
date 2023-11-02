@@ -17,4 +17,7 @@
     <string name="selectkWords">Select Keywords</string>
     <string name="done">Done</string>
     <string name="delete">Delete</string>
+    <string name="selectItems">Selected items : 0</string>
+    <string name="selectAll">Select all</string>
+    <string name="deleteSelectedItems">Delete selected items</string>
 </resources>
