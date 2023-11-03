@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity">
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,4 +21,11 @@
         android:layout_gravity="bottom|end"
         app:srcCompat="@android:drawable/ic_input_add"
         android:contentDescription="add_button" />
+    <Spinner
+        android:id="@+id/sort_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        />
+
 </FrameLayout>

@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference usersRef;
     private ArrayList<Item> dataList;
     private ArrayAdapter<Item> itemAdapter;
+    private Spinner sortSpinner;
 
 
     @Override
@@ -98,6 +101,42 @@ public class MainActivity extends AppCompatActivity {
 
 
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
+
+        boolean reverseOrder = false;
+        sortSpinner = findViewById(R.id.sort_spinner);
+        ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.sort_array,
+                android.R.layout.simple_spinner_item
+        );
+        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String sort = parent.getItemAtPosition(position).toString();
+                switch(sort) {
+                    case "Date":
+                        ItemSorter.sortDate(dataList, reverseOrder);
+                        break;
+                    case "Description":
+                        ItemSorter.sortDescription(dataList, reverseOrder);
+                        break;
+                    case "Make":
+                        ItemSorter.sortMake(dataList, reverseOrder);
+                        break;
+                    case "Estimated Value":
+                        ItemSorter.sortEstValue(dataList, reverseOrder);
+                        break;
+                }
+                itemAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        sortSpinner.setAdapter(sortAdapter);
     }
 
     @Override
