@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="filter_spinner_options">
+        <item>Make</item>
+        <item>Description Words</item>
+        <Item>Tags</Item>
+        <Items>Date</Items>
+    </array>
+</resources>
