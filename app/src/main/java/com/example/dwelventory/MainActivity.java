@@ -18,6 +18,7 @@ import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -58,7 +59,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FilterFragment.FilterFragmentListener {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -210,6 +211,15 @@ public class MainActivity extends AppCompatActivity {
 
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
 
+        final Spinner filterSpinner = findViewById(R.id.filter_spinner);
+        filterSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                FilterFragment filter = FilterFragment.newInstance((String) parent.getItemAtPosition(position));
+                filter.show(getSupportFragmentManager(), "FilterFragment");
+            }
+        });
+
         
     }
 
@@ -304,6 +314,26 @@ public class MainActivity extends AppCompatActivity {
                 itemAdapter.notifyDataSetChanged();
             }
         }
+    }
+
+    @Override
+    public void onMakeFilterApplied(String[] filterInput) {
+
+    }
+
+    @Override
+    public void onDateFilterApplied(Date start, Date end) {
+
+    }
+
+    @Override
+    public void onKeywordFilterApplied(String[] keywords) {
+
+    }
+
+    @Override
+    public void onTagFilterApplied(String[] tags) {
+
     }
 }
 

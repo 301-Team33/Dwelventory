@@ -3,7 +3,7 @@
     <array name="filter_spinner_options">
         <item>Make</item>
         <item>Description Words</item>
-        <Item>Tags</Item>
-        <Items>Date</Items>
+        <item>Tags</item>
+        <item>Date</item>
     </array>
 </resources>
