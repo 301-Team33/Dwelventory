@@ -72,15 +72,9 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:id="@+id/item_list"
-            android:layout_weight="1">
-        </ListView>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true">
 
         <TextView
             android:layout_width="match_parent"
@@ -105,11 +99,9 @@
         android:clickable="true"
         android:contentDescription="add_button"
         android:focusable="true"
-
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        app:srcCompat="@android:drawable/ic_input_add"
-        android:contentDescription="add_button" />
+        app:srcCompat="@android:drawable/ic_input_add" />
 
 </RelativeLayout>
 
