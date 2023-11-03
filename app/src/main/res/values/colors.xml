@@ -7,5 +7,9 @@
     <color name="caramel">#C38E67</color>
     <color name="darkBrown">#8E7A6B</color>
     <color name="beige">#D8C9B7</color>
+
     <color name = "gray">#E7E7E7</color>
+
+    <color name="grey">#808080</color>
+
 </resources>

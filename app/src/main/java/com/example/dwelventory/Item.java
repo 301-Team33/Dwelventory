@@ -1,11 +1,12 @@
 package com.example.dwelventory;
 
-import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Item implements Serializable {
+
+public class Item implements Parcelable {
     private String description;
     private Date date;
     private String make;
@@ -17,7 +18,11 @@ public class Item implements Serializable {
     private String comment;
     // optional
     private List photos;
+
     private ArrayList<Tag> tags;
+
+    private boolean selected;
+
 
     // base constructor
     public Item(String description, Date date, String make, String model, int estValue ) {
@@ -26,7 +31,42 @@ public class Item implements Serializable {
         this.make = make;
         this.model = model;
         this.estValue = estValue;
+//        this.selected = false;
     }
+
+    // full constructor
+    public Item(String description, Date date, String make, String model, int serialNumber, int estValue, String comment, List photos) {
+        this.description = description;
+        this.date = date;
+        this.make = make;
+        this.model = model;
+        this.serialNumber = serialNumber;
+        this.estValue = estValue;
+        this.comment = comment;
+        this.photos = photos;
+    }
+
+    // parcelable constructor
+    protected Item(Parcel in) {
+        description = in.readString();
+        make = in.readString();
+        model = in.readString();
+        serialNumber = in.readInt();
+        estValue = in.readInt();
+        comment = in.readString();
+    }
+
+    public static final Creator<Item> CREATOR = new Creator<Item>() {
+        @Override
+        public Item createFromParcel(Parcel in) {
+            return new Item(in);
+        }
+
+        @Override
+        public Item[] newArray(int size) {
+            return new Item[size];
+        }
+    };
 
     public String getDescription() {
         return description;
@@ -92,6 +132,7 @@ public class Item implements Serializable {
         this.photos = photos;
     }
 
+
     public void setTags(ArrayList<Tag> tags){
         this.tags = tags;
     }
@@ -99,4 +140,31 @@ public class Item implements Serializable {
     public ArrayList<Tag> getTags(){
         return this.tags;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(description);
+        dest.writeString(make);
+        dest.writeString(model);
+        dest.writeInt(serialNumber);
+        dest.writeInt(estValue);
+        dest.writeString(comment);
+        dest.writeString(String.valueOf(selected));
+    }
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+//        this.selected = selected;
+       this.selected = selected;
+
+    }
+
+
 }
