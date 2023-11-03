@@ -96,6 +96,10 @@ public class TagFragment extends DialogFragment{
         Bundle bundle = getArguments();
         userId = bundle.getString("user_id");
 
+        if (bundle.containsKey("current_item")){
+            Item currentItem = bundle.getParcelable("current_item");
+        }
+
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         tagsRef = db.collection("users").document(userId).collection("tags");
@@ -244,7 +248,7 @@ public class TagFragment extends DialogFragment{
     static TagFragment newInstance(String userId,Item item){
         Bundle args = new Bundle();
         args.putString("user_id",userId);
-        args.putSerializable("current_item",item);
+        args.putParcelable("current_item",item);
 
         TagFragment tagFragment = new TagFragment();
         tagFragment.setArguments(args);
