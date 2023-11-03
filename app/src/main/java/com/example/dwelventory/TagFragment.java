@@ -98,6 +98,7 @@ public class TagFragment extends DialogFragment{
 
         if (bundle.containsKey("current_item")){
             Item currentItem = bundle.getParcelable("current_item");
+            //updated
         }
 
         mAuth = FirebaseAuth.getInstance();
