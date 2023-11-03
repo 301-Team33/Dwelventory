@@ -35,7 +35,6 @@ public class FilterFragment extends DialogFragment {
         fragment.setArguments(args);
         return fragment;
     }
-    public FilterFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
