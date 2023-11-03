@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
         dataList = new ArrayList<>();
 
-        ArrayList<Item> dataList = new ArrayList<>();
+        //ArrayList<Item> dataList = new ArrayList<>();
 
         // fake data
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
@@ -165,13 +165,14 @@ public class MainActivity extends AppCompatActivity {
                 /*View checkBoxLayout = view.findViewById(R.id.checkbox);
                 checkBoxLayout.setVisibility(View.VISIBLE);*/
 
-                for (int j = 0; j < adapterView.getCount(); j++) {
+                for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
                     if (view_temp != null) {
                         CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
                         checkBox.setVisibility(View.VISIBLE);
                     }
                 }
+
 
                 RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
                 select_items.setVisibility(View.VISIBLE);
@@ -184,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         select_items.setVisibility(View.GONE);
 
-                        for (int j = 0; j < adapterView.getCount(); j++) {
+                        for (int j = 0; j < itemAdapter.getCount(); j++) {
                             View view_temp = finalItemList.getChildAt(j);
                             if (view_temp != null) {
                                 CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
@@ -197,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                 deletebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        for (int j = 0; j < adapterView.getCount(); j++) {
+                        for (int j = 0; j < itemAdapter.getCount(); j++) {
                             View view_temp = finalItemList.getChildAt(j);
                             if (view_temp != null) {
                                 CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
@@ -232,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });*/
-                finalItemAdapter.notifyDataSetChanged();
+                //finalItemAdapter.notifyDataSetChanged();
                 return true;
 
             }
