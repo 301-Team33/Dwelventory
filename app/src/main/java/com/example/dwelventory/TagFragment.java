@@ -88,7 +88,7 @@ public class TagFragment extends DialogFragment{
         deletePrompt = view.findViewById(R.id.delete_prompt_text);
 
         deleteLayout.setVisibility(View.GONE);
-
+        deletePrompt.setVisibility(View.GONE);
 
 
 
@@ -114,6 +114,7 @@ public class TagFragment extends DialogFragment{
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(view);
 
+
         tagBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,6 +128,7 @@ public class TagFragment extends DialogFragment{
                 itemIndex = position;
                 deletePrompt.setText("Delete: " + tagDataList.get(position).getTagName() + "?" );
                 deleteLayout.setVisibility(View.VISIBLE);
+                deletePrompt.setVisibility(View.VISIBLE);
                 return true;
             }
         });
@@ -170,10 +172,43 @@ public class TagFragment extends DialogFragment{
 
         });
 
+        if (bundle.containsKey("current_item")){
+            Item item = (Item) bundle.getSerializable("current_item");
+            ArrayList<Tag> currentAppliedTags = item.getTags();
+            String testString = "";
+            for (Tag appliedTag : currentAppliedTags){
+                String appliedTagName = appliedTag.getTagName();
+                tagsToApply.add(appliedTag);
+
+                // Set the background color of the listview to show that the Tag was selected!
+                int i = 0;
+                for (Tag userDefinedTags: tagDataList){
+                    String testTagName = userDefinedTags.getTagName();
+                    testString = testString + testTagName;
+                    if (1 == 1){
+                        View updateView = tagListView.getChildAt(i);
+                        updateView.setBackgroundColor(Color.BLUE);
+                        tagApplyButton.setBackgroundColor(Color.BLUE);
+                        break;
+                    }
+                    i++;
+
+                }
+
+
+
+            }
+            testString = Integer.toString(tagDataList.size());
+            tagApplyButton.setText(testString);
+
+
+        }
+
         deleteCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 deleteLayout.setVisibility(View.GONE);
+                deletePrompt.setVisibility(View.GONE);
             }
         });
 
@@ -182,6 +217,7 @@ public class TagFragment extends DialogFragment{
             public void onClick(View v) {
                 Tag toDelete = tagDataList.get(itemIndex);
                 deleteLayout.setVisibility(View.GONE);
+                deletePrompt.setVisibility(View.GONE);
                 currentTagNames.remove(toDelete.getTagName().toLowerCase());
                 tagsRef.document(toDelete.getTagName()).delete();
                 tagDataList.remove(itemIndex);
@@ -234,6 +270,17 @@ public class TagFragment extends DialogFragment{
 
         TagFragment tagFragment = new TagFragment();
         tagFragment.setArguments(args);
+        return tagFragment;
+    }
+
+    static TagFragment newInstance(String userId,Item item){
+        Bundle args = new Bundle();
+        args.putString("user_id",userId);
+        args.putSerializable("current_item",item);
+
+        TagFragment tagFragment = new TagFragment();
+        tagFragment.setArguments(args);
+
         return tagFragment;
     }
 

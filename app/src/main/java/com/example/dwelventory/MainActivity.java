@@ -88,6 +88,10 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
         Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings", 200);
         Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+        ArrayList<Tag> practiceTags = new ArrayList<>();
+        practiceTags.add(new Tag("Tag1"));
+        practiceTags.add(new Tag("Tag2"));
+        item1.setTags(practiceTags);
         dataList.add(item1);
         dataList.add(item2);
 
@@ -101,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TagFragment newFragment = TagFragment.newInstance(mAuth.getUid());
+                TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),item1);
                 newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
             }
         });
