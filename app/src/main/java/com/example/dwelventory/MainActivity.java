@@ -127,36 +127,11 @@ public class MainActivity extends AppCompatActivity {
         itemList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         itemList.setAdapter(itemAdapter);
 
-//        itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//                /*View checkBoxLayout = view.findViewById(R.id.checkbox);
-//                checkBoxLayout.setVisibility(View.VISIBLE);*/
-//
-//                for (int j = 0; j < itemAdapter.getCount(); j++) {
-//                    View view_temp = itemList.getChildAt();
-//                    if (view_temp != null) {
-//                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-//                        checkBox.setVisibility(View.VISIBLE);
-//                    }
-//                }
-//
-//                RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
-//                select_items.setVisibility(View.VISIBLE);
-//                //changeListViewHeight(Boolean.TRUE);
-//
-//                ImageButton closebtn = findViewById(R.id.closebtn);
-//                ImageButton deletebtn = findViewById(R.id.deletebtn);
-//                return false;
-//            }
-//        });
 
-/*SORRY ABHI*/
 
         // Declare itemList as new final variable
         // (This variable is used only for the longClickListener)
         ListView finalItemList = itemList;
-//        ListView finalItemList = findViewById(R.id.item_list);
         ArrayAdapter<Item> finalItemAdapter = itemAdapter;
 
         itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
