@@ -29,7 +29,7 @@ public class Item implements Parcelable {
         this.make = make;
         this.model = model;
         this.estValue = estValue;
-        this.selected = false;
+//        this.selected = false;
     }
 
     // full constructor
@@ -143,11 +143,16 @@ public class Item implements Parcelable {
         dest.writeInt(serialNumber);
         dest.writeInt(estValue);
         dest.writeString(comment);
+        dest.writeString(String.valueOf(selected));
+    }
     public boolean isSelected() {
         return selected;
     }
 
     public void setSelected(boolean selected) {
-        this.selected = selected;
+//        this.selected = selected;
+       this.selected = selected;
+
     }
+
 }

@@ -73,14 +73,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:id="@+id/item_list"
-            android:layout_weight="1">
-        </ListView>
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true">
 
         <TextView
             android:layout_width="match_parent"
@@ -103,7 +97,6 @@
         android:layout_marginBottom="5dp"
         android:backgroundTint="@color/green"
         android:clickable="true"
-        android:contentDescription="add_button"
         android:focusable="true"
 
         android:layout_alignParentBottom="true"
