@@ -4,10 +4,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
+
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.PopupMenu;
+import android.widget.CheckBox;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -54,8 +64,10 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference usersRef;
     private ArrayList<Item> dataList;
+  
     private ArrayAdapter<Item> itemAdapter;
     private float estTotal;
+
 
 
     @Override
@@ -71,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
         dataList = new ArrayList<>();
 
-        ArrayList<Item> dataList = new ArrayList<>();
+        //ArrayList<Item> dataList = new ArrayList<>();
 
         // fake data
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
@@ -101,13 +113,107 @@ public class MainActivity extends AppCompatActivity {
         ListView itemList = findViewById(R.id.item_list);
         itemList.setAdapter(itemAdapter);
 
+        itemAdapter = new ItemList(this, dataList);
+        itemList = findViewById(R.id.item_list);
+        itemList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        itemList.setAdapter(itemAdapter);
 
+        // Declare itemList as new final variable
+        // (This variable is used only for the longClickListener)
+        final ListView finalItemList = itemList;
+        final ArrayAdapter<Item> finalItemAdapter = itemAdapter;
+
+        itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                /*View checkBoxLayout = view.findViewById(R.id.checkbox);
+                checkBoxLayout.setVisibility(View.VISIBLE);*/
+
+                for (int j = 0; j < itemAdapter.getCount(); j++) {
+                    View view_temp = finalItemList.getChildAt(j);
+                    if (view_temp != null) {
+                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                        checkBox.setVisibility(View.VISIBLE);
+                    }
+                }
+
+
+                RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
+                select_items.setVisibility(View.VISIBLE);
+                //changeListViewHeight(Boolean.TRUE);
+
+                ImageButton closebtn = findViewById(R.id.closebtn);
+                ImageButton deletebtn = findViewById(R.id.deletebtn);
+                closebtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        select_items.setVisibility(View.GONE);
+
+                        for (int j = 0; j < itemAdapter.getCount(); j++) {
+                            View view_temp = finalItemList.getChildAt(j);
+                            if (view_temp != null) {
+                                CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                                checkBox.setVisibility(View.GONE);
+                            }
+                        }
+                    }
+                });
+
+                deletebtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        for (int j = 0; j < itemAdapter.getCount(); j++) {
+                            View view_temp = finalItemList.getChildAt(j);
+                            if (view_temp != null) {
+                                CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                                //checkBox.setVisibility(View.GONE);
+                                if(checkBox.isChecked()){
+                                    finalItemAdapter.remove(dataList.get(j));
+                                    finalItemAdapter.notifyDataSetChanged();
+                                    checkBox.setChecked(false);
+                                    dataList.remove(j);
+                                }
+                            }
+                        }
+                        finalItemAdapter.notifyDataSetChanged();
+                    }
+                });
+                /*deletebtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int itemRemovedCount = 0;
+
+                        for (int j = dataList.size() - 1; j >= 0; j--) {
+                            Item currentItem = dataList.get(j);
+                            if (currentItem.isSelected()) {
+                                finalItemAdapter.remove(currentItem);
+                                dataList.remove(j);
+                                itemRemovedCount++;
+                            }
+                        }
+
+                        if (itemRemovedCount > 0) {
+                            Toast.makeText(MainActivity.this, "Deleted " + itemRemovedCount + " Items", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });*/
+                //finalItemAdapter.notifyDataSetChanged();
+                return true;
+
+            }
+        });
+        itemList = finalItemList;
+        itemAdapter = finalItemAdapter;
+        itemList.setAdapter(itemAdapter);
+        //itemAdapter.notifyDataSetChanged();
 
 
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
 
         
     }
+
+
 
     @Override
     public void onStart() {
@@ -116,8 +222,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             signOnAnonymously();
-        }
-        else {
+        } else {
             Toast.makeText(MainActivity.this, "Already signed in",
                     Toast.LENGTH_SHORT).show();
             checkUsers(mAuth.getCurrentUser());
@@ -125,13 +230,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    //@Override
+    /*public void onOKPressed(Item item) {
+
+
     public void onOKPressed(Item item) {
+
         dataList.add(item);
         itemAdapter.notifyDataSetChanged();
-    }
+    }*/
 
     /**
-     *  This method will attempt to sign on anonymously, if the user is not already signed in
+     * This method will attempt to sign on anonymously, if the user is not already signed in
      */
     private void signOnAnonymously() {
         mAuth.signInAnonymously().addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -156,8 +266,8 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * This method checks the Firestore database to see if a corresponding 'users' document exists
-     * @param user
-     *     This is the given user currently accessing the app/database
+     *
+     * @param user This is the given user currently accessing the app/database
      */
     private void checkUsers(FirebaseUser user) {
         DocumentReference doc = db.collection("users").document(user.getUid());
@@ -182,6 +292,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+   
     public void deleteItems(ArrayList<Item> dataList, ArrayList<Item> toremove){
         if (toremove.size() == 0){
             Toast.makeText(MainActivity.this, "Select items to delete",
@@ -194,4 +306,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+
 
