@@ -12,7 +12,13 @@
     <string name="invalid_tag_toast">Invalid Tag</string>
     <string name="tag_already_exists_toast">Tag Already Exists</string>
 
+
+    <string name="delete_tag_message">Delete Tag: </string>
+    <string name="delete_tag_delete_button">Delete</string>
+    <string name="delete_tag_reject_button">Back</string>
+
     <string name="confirm">Confirm</string>
+
     <string name="description">Description (Name)</string>
     <string name="date">Date (mm-dd-yyyy)</string>
     <string name="make">Make</string>
@@ -39,6 +45,8 @@
       <item>Ascending</item>
       <item>Descending</item>
     </string-array>
+  <string name="tags_title">TAGS</string>
+
 
     <string name="delete">Delete</string>
     <string name="selectItems">Selected items : 0</string>

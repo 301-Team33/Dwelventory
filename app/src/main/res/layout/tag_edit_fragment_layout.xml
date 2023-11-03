@@ -2,16 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/beige">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tag_title_bar">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tags"
+            android:text="@string/tags_title"
+            android:background="@color/darkBrown"
             android:textSize="40sp"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textStyle="bold"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:paddingBottom="15dp"
@@ -22,13 +28,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
+            android:src="@drawable/tag_cancel_fragment"
+            app:tint="@color/white"
+            android:backgroundTint="@color/green"
             ></com.google.android.material.floatingactionbutton.FloatingActionButton>
     </RelativeLayout>
     <ListView
         android:id="@+id/tag_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"></ListView>
+        android:layout_weight="1"
+        android:dividerHeight="0dp"
+        android:background="@color/gray"></ListView>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -39,7 +50,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|left"
             android:maxWidth="240dp"
-            android:maxLength="30">
+            android:maxLength="30"
+            android:maxLines="1">
         </EditText>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/tag_create_button"
@@ -47,6 +59,9 @@
             android:layout_height="wrap_content"
             android:layout_alignRight="@+id/tag_edittext"
             android:layout_alignParentEnd="true"
+            android:src="@drawable/tag_add_circle"
+            android:backgroundTint="@color/green"
+            app:tint="@color/white"
             ></com.google.android.material.floatingactionbutton.FloatingActionButton>
     </RelativeLayout>
 
@@ -54,8 +69,46 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/tag_confirm"
-        android:layout_gravity="center">
+        android:id="@+id/tag_apply_button"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/green">
     </Button>
+
+    <TextView
+        android:text="Delete: Sample?"
+        android:id="@+id/delete_prompt_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        android:textSize="20sp"
+        android:textColor="@color/black"></TextView>
+
+    <LinearLayout
+        android:id="@+id/tag_deletion_views"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+
+        <Button
+            android:layout_toRightOf="@+id/no_action_button"
+            android:id="@+id/delete_button"
+            android:layout_marginRight  ="20dp"
+            android:text="Delete"
+            android:backgroundTint="@color/green"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></Button>
+
+        <Button
+            android:id="@+id/no_action_button"
+            android:layout_width="wrap_content"
+            android:text="Cancel"
+            android:backgroundTint="@color/green"
+            android:layout_height="wrap_content"></Button>
+
+
+    </LinearLayout>
 
 
 
