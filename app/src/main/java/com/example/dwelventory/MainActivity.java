@@ -66,7 +66,10 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference usersRef;
     private ArrayList<Item> dataList;
     private ArrayAdapter<Item> itemAdapter;
+    boolean reverseOrder = false;
+
     private Spinner sortSpinner;
+    private Spinner orderSpinner;
     private float estTotal;
 
 
@@ -210,7 +213,6 @@ public class MainActivity extends AppCompatActivity {
 
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
 
-        boolean reverseOrder = false;
         sortSpinner = findViewById(R.id.sort_spinner);
         ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(
                 this,
@@ -245,9 +247,49 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         sortSpinner.setAdapter(sortAdapter);
+
+        orderSpinner = findViewById(R.id.order_spinner);
+        ArrayAdapter<CharSequence> orderAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.order_array,
+                android.R.layout.simple_spinner_item
+        );
+        orderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        orderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String order = parent.getItemAtPosition(position).toString();
+                if (order.equals("Descending")) {
+                    reverseOrder = true;
+                }
+                else {
+                    reverseOrder = false;
+                }
+
+                String sort = sortSpinner.getSelectedItem().toString();
+                switch(sort) {
+                    case "Date":
+                        ItemSorter.sortDate(dataList, reverseOrder);
+                        break;
+                    case "Description":
+                        ItemSorter.sortDescription(dataList, reverseOrder);
+                        break;
+                    case "Make":
+                        ItemSorter.sortMake(dataList, reverseOrder);
+                        break;
+                    case "Estimated Value":
+                        ItemSorter.sortEstValue(dataList, reverseOrder);
+                        break;
+                }
+                itemAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        orderSpinner.setAdapter(orderAdapter);
+
     }
-
-
 
     @Override
     public void onStart() {
