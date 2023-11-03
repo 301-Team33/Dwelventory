@@ -172,38 +172,6 @@ public class TagFragment extends DialogFragment{
 
         });
 
-        if (bundle.containsKey("current_item")){
-            Item item = (Item) bundle.getSerializable("current_item");
-            ArrayList<Tag> currentAppliedTags = item.getTags();
-            String testString = "";
-            for (Tag appliedTag : currentAppliedTags){
-                String appliedTagName = appliedTag.getTagName();
-                tagsToApply.add(appliedTag);
-
-                // Set the background color of the listview to show that the Tag was selected!
-                int i = 0;
-                for (Tag userDefinedTags: tagDataList){
-                    String testTagName = userDefinedTags.getTagName();
-                    testString = testString + testTagName;
-                    if (1 == 1){
-                        View updateView = tagListView.getChildAt(i);
-                        updateView.setBackgroundColor(Color.BLUE);
-                        tagApplyButton.setBackgroundColor(Color.BLUE);
-                        break;
-                    }
-                    i++;
-
-                }
-
-
-
-            }
-            testString = Integer.toString(tagDataList.size());
-            tagApplyButton.setText(testString);
-
-
-        }
-
         deleteCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
