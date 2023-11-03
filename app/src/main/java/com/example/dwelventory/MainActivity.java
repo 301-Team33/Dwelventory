@@ -63,7 +63,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -115,6 +115,10 @@ public class MainActivity extends AppCompatActivity {
         List photos = null;
         Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings",serial,200, comment, photos);
         Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+        ArrayList<Tag> practiceTags = new ArrayList<>();
+        practiceTags.add(new Tag("Tag1"));
+        practiceTags.add(new Tag("Tag2"));
+        item1.setTags(practiceTags);
         dataList.add(item1);
         dataList.add(item2);
 
@@ -220,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
         //itemAdapter.notifyDataSetChanged();
 
 
-        final FloatingActionButton addButton = findViewById(R.id.add_item_button);
+
         addEditActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -295,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("mainTag", "Make is " + itemMake);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment, itemPhotos);
         return copyItem;
+
     }
 
 
@@ -374,6 +379,30 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+
+    @Override
+    public void onCloseAction() {
+        TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
+        tagFragment.dismiss();
+    }
+
+    @Override
+    public void onTagApplyAction(ArrayList<Tag> applyTags) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        String date22 = "28-Oct-2023";
+        Date date2;
+        TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
+        tagFragment.dismiss();
+        try {
+            date2 = formatter.parse(date22);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        Item item3 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+        item3.setTags(applyTags);
+        Log.d("tag", "onTagApplyAction: " + item3.getTags().get(0).getTagName() + item3.getTags().get(1).getTagName());
     }
 
 
