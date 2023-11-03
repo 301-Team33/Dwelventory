@@ -12,9 +12,9 @@
     <string name="invalid_tag_toast">Invalid Tag</string>
     <string name="tag_already_exists_toast">Tag Already Exists</string>
 
-
+    <string name="confirm">Confirm</string>
     <string name="description">Description (Name)</string>
-    <string name="date">Date of Purchase</string>
+    <string name="date">Date (mm-dd-yyyy)</string>
     <string name="make">Make</string>
     <string name="model">Model</string>
     <string name="serialNumber">Serial Number</string>
