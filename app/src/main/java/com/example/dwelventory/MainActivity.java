@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     private int ADD_ACTIVITY_CODE = 8;
     private int EDIT_ACTIVITY_CODE = 18;
     private int ADD_EDIT_CODE_OK = 818;
+    private FloatingActionButton addButton;
     private float estTotal;
 
 
@@ -91,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         usersRef = db.collection("users");
 
         dataList = new ArrayList<>();
+
+        addButton = findViewById(R.id.add_item_button);
 
         //ArrayList<Item> dataList = new ArrayList<>();
 
