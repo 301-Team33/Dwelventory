@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -89,6 +90,13 @@ public class AddEditActivity extends AppCompatActivity {
             commentButton.setText(item.getComment());
             Log.d("aeTag", "made it to the end");
         }
+
+        editTagButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+            }
+        });
 
 
         confirmButton.setOnClickListener(v -> {
