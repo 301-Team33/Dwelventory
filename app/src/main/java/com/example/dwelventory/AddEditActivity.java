@@ -11,13 +11,17 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class AddEditActivity extends AppCompatActivity {
+public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener{
     // All views
     EditText nameButton;
     EditText dateButton;
@@ -38,6 +42,10 @@ public class AddEditActivity extends AppCompatActivity {
     private String make;
     private String model;
     private int estValue;
+
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private CollectionReference usersRef;
 //    private String comment;
 
 
@@ -61,6 +69,10 @@ public class AddEditActivity extends AppCompatActivity {
         photoButton = findViewById(R.id.photo_button);
         confirmButton = findViewById(R.id.confirm_button);
 
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        usersRef = db.collection("users");
+
         Intent intent = getIntent();
         String mode = intent.getStringExtra("mode");
         int position = intent.getIntExtra("position", -1);
@@ -68,7 +80,7 @@ public class AddEditActivity extends AppCompatActivity {
 
 
         if (mode.equals("edit")){
-            Item item = intent.getParcelableExtra("item");
+            Item item = (Item) intent.getParcelableExtra("item");
             // fill edit texts with information
             assert item != null;
             nameButton.setText(item.getDescription());
@@ -94,7 +106,14 @@ public class AddEditActivity extends AppCompatActivity {
         editTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+                if(mode.equals("edit")) {
+                    Item item = (Item) intent.getParcelableExtra("item")
+                    TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),item);
+                    newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
+                }else{
+                    TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),item);
+                    newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
+                }
             }
         });
 
@@ -188,5 +207,16 @@ public class AddEditActivity extends AppCompatActivity {
         } catch (ParseException e) {
             return false; // Date is invalid
         }
+    }
+
+    @Override
+    public void onCloseAction() {
+        TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
+        tagFragment.dismiss();
+    }
+
+    @Override
+    public void onTagApplyAction(ArrayList<Tag> applyTags) {
+
     }
 }
