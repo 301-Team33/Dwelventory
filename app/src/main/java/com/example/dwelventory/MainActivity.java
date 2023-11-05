@@ -212,11 +212,16 @@ public class MainActivity extends AppCompatActivity implements FilterFragment.Fi
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
 
         final Spinner filterSpinner = findViewById(R.id.filter_spinner);
-        filterSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 FilterFragment filter = FilterFragment.newInstance((String) parent.getItemAtPosition(position));
                 filter.show(getSupportFragmentManager(), "FilterFragment");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
