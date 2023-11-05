@@ -46,6 +46,9 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private CollectionReference usersRef;
+    private Item item;
+
+    private ArrayList<Tag> tagsToApply;
 //    private String comment;
 
 
@@ -80,12 +83,15 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
 
 
         if (mode.equals("edit")){
-            Item item = (Item) intent.getParcelableExtra("item");
+            item = (Item) intent.getParcelableExtra("item");
+
             // fill edit texts with information
             assert item != null;
             nameButton.setText(item.getDescription());
             Date date = (Date) intent.getSerializableExtra("date");
             Log.d("aeTag", "um Date is" + date);
+            tagsToApply = intent.getParcelableArrayListExtra("tags");
+            item.setTags(tagsToApply);
             assert date != null;
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault());
             // Format the Date object as a string
@@ -107,11 +113,10 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             @Override
             public void onClick(View v) {
                 if(mode.equals("edit")) {
-                    Item item = (Item) intent.getParcelableExtra("item")
                     TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),item);
                     newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
                 }else{
-                    TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),item);
+                    TagFragment newFragment = TagFragment.newInstance(mAuth.getUid());
                     newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
                 }
             }
@@ -125,6 +130,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 Log.d("editTag", "before making the new item, date is " + date);
                 
                 Item item = new Item(name, date, make, model, estValue);
+                item.setTags(tagsToApply);
                 // put it in intent
                 Intent updatedIntent = new Intent();
                 // go back to main activity
@@ -217,6 +223,15 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
 
     @Override
     public void onTagApplyAction(ArrayList<Tag> applyTags) {
+        TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
+        tagFragment.dismiss();
+        Intent intent = getIntent();
+        String mode = intent.getStringExtra("mode");
+        if (mode.equals("edit")){
+            item.setTags(applyTags);
+            tagsToApply = applyTags;
+        }else{
+            tagsToApply = applyTags;
 
     }
-}
+}}

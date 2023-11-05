@@ -55,6 +55,7 @@ public class TagFragment extends DialogFragment{
     private ArrayAdapter<Tag> tagArrayAdapter;
     private ArrayList<Tag> tagDataList;
     private ArrayList<Tag> tagsToApply;
+    private ArrayList<Tag> tagsCurrentApply;
     private HashMap<String,String> currentTagNames = new HashMap<String,String>();
     private int itemIndex;
 
@@ -95,9 +96,22 @@ public class TagFragment extends DialogFragment{
 
         Bundle bundle = getArguments();
         userId = bundle.getString("user_id");
+        tagsCurrentApply = new ArrayList<>();
+        tagsToApply = new ArrayList<>();
 
         if (bundle.containsKey("current_item")){
             Item currentItem = bundle.getParcelable("current_item");
+            tagsCurrentApply = currentItem.getTags();
+            tagApplyButton.setText(currentItem.getDescription());
+            if (tagsCurrentApply == null){
+                tagsCurrentApply = new ArrayList<>();
+            }
+
+            if (tagsCurrentApply.size() == 0){
+                tagApplyButton.setText("no tags");
+            }else{
+                tagApplyButton.setText(currentItem.getTags().get(0).getTagName());
+            }
             //updated
         }
 
@@ -110,9 +124,8 @@ public class TagFragment extends DialogFragment{
         tagListView = view.findViewById(R.id.tag_listview);
 
         tagDataList = new ArrayList<>();
-        tagsToApply = new ArrayList<>();
 
-        tagArrayAdapter = new TagCustomList(this.getContext(), tagDataList);
+        tagArrayAdapter = new TagCustomList(this.getContext(), tagDataList,tagsCurrentApply);
         tagListView.setAdapter(tagArrayAdapter);
 
 
@@ -141,16 +154,16 @@ public class TagFragment extends DialogFragment{
         tagListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(tagsToApply.contains(tagDataList.get(position))){
-                    // This is the case where the tag was already selected and now they want to
-                    // deselect it, removing it from the set of tags that need to be applied!
-                    view.setBackgroundColor(Color.GRAY);
-                    tagsToApply.remove(tagDataList.get(position));
-                }else{
+                if(tagsToApply == null || tagsToApply.contains(tagDataList.get(position)) == false){
                     // Else Tag is Selected and now added to the Tag Data List that needs to be
                     // applied.
-                    view.setBackgroundColor(Color.DKGRAY);
+                    view.setBackgroundColor(getResources().getColor(R.color.selected,null));
                     tagsToApply.add(tagDataList.get(position));
+                }else{
+                    // This is the case where the tag was already selected and now they want to
+                    // deselect it, removing it from the set of tags that need to be applied!
+                    view.setBackgroundColor(getResources().getColor(R.color.gray,null));
+                    tagsToApply.remove(tagDataList.get(position));
                 }
             }
         });
@@ -168,7 +181,14 @@ public class TagFragment extends DialogFragment{
                         String storedTagName = doc.getId();
                         Log.d("Firestore", String.format("Tag(%s) fetched", storedTagName));
                         currentTagNames.put(storedTagName.toLowerCase(),"1");
-                        tagDataList.add(new Tag(storedTagName));
+                        Tag storedTag = new Tag(storedTagName);
+                        tagDataList.add(storedTag);
+                        for (Tag appliedTag: tagsCurrentApply){
+                            if (storedTagName.equals(appliedTag.getTagName())){
+                                tagsToApply.add(storedTag);
+                                break;
+                            }
+                        }
                     }
                     tagArrayAdapter.notifyDataSetChanged();
                 }

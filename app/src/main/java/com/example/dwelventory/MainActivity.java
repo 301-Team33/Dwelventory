@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         List photos = null;
         Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings",serial,200, comment, photos);
         Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+        ArrayList<Tag> testtag = new ArrayList<>();
         ArrayList<Tag> practiceTags = new ArrayList<>();
         practiceTags.add(new Tag("Tag1"));
         practiceTags.add(new Tag("Tag2"));
@@ -267,11 +268,14 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             Log.d("mainTag", "position: " + i);
             Log.d("mainitemclickTag", "date from list " + dataList.get(i).getDate());
             Item copyItem = makeCopy( dataList.get(i) );
+            Log.d("mainTag","Tag is: (In on click)" + copyItem.getTags().get(0).getTagName());
 
             Log.d("mainTag", "hi copyDate is " + copyItem.getDate());
 
             intent.putExtra("item", copyItem);
             intent.putExtra("date", copyItem.getDate());
+            intent.putExtra("tags",copyItem.getTags());
+
             intent.putExtra("position", i);
             intent.putExtra("requestCode", EDIT_ACTIVITY_CODE);
             addEditActivityResultLauncher.launch(intent);
@@ -297,10 +301,14 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         int itemSerial = item.getSerialNumber();
         int itemValue = item.getEstValue();
         String itemComment = item.getComment();
+        String tagCheck = item.getTags().get(0).getTagName();
+        Log.d("mainTag","Tag is:" + tagCheck);
         List itemPhotos = item.getPhotos();
         Log.d("mainTag", "Date is" + itemDate);
         Log.d("mainTag", "Make is " + itemMake);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment, itemPhotos);
+        copyItem.setTags(item.getTags());
+        Log.d("mainTag","Tag is (copy):" + copyItem.getTags().get(0).getTagName());
         return copyItem;
 
     }
