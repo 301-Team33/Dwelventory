@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements FilterFragment.Fi
     private ArrayAdapter<Item> itemAdapter;
     private float estTotal;
 
-
+    private Spinner filterSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -211,12 +211,22 @@ public class MainActivity extends AppCompatActivity implements FilterFragment.Fi
 
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
 
-        final Spinner filterSpinner = findViewById(R.id.filter_spinner);
+        filterSpinner = findViewById(R.id.filter_spinner);
+        ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.filter_spinner_options,
+                android.R.layout.simple_spinner_item
+        );
+        filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                FilterFragment filter = FilterFragment.newInstance((String) parent.getItemAtPosition(position));
-                filter.show(getSupportFragmentManager(), "FilterFragment");
+                if(position > 0){
+                    String filter = parent.getItemAtPosition(position).toString();
+                    FilterFragment filterFrag = FilterFragment.newInstance(filter);
+                    filterFrag.show(getSupportFragmentManager(), "FilterFragment");
+                }
+
             }
 
             @Override
@@ -323,7 +333,9 @@ public class MainActivity extends AppCompatActivity implements FilterFragment.Fi
 
     @Override
     public void onMakeFilterApplied(String[] filterInput) {
+        dataList.clear();
 
+        CollectionReference itemsRef = db.collection("items");
     }
 
     @Override
