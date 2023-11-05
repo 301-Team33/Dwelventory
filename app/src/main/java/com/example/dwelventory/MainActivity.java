@@ -77,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     private int ADD_EDIT_CODE_OK = 818;
     private FloatingActionButton addButton;
     private float estTotal;
+    private ListView finalItemList;
+    private ArrayAdapter<Item> finalItemAdapter;
 
 
 
@@ -123,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         practiceTags.add(new Tag("Tag1"));
         practiceTags.add(new Tag("Tag2"));
         item1.setTags(practiceTags);
+        item2.setTags(testtag);
         dataList.add(item1);
         dataList.add(item2);
 
@@ -139,8 +142,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
         // Declare itemList as new final variable
         // (This variable is used only for the longClickListener)
-        ListView finalItemList = itemList;
-        ArrayAdapter<Item> finalItemAdapter = itemAdapter;
+        finalItemList = itemList;
+        finalItemAdapter = itemAdapter;
 
         itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -202,7 +205,18 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                 tagButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        
+                        TagFragment newFragment = TagFragment.newInstance(mAuth.getUid());
+                        newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
+                        for (int j = 0; j < itemAdapter.getCount(); j++) {
+                            View view_temp = finalItemList.getChildAt(j);
+                            if (view_temp != null) {
+                                CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                                //checkBox.setVisibility(View.GONE);
+                                if(checkBox.isChecked()){
+
+                                }
+                            }
+                        }
                     }
                 });
                 /*deletebtn.setOnClickListener(new View.OnClickListener() {
@@ -278,7 +292,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             Log.d("mainTag", "position: " + i);
             Log.d("mainitemclickTag", "date from list " + dataList.get(i).getDate());
             Item copyItem = makeCopy( dataList.get(i) );
-            Log.d("mainTag","Tag is: (In on click)" + copyItem.getTags().get(0).getTagName());
 
             Log.d("mainTag", "hi copyDate is " + copyItem.getDate());
 
@@ -409,20 +422,32 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
     @Override
     public void onTagApplyAction(ArrayList<Tag> applyTags) {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-        String date22 = "28-Oct-2023";
-        Date date2;
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
-        try {
-            date2 = formatter.parse(date22);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+        for (int j = 0; j < itemAdapter.getCount(); j++) {
+            View view_temp = finalItemList.getChildAt(j);
+            if (view_temp != null) {
+                CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                //checkBox.setVisibility(View.GONE);
+                if(checkBox.isChecked()){
+                    // Must process the tags for this item.
+                    for (int i = 0; i < applyTags.size(); i++){
+                        boolean contained = false;
+                        for (int k = 0; k < dataList.get(j).getTags().size();k++){
+                            if (dataList.get(j).getTags().get(k).getTagName().equals(applyTags.get(i).getTagName())) {
+                                contained = true;
+                                break;
+                            }
+                        }
+                        if (!contained){
+                            dataList.get(j).getTags().add(new Tag(applyTags.get(i).getTagName()));
+                        }
+                    }
+                }
+            }
         }
-        Item item3 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
-        item3.setTags(applyTags);
-        Log.d("tag", "onTagApplyAction: " + item3.getTags().get(0).getTagName() + item3.getTags().get(1).getTagName());
     }
+
 
 
    

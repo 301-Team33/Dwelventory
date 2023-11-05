@@ -135,6 +135,10 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
 
                 // put it in intent
                 Intent updatedIntent = new Intent();
+                if(item.getTags() == null){
+                  ArrayList<Tag>  emptyTagSet = new ArrayList<>();
+                  item.setTags(emptyTagSet);
+                }
                 // go back to main activity
                 updatedIntent.putExtra("tags",item.getTags());
                 updatedIntent.putExtra("item", item);

@@ -102,15 +102,8 @@ public class TagFragment extends DialogFragment{
         if (bundle.containsKey("current_item")){
             Item currentItem = bundle.getParcelable("current_item");
             tagsCurrentApply = currentItem.getTags();
-            tagApplyButton.setText(currentItem.getDescription());
             if (tagsCurrentApply == null){
                 tagsCurrentApply = new ArrayList<>();
-            }
-
-            if (tagsCurrentApply.size() == 0){
-                tagApplyButton.setText("no tags");
-            }else{
-                tagApplyButton.setText(currentItem.getTags().get(0).getTagName());
             }
             //updated
         }
