@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private CollectionReference usersRef;
+    private CollectionReference itemsRef;
     private ArrayList<Item> dataList;
   
     private ArrayAdapter<Item> itemAdapter;
@@ -90,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
+//        itemsRef = db.collection("users").document9
+//                tagsRef = db.collection("users").document(userId).collection("tags");
+
 
         dataList = new ArrayList<>();
 
@@ -238,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                         if (data != null) {
                             // Extract item
                             Item item = data.getParcelableExtra("item");
+                            String name = item.getDescription();
                             // Get and set date bc its weird
                             Date date = (Date) data.getSerializableExtra("date");
                             item.setDate(date);
@@ -247,12 +252,14 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 // Handle the result for adding
                                 Log.d("resultTag", "i am about to add the item");
                                 dataList.add(item);
+                                itemsRef.document(name).set(item);
                                 itemAdapter.notifyDataSetChanged();
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
                                 // Handle the result for editing
                                 Log.d("resultTag", "i am about to edit the item");
                                 int position = data.getIntExtra("position", -1);
                                 dataList.set(position, item);
+                                itemsRef.document(name).set(item);
                                 itemAdapter.notifyDataSetChanged();
                             }
                         }
@@ -322,16 +329,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     }
 
 
-    //@Override
-    /*public void onOKPressed(Item item) {
-
-
-    public void onOKPressed(Item item) {
-
-        dataList.add(item);
-        itemAdapter.notifyDataSetChanged();
-    }*/
-
     /**
      * This method will attempt to sign on anonymously, if the user is not already signed in
      */
@@ -368,6 +365,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
+                    // make item collection after verifying user
+                    itemsRef = db.collection("users").document(user.getUid()).collection("items");
                     if (document.exists()) {
                         Log.d("userCheck", "User document exists");
                     } else {
@@ -407,7 +406,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         item3.setTags(applyTags);
         Log.d("tag", "onTagApplyAction: " + item3.getTags().get(0).getTagName() + item3.getTags().get(1).getTagName());
     }
-
 
    
     public void deleteItems(ArrayList<Item> dataList, ArrayList<Item> toremove){
