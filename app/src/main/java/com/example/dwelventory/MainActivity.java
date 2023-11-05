@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -69,15 +71,17 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     private FirebaseFirestore db;
     private CollectionReference usersRef;
     private ArrayList<Item> dataList;
-  
     private ArrayAdapter<Item> itemAdapter;
+    boolean reverseOrder = false;
     private ActivityResultLauncher<Intent> addEditActivityResultLauncher;
     private int ADD_ACTIVITY_CODE = 8;
     private int EDIT_ACTIVITY_CODE = 18;
     private int ADD_EDIT_CODE_OK = 818;
     private FloatingActionButton addButton;
-    private float estTotal;
 
+    private Spinner sortSpinner;
+    private Spinner orderSpinner;
+    private float estTotal;
 
 
     @Override
@@ -227,6 +231,83 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         //itemAdapter.notifyDataSetChanged();
 
 
+        final FloatingActionButton addButton = findViewById(R.id.add_item_button);
+
+        sortSpinner = findViewById(R.id.sort_spinner);
+        ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.sort_array,
+                android.R.layout.simple_spinner_item
+        );
+        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String sort = parent.getItemAtPosition(position).toString();
+                switch(sort) {
+                    case "Date":
+                        ItemSorter.sortDate(dataList, reverseOrder);
+                        break;
+                    case "Description":
+                        ItemSorter.sortDescription(dataList, reverseOrder);
+                        break;
+                    case "Make":
+                        ItemSorter.sortMake(dataList, reverseOrder);
+                        break;
+                    case "Estimated Value":
+                        ItemSorter.sortEstValue(dataList, reverseOrder);
+                        break;
+                }
+                itemAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        sortSpinner.setAdapter(sortAdapter);
+
+        orderSpinner = findViewById(R.id.order_spinner);
+        ArrayAdapter<CharSequence> orderAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.order_array,
+                android.R.layout.simple_spinner_item
+        );
+        orderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        orderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String order = parent.getItemAtPosition(position).toString();
+                if (order.equals("Descending")) {
+                    reverseOrder = true;
+                }
+                else {
+                    reverseOrder = false;
+                }
+
+                String sort = sortSpinner.getSelectedItem().toString();
+                switch(sort) {
+                    case "Date":
+                        ItemSorter.sortDate(dataList, reverseOrder);
+                        break;
+                    case "Description":
+                        ItemSorter.sortDescription(dataList, reverseOrder);
+                        break;
+                    case "Make":
+                        ItemSorter.sortMake(dataList, reverseOrder);
+                        break;
+                    case "Estimated Value":
+                        ItemSorter.sortEstValue(dataList, reverseOrder);
+                        break;
+                }
+                itemAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        orderSpinner.setAdapter(orderAdapter);
 
         addEditActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -304,8 +385,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         return copyItem;
 
     }
-
-
 
     @Override
     public void onStart() {
