@@ -59,6 +59,14 @@
             android:layout_marginLeft="370dp"
             android:layout_alignParentTop="true"
             android:contentDescription="Close"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/multiple_set_tags_button"
+            android:text="Set Tags"
+            android:layout_alignParentBottom="true"
+            ></Button>
     </RelativeLayout>
 
     <ListView

@@ -163,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
                 ImageButton closebtn = findViewById(R.id.closebtn);
                 ImageButton deletebtn = findViewById(R.id.deletebtn);
+                Button tagButton = findViewById(R.id.multiple_set_tags_button);
                 closebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -195,6 +196,13 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                             }
                         }
                         finalItemAdapter.notifyDataSetChanged();
+                    }
+                });
+
+                tagButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        
                     }
                 });
                 /*deletebtn.setOnClickListener(new View.OnClickListener() {
@@ -239,9 +247,11 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                         if (data != null) {
                             // Extract item
                             Item item = data.getParcelableExtra("item");
+                            ArrayList<Tag> tags = data.getParcelableArrayListExtra("tags");
                             // Get and set date bc its weird
                             Date date = (Date) data.getSerializableExtra("date");
                             item.setDate(date);
+                            item.setTags(tags);
                             int requestCode = data.getIntExtra("requestCode", -1);
                             Log.d("resultTag", "request code: " + requestCode);
                             if (requestCode == ADD_ACTIVITY_CODE) {
@@ -301,14 +311,12 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         int itemSerial = item.getSerialNumber();
         int itemValue = item.getEstValue();
         String itemComment = item.getComment();
-        String tagCheck = item.getTags().get(0).getTagName();
-        Log.d("mainTag","Tag is:" + tagCheck);
+
         List itemPhotos = item.getPhotos();
         Log.d("mainTag", "Date is" + itemDate);
         Log.d("mainTag", "Make is " + itemMake);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment, itemPhotos);
         copyItem.setTags(item.getTags());
-        Log.d("mainTag","Tag is (copy):" + copyItem.getTags().get(0).getTagName());
         return copyItem;
 
     }

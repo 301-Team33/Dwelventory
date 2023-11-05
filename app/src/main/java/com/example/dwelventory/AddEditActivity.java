@@ -131,9 +131,12 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 
                 Item item = new Item(name, date, make, model, estValue);
                 item.setTags(tagsToApply);
+
+
                 // put it in intent
                 Intent updatedIntent = new Intent();
                 // go back to main activity
+                updatedIntent.putExtra("tags",item.getTags());
                 updatedIntent.putExtra("item", item);
                 updatedIntent.putExtra("date", date);
                 updatedIntent.putExtra("mode", mode);
