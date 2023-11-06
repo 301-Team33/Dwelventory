@@ -1,27 +1,20 @@
 package com.example.dwelventory;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Spinner;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -36,25 +29,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -69,24 +48,28 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     private FirebaseFirestore db;
     private CollectionReference usersRef;
     private ArrayList<Item> dataList;
-  
     private ArrayAdapter<Item> itemAdapter;
+    boolean reverseOrder = false;
     private ActivityResultLauncher<Intent> addEditActivityResultLauncher;
     private int ADD_ACTIVITY_CODE = 8;
     private int EDIT_ACTIVITY_CODE = 18;
     private int ADD_EDIT_CODE_OK = 818;
     private FloatingActionButton addButton;
+
     private float estTotal;
     private ListView finalItemList;
     private ArrayAdapter<Item> finalItemAdapter;
 
+
+    private Spinner sortSpinner;
+    private Spinner orderSpinner;
+    private float estTotal;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         // Initialize Firebase authentication
         mAuth = FirebaseAuth.getInstance();
@@ -138,30 +121,70 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         itemList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         itemList.setAdapter(itemAdapter);
 
-
-
         // Declare itemList as new final variable
         // (This variable is used only for the longClickListener)
         finalItemList = itemList;
         finalItemAdapter = itemAdapter;
 
         itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            public void getSelectedCount(TextView selected_count){
+                int count = 0;
+                for (int j = 0; j < itemAdapter.getCount(); j++) {
+                    View view_temp = finalItemList.getChildAt(j);
+                    if (view_temp != null) {
+                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                        if (checkBox.isChecked()){
+                            count++;
+                        }
+                    }
+                }
+                selected_count.setText("Selected Items : "+ count);
+            }
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                /*View checkBoxLayout = view.findViewById(R.id.checkbox);
-                checkBoxLayout.setVisibility(View.VISIBLE);*/
+
+
+                addButton.setVisibility(View.GONE);
+                RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
+                TextView selected_count = findViewById(R.id.selectedItems);
+                select_items.setVisibility(View.VISIBLE);
+                CheckBox select_All = findViewById(R.id.selectAll_checkbox);
 
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
                     if (view_temp != null) {
                         CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
                         checkBox.setVisibility(View.VISIBLE);
+                        checkBox.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                getSelectedCount(selected_count);
+                            }
+                        });
                     }
                 }
-
-
-                RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
-                select_items.setVisibility(View.VISIBLE);
+                select_All.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(select_All.isChecked()){
+                            for(int j = 0; j<finalItemList.getCount();j++){
+                                View view1 = finalItemList.getChildAt(j);
+                                CheckBox checkBox = view1.findViewById(R.id.checkbox);
+                                checkBox.setChecked(true);
+                                getSelectedCount(selected_count);
+                            }
+                        }
+                        if(!select_All.isChecked()){
+                            for(int j = 0; j<finalItemList.getCount();j++){
+                                View view1 = finalItemList.getChildAt(j);
+                                CheckBox checkBox = view1.findViewById(R.id.checkbox);
+                                checkBox.setChecked(false);
+                                getSelectedCount(selected_count);
+                            }
+                        }
+                    }
+                });
                 //changeListViewHeight(Boolean.TRUE);
 
                 ImageButton closebtn = findViewById(R.id.closebtn);
@@ -179,27 +202,29 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 checkBox.setVisibility(View.GONE);
                             }
                         }
+                        addButton.setVisibility(View.VISIBLE);
                     }
                 });
 
                 deletebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        for (int j = 0; j < itemAdapter.getCount(); j++) {
-                            View view_temp = finalItemList.getChildAt(j);
-                            if (view_temp != null) {
-                                CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                                //checkBox.setVisibility(View.GONE);
-                                if(checkBox.isChecked()){
-                                    finalItemAdapter.remove(dataList.get(j));
-                                    finalItemAdapter.notifyDataSetChanged();
-                                    checkBox.setChecked(false);
-                                    dataList.remove(j);
-                                }
-                            }
-                        }
-                        finalItemAdapter.notifyDataSetChanged();
+                         ArrayList<Item> tobeDeleted = getcheckedItems(finalItemList, finalItemAdapter);
+                         for(int i = 0; i<tobeDeleted.size();i++){
+                             itemAdapter.remove(tobeDeleted.get(i));
+                             dataList.remove(tobeDeleted.get(i));
+                             itemAdapter.notifyDataSetChanged();
+                         }
+
+                         for(int i = 0; i<finalItemList.getCount();i++){
+                             View view1 = finalItemList.getChildAt(i);
+                             CheckBox checkBox = view1.findViewById(R.id.checkbox);
+                             checkBox.setChecked(false);
+                         }
+                         getSelectedCount(selected_count);
+                         select_All.setChecked(false);
                     }
+
                 });
 
                 tagButton.setOnClickListener(new View.OnClickListener() {
@@ -222,13 +247,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 itemRemovedCount++;
                             }
                         }
-
-                        if (itemRemovedCount > 0) {
-                            Toast.makeText(MainActivity.this, "Deleted " + itemRemovedCount + " Items", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });*/
-                //finalItemAdapter.notifyDataSetChanged();
+                });
+                itemAdapter.notifyDataSetChanged();
                 return true;
 
             }
@@ -240,6 +260,83 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         //itemAdapter.notifyDataSetChanged();
 
 
+        final FloatingActionButton addButton = findViewById(R.id.add_item_button);
+
+        sortSpinner = findViewById(R.id.sort_spinner);
+        ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.sort_array,
+                android.R.layout.simple_spinner_item
+        );
+        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String sort = parent.getItemAtPosition(position).toString();
+                switch(sort) {
+                    case "Date":
+                        ItemSorter.sortDate(dataList, reverseOrder);
+                        break;
+                    case "Description":
+                        ItemSorter.sortDescription(dataList, reverseOrder);
+                        break;
+                    case "Make":
+                        ItemSorter.sortMake(dataList, reverseOrder);
+                        break;
+                    case "Estimated Value":
+                        ItemSorter.sortEstValue(dataList, reverseOrder);
+                        break;
+                }
+                itemAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        sortSpinner.setAdapter(sortAdapter);
+
+        orderSpinner = findViewById(R.id.order_spinner);
+        ArrayAdapter<CharSequence> orderAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.order_array,
+                android.R.layout.simple_spinner_item
+        );
+        orderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        orderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String order = parent.getItemAtPosition(position).toString();
+                if (order.equals("Descending")) {
+                    reverseOrder = true;
+                }
+                else {
+                    reverseOrder = false;
+                }
+
+                String sort = sortSpinner.getSelectedItem().toString();
+                switch(sort) {
+                    case "Date":
+                        ItemSorter.sortDate(dataList, reverseOrder);
+                        break;
+                    case "Description":
+                        ItemSorter.sortDescription(dataList, reverseOrder);
+                        break;
+                    case "Make":
+                        ItemSorter.sortMake(dataList, reverseOrder);
+                        break;
+                    case "Estimated Value":
+                        ItemSorter.sortEstValue(dataList, reverseOrder);
+                        break;
+                }
+                itemAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        orderSpinner.setAdapter(orderAdapter);
 
         addEditActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -303,6 +400,20 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         });
     }
 
+    private ArrayList<Item> getcheckedItems(ListView L, ArrayAdapter<Item> I) {
+        L = findViewById(R.id.item_list);
+        ArrayList<Item> A = new ArrayList<>();
+        for(int i = 0; i<L.getCount(); i++){
+            View view = L.getChildAt(i);
+            CheckBox checkBox = view.findViewById(R.id.checkbox);
+            Item item = (Item) itemAdapter.getItem(i);
+            if(checkBox.isChecked()){
+                A.add(item);
+            }
+        }
+        return A;
+    }
+
     public Item makeCopy(Item item){
         Log.d("mainTag", "in copy ");
         assert item != null;
@@ -323,8 +434,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         return copyItem;
 
     }
-
-
 
     @Override
     public void onStart() {
