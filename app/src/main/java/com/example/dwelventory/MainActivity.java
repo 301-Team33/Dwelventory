@@ -56,6 +56,11 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     private int ADD_EDIT_CODE_OK = 818;
     private FloatingActionButton addButton;
 
+    private float estTotal;
+    private ListView finalItemList;
+    private ArrayAdapter<Item> finalItemAdapter;
+
+
     private Spinner sortSpinner;
     private Spinner orderSpinner;
     private float estTotal;
@@ -98,10 +103,12 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         List photos = null;
         Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings",serial,200, comment, photos);
         Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+        ArrayList<Tag> testtag = new ArrayList<>();
         ArrayList<Tag> practiceTags = new ArrayList<>();
         practiceTags.add(new Tag("Tag1"));
         practiceTags.add(new Tag("Tag2"));
         item1.setTags(practiceTags);
+        item2.setTags(testtag);
         dataList.add(item1);
         dataList.add(item2);
 
@@ -116,8 +123,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
         // Declare itemList as new final variable
         // (This variable is used only for the longClickListener)
-        ListView finalItemList = itemList;
-        ArrayAdapter<Item> finalItemAdapter = itemAdapter;
+        finalItemList = itemList;
+        finalItemAdapter = itemAdapter;
 
         itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
@@ -182,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
                 ImageButton closebtn = findViewById(R.id.closebtn);
                 ImageButton deletebtn = findViewById(R.id.deletebtn);
+                Button tagButton = findViewById(R.id.multiple_set_tags_button);
                 closebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -217,6 +225,28 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                          select_All.setChecked(false);
                     }
 
+                });
+
+                tagButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),"edit");
+                        newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
+                    }
+                });
+                /*deletebtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int itemRemovedCount = 0;
+
+                        for (int j = dataList.size() - 1; j >= 0; j--) {
+                            Item currentItem = dataList.get(j);
+                            if (currentItem.isSelected()) {
+                                finalItemAdapter.remove(currentItem);
+                                dataList.remove(j);
+                                itemRemovedCount++;
+                            }
+                        }
                 });
                 itemAdapter.notifyDataSetChanged();
                 return true;
@@ -318,9 +348,11 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                         if (data != null) {
                             // Extract item
                             Item item = data.getParcelableExtra("item");
+                            ArrayList<Tag> tags = data.getParcelableArrayListExtra("tags");
                             // Get and set date bc its weird
                             Date date = (Date) data.getSerializableExtra("date");
                             item.setDate(date);
+                            item.setTags(tags);
                             int requestCode = data.getIntExtra("requestCode", -1);
                             Log.d("resultTag", "request code: " + requestCode);
                             if (requestCode == ADD_ACTIVITY_CODE) {
@@ -352,6 +384,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
             intent.putExtra("item", copyItem);
             intent.putExtra("date", copyItem.getDate());
+            intent.putExtra("tags",copyItem.getTags());
+
             intent.putExtra("position", i);
             intent.putExtra("requestCode", EDIT_ACTIVITY_CODE);
             addEditActivityResultLauncher.launch(intent);
@@ -391,10 +425,12 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         int itemSerial = item.getSerialNumber();
         int itemValue = item.getEstValue();
         String itemComment = item.getComment();
+
         List itemPhotos = item.getPhotos();
         Log.d("mainTag", "Date is" + itemDate);
         Log.d("mainTag", "Make is " + itemMake);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment, itemPhotos);
+        copyItem.setTags(item.getTags());
         return copyItem;
 
     }
@@ -479,29 +515,59 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
     @Override
     public void onCloseAction() {
+        // simply say, it closes the fragment.
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
     }
 
     @Override
     public void onTagApplyAction(ArrayList<Tag> applyTags) {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-        String date22 = "28-Oct-2023";
-        Date date2;
+        // simply close the fragment first since selected tags are now going to be applied.
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
-        try {
-            date2 = formatter.parse(date22);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+        for (int j = 0; j < itemAdapter.getCount(); j++) {
+            View view_temp = finalItemList.getChildAt(j);
+            if (view_temp != null) {
+                CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                //checkBox.setVisibility(View.GONE);
+                if(checkBox.isChecked()){
+                    // Must process the tags for this item.
+                    for (int i = 0; i < applyTags.size(); i++){
+                        boolean contained = false;
+                        // check to see if the tags that were wanting to be applied are already
+                        // associated with the item. This double for loop checks all the items
+                        // that were selected via the checkbox and only applies UNIQUE tags not already
+                        // specified for the item.
+                        for (int k = 0; k < dataList.get(j).getTags().size();k++){
+                            if (dataList.get(j).getTags().get(k).getTagName().equals(applyTags.get(i).getTagName())) {
+                                contained = true; // tag was already defined for the item.
+                                break;
+                            }
+                        }
+                        // if the tag was not specified for the item then add it for that item!
+                        if (!contained){
+                            dataList.get(j).getTags().add(new Tag(applyTags.get(i).getTagName()));
+                        }
+                    }
+                }
+            }
         }
-        Item item3 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
-        item3.setTags(applyTags);
-        Log.d("tag", "onTagApplyAction: " + item3.getTags().get(0).getTagName() + item3.getTags().get(1).getTagName());
+    }
+
+    @Override
+    public void onTagDeletion(Tag deletedTag) {
+        // check all the items in the listview. and if the item has the tag that was defined to be
+        // deleted then delete it from the arraylist of tags associated with the item!!
+        for (Item currentItem: dataList){
+            for (Tag currentTag: currentItem.getTags()){
+                if (currentTag.getTagName().equals(deletedTag.getTagName())){
+                    currentItem.getTags().remove(currentTag);
+                }
+            }
+        }
     }
 
 
-   
     public void deleteItems(ArrayList<Item> dataList, ArrayList<Item> toremove){
         if (toremove.size() == 0){
             Toast.makeText(MainActivity.this, "Select items to delete",
