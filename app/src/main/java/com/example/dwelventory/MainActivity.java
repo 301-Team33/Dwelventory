@@ -1,29 +1,20 @@
 package com.example.dwelventory;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,25 +29,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -88,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         // Initialize Firebase authentication
         mAuth = FirebaseAuth.getInstance();
@@ -138,30 +114,70 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         itemList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         itemList.setAdapter(itemAdapter);
 
-
-
         // Declare itemList as new final variable
         // (This variable is used only for the longClickListener)
         ListView finalItemList = itemList;
         ArrayAdapter<Item> finalItemAdapter = itemAdapter;
 
         itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            public void getSelectedCount(TextView selected_count){
+                int count = 0;
+                for (int j = 0; j < itemAdapter.getCount(); j++) {
+                    View view_temp = finalItemList.getChildAt(j);
+                    if (view_temp != null) {
+                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                        if (checkBox.isChecked()){
+                            count++;
+                        }
+                    }
+                }
+                selected_count.setText("Selected Items : "+ count);
+            }
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                /*View checkBoxLayout = view.findViewById(R.id.checkbox);
-                checkBoxLayout.setVisibility(View.VISIBLE);*/
+
+
+                addButton.setVisibility(View.GONE);
+                RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
+                TextView selected_count = findViewById(R.id.selectedItems);
+                select_items.setVisibility(View.VISIBLE);
+                CheckBox select_All = findViewById(R.id.selectAll_checkbox);
 
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
                     if (view_temp != null) {
                         CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
                         checkBox.setVisibility(View.VISIBLE);
+                        checkBox.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                getSelectedCount(selected_count);
+                            }
+                        });
                     }
                 }
-
-
-                RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
-                select_items.setVisibility(View.VISIBLE);
+                select_All.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(select_All.isChecked()){
+                            for(int j = 0; j<finalItemList.getCount();j++){
+                                View view1 = finalItemList.getChildAt(j);
+                                CheckBox checkBox = view1.findViewById(R.id.checkbox);
+                                checkBox.setChecked(true);
+                                getSelectedCount(selected_count);
+                            }
+                        }
+                        if(!select_All.isChecked()){
+                            for(int j = 0; j<finalItemList.getCount();j++){
+                                View view1 = finalItemList.getChildAt(j);
+                                CheckBox checkBox = view1.findViewById(R.id.checkbox);
+                                checkBox.setChecked(false);
+                                getSelectedCount(selected_count);
+                            }
+                        }
+                    }
+                });
                 //changeListViewHeight(Boolean.TRUE);
 
                 ImageButton closebtn = findViewById(R.id.closebtn);
@@ -178,48 +194,31 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 checkBox.setVisibility(View.GONE);
                             }
                         }
+                        addButton.setVisibility(View.VISIBLE);
                     }
                 });
 
                 deletebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        for (int j = 0; j < itemAdapter.getCount(); j++) {
-                            View view_temp = finalItemList.getChildAt(j);
-                            if (view_temp != null) {
-                                CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                                //checkBox.setVisibility(View.GONE);
-                                if(checkBox.isChecked()){
-                                    finalItemAdapter.remove(dataList.get(j));
-                                    finalItemAdapter.notifyDataSetChanged();
-                                    checkBox.setChecked(false);
-                                    dataList.remove(j);
-                                }
-                            }
-                        }
-                        finalItemAdapter.notifyDataSetChanged();
+                         ArrayList<Item> tobeDeleted = getcheckedItems(finalItemList, finalItemAdapter);
+                         for(int i = 0; i<tobeDeleted.size();i++){
+                             itemAdapter.remove(tobeDeleted.get(i));
+                             dataList.remove(tobeDeleted.get(i));
+                             itemAdapter.notifyDataSetChanged();
+                         }
+
+                         for(int i = 0; i<finalItemList.getCount();i++){
+                             View view1 = finalItemList.getChildAt(i);
+                             CheckBox checkBox = view1.findViewById(R.id.checkbox);
+                             checkBox.setChecked(false);
+                         }
+                         getSelectedCount(selected_count);
+                         select_All.setChecked(false);
                     }
+
                 });
-                /*deletebtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        int itemRemovedCount = 0;
-
-                        for (int j = dataList.size() - 1; j >= 0; j--) {
-                            Item currentItem = dataList.get(j);
-                            if (currentItem.isSelected()) {
-                                finalItemAdapter.remove(currentItem);
-                                dataList.remove(j);
-                                itemRemovedCount++;
-                            }
-                        }
-
-                        if (itemRemovedCount > 0) {
-                            Toast.makeText(MainActivity.this, "Deleted " + itemRemovedCount + " Items", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });*/
-                //finalItemAdapter.notifyDataSetChanged();
+                itemAdapter.notifyDataSetChanged();
                 return true;
 
             }
@@ -365,6 +364,20 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             intent.putExtra("requestCode", ADD_ACTIVITY_CODE);
             addEditActivityResultLauncher.launch(intent);
         });
+    }
+
+    private ArrayList<Item> getcheckedItems(ListView L, ArrayAdapter<Item> I) {
+        L = findViewById(R.id.item_list);
+        ArrayList<Item> A = new ArrayList<>();
+        for(int i = 0; i<L.getCount(); i++){
+            View view = L.getChildAt(i);
+            CheckBox checkBox = view.findViewById(R.id.checkbox);
+            Item item = (Item) itemAdapter.getItem(i);
+            if(checkBox.isChecked()){
+                A.add(item);
+            }
+        }
+        return A;
     }
 
     public Item makeCopy(Item item){
