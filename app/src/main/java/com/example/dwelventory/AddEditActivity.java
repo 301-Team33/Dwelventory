@@ -38,6 +38,7 @@ public class AddEditActivity extends AppCompatActivity {
     private String model;
     private int estValue;
 //    private String comment;
+    private String prevName;
 
 
     @Override
@@ -70,7 +71,8 @@ public class AddEditActivity extends AppCompatActivity {
             Item item = intent.getParcelableExtra("item");
             // fill edit texts with information
             assert item != null;
-            nameButton.setText(item.getDescription());
+            prevName = item.getDescription();
+            nameButton.setText(prevName);
             Date date = (Date) intent.getSerializableExtra("date");
             Log.d("aeTag", "um Date is" + date);
             assert date != null;
@@ -106,6 +108,7 @@ public class AddEditActivity extends AppCompatActivity {
                 updatedIntent.putExtra("mode", mode);
                 updatedIntent.putExtra("position", position );
                 updatedIntent.putExtra("requestCode", requestCode);
+                updatedIntent.putExtra("previous name", prevName);
 
                 setResult(818, updatedIntent);
                 Log.d("aeTag", "finishing aeActivity...");

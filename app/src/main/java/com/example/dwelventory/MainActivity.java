@@ -242,7 +242,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                         if (data != null) {
                             // Extract item
                             Item item = data.getParcelableExtra("item");
-                            String name = item.getDescription();
                             // Get and set date bc its weird
                             Date date = (Date) data.getSerializableExtra("date");
                             item.setDate(date);
@@ -252,14 +251,14 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 // Handle the result for adding
                                 Log.d("resultTag", "i am about to add the item");
                                 dataList.add(item);
-                                itemsRef.document(name).set(item);
+                                itemsRef.document(String.valueOf( item.getItemRefID() )).set(item);
                                 itemAdapter.notifyDataSetChanged();
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
                                 // Handle the result for editing
                                 Log.d("resultTag", "i am about to edit the item");
                                 int position = data.getIntExtra("position", -1);
                                 dataList.set(position, item);
-                                itemsRef.document(name).set(item);
+                                itemsRef.document(String.valueOf( item.getItemRefID() )).set(item);
                                 itemAdapter.notifyDataSetChanged();
                             }
                         }
