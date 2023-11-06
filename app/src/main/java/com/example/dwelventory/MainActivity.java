@@ -342,7 +342,8 @@ public class MainActivity extends AppCompatActivity implements FilterFragment.Fi
     }
 
     /**
-     * This method queries the database to filter based on make.
+     * This method queries the database to filter based on make. Once retrieved from database,
+     * it updates dataList and notifies the adapter about changes.
      *
      * @param makeInput This is the make types to filter by, specified by the user.
      */
@@ -376,6 +377,7 @@ public class MainActivity extends AppCompatActivity implements FilterFragment.Fi
     /**
      * This method queries the database to find items added within the given date range. Once
      * retrieved from database, it updates dataList and notifies the adapter about changes.
+     *
      * @param start earliest date that an items date can be
      * @param end latest date that an items date can be
      */
@@ -407,6 +409,12 @@ public class MainActivity extends AppCompatActivity implements FilterFragment.Fi
         itemAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * This method queries the database to find items containing given keywords. Once
+     * retrieved from database, it updates dataList and notifies the adapter about changes.
+     *
+     * @param keywords
+     */
     @Override
     public void onKeywordFilterApplied(String[] keywords) {
         dataList.clear();
@@ -435,6 +443,12 @@ public class MainActivity extends AppCompatActivity implements FilterFragment.Fi
         itemAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * This method queries the database to find items containing specified tags. Once
+     * retrieved from database, it updates dataList and notifies the adapter about changes.
+     *
+     * @param tags
+     */
     @Override
     public void onTagFilterApplied(String[] tags) {
         dataList.clear();

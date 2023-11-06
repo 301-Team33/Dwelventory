@@ -55,15 +55,17 @@ public class FilterFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
+        // Verify arguments
         if (getArguments() != null) {
             filterOption = getArguments().getString("filter_option");
         }
         else {
-            // Handle case where no arguments were set
             throw new IllegalStateException("No filter option provided to FilterFragment");
         }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
+        // If filter option selected was make
         if("Make".equals(filterOption)){
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.popup_select_make, null);
 
