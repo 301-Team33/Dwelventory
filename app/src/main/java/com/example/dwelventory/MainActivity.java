@@ -205,18 +205,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                 tagButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TagFragment newFragment = TagFragment.newInstance(mAuth.getUid());
+                        TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),"edit");
                         newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
-                        for (int j = 0; j < itemAdapter.getCount(); j++) {
-                            View view_temp = finalItemList.getChildAt(j);
-                            if (view_temp != null) {
-                                CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                                //checkBox.setVisibility(View.GONE);
-                                if(checkBox.isChecked()){
-
-                                }
-                            }
-                        }
                     }
                 });
                 /*deletebtn.setOnClickListener(new View.OnClickListener() {
@@ -416,12 +406,14 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
     @Override
     public void onCloseAction() {
+        // simply say, it closes the fragment.
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
     }
 
     @Override
     public void onTagApplyAction(ArrayList<Tag> applyTags) {
+        // simply close the fragment first since selected tags are now going to be applied.
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
         for (int j = 0; j < itemAdapter.getCount(); j++) {
@@ -433,12 +425,17 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                     // Must process the tags for this item.
                     for (int i = 0; i < applyTags.size(); i++){
                         boolean contained = false;
+                        // check to see if the tags that were wanting to be applied are already
+                        // associated with the item. This double for loop checks all the items
+                        // that were selected via the checkbox and only applies UNIQUE tags not already
+                        // specified for the item.
                         for (int k = 0; k < dataList.get(j).getTags().size();k++){
                             if (dataList.get(j).getTags().get(k).getTagName().equals(applyTags.get(i).getTagName())) {
-                                contained = true;
+                                contained = true; // tag was already defined for the item.
                                 break;
                             }
                         }
+                        // if the tag was not specified for the item then add it for that item!
                         if (!contained){
                             dataList.get(j).getTags().add(new Tag(applyTags.get(i).getTagName()));
                         }
@@ -448,9 +445,20 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         }
     }
 
+    @Override
+    public void onTagDeletion(Tag deletedTag) {
+        // check all the items in the listview. and if the item has the tag that was defined to be
+        // deleted then delete it from the arraylist of tags associated with the item!!
+        for (Item currentItem: dataList){
+            for (Tag currentTag: currentItem.getTags()){
+                if (currentTag.getTagName().equals(deletedTag.getTagName())){
+                    currentItem.getTags().remove(currentTag);
+                }
+            }
+        }
+    }
 
 
-   
     public void deleteItems(ArrayList<Item> dataList, ArrayList<Item> toremove){
         if (toremove.size() == 0){
             Toast.makeText(MainActivity.this, "Select items to delete",

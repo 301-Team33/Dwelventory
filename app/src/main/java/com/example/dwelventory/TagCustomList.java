@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class TagCustomList extends ArrayAdapter<Tag> {
 
     private ArrayList<Tag> tags;
-    private ArrayList<Tag> currentlyApplied;
+    private ArrayList<Tag> currentlyApplied; // used for items that already have specified tags// were created already.
     private Context context;
 
     public TagCustomList(Context context, ArrayList<Tag> tags,ArrayList<Tag> currentlyApplied){
@@ -43,9 +43,12 @@ public class TagCustomList extends ArrayAdapter<Tag> {
         if (currentlyApplied != null) {
             for (Tag appliedTagName : currentlyApplied) {
                 if (appliedTagName.getTagName().equals(tag.getTagName())) {
+                    // This is the case where the item already has tags specified to it that are
+                    // in the database, we set it's background to the selected option.
                     view.setBackgroundColor(ContextCompat.getColor(context,R.color.selected));
                     return view;
                 } else {
+                    // else the item doesnt have this tag so it is not implied to be selected through the UI.
                     view.setBackgroundColor(ContextCompat.getColor(context,R.color.gray));
                 }
             }

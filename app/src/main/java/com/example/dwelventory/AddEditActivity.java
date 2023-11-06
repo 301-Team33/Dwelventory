@@ -241,4 +241,10 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             tagsToApply = applyTags;
 
     }
-}}
+}
+
+    @Override
+    public void onTagDeletion(Tag deletedTag) {
+        return;
+    }
+}
