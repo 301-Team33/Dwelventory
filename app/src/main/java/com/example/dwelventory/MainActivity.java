@@ -1,27 +1,17 @@
 package com.example.dwelventory;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -37,28 +27,13 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.lang.reflect.Array;
 import java.util.HashMap;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -90,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         // Initialize Firebase authentication
         mAuth = FirebaseAuth.getInstance();
@@ -162,26 +136,9 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             }
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                /*View checkBoxLayout = view.findViewById(R.id.checkbox);
-                checkBoxLayout.setVisibility(View.VISIBLE);*/
 
 
-                /*for (int j = 0; j < itemAdapter.getCount(); j++) {
-                    View view_temp = finalItemList.getChildAt(j);
-                    if (view_temp != null) {
-                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                        checkBox.setVisibility(View.VISIBLE);
-                        checkBox.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                getSelectedCount(selected_count);
-                            }
-                        });
-                    }
-                }      */
-
-
-
+                addButton.setVisibility(View.GONE);
                 RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
                 TextView selected_count = findViewById(R.id.selectedItems);
                 select_items.setVisibility(View.VISIBLE);
@@ -237,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 checkBox.setVisibility(View.GONE);
                             }
                         }
+                        addButton.setVisibility(View.VISIBLE);
                     }
                 });
 
@@ -255,29 +213,11 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                              CheckBox checkBox = view1.findViewById(R.id.checkbox);
                              checkBox.setChecked(false);
                          }
+                         getSelectedCount(selected_count);
+                         select_All.setChecked(false);
                     }
 
                 });
-                /*deletebtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        int itemRemovedCount = 0;
-
-                        for (int j = dataList.size() - 1; j >= 0; j--) {
-                            Item currentItem = dataList.get(j);
-                            if (currentItem.isSelected()) {
-                                finalItemAdapter.remove(currentItem);
-                                dataList.remove(j);
-                                itemRemovedCount++;
-                            }
-                        }
-
-                        if (itemRemovedCount > 0) {
-                            Toast.makeText(MainActivity.this, "Deleted " + itemRemovedCount + " Items", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });*/
-                //finalItemAdapter.notifyDataSetChanged();
                 itemAdapter.notifyDataSetChanged();
                 return true;
 
