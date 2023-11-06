@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
     private Spinner sortSpinner;
     private Spinner orderSpinner;
-    private float estTotal;
+
 
 
     @Override
@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 itemRemovedCount++;
                             }
                         }
-                });
+                });*/
                 itemAdapter.notifyDataSetChanged();
                 return true;
 
@@ -458,7 +458,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
         dataList.add(item);
         itemAdapter.notifyDataSetChanged();
-    }*/
+    }
 
     /**
      * This method will attempt to sign on anonymously, if the user is not already signed in
