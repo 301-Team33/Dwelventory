@@ -22,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,6 +35,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 
 import android.os.Bundle;
@@ -127,30 +129,87 @@ public class MainActivity extends AppCompatActivity {
         itemList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         itemList.setAdapter(itemAdapter);
 
-
-
         // Declare itemList as new final variable
         // (This variable is used only for the longClickListener)
         ListView finalItemList = itemList;
         ArrayAdapter<Item> finalItemAdapter = itemAdapter;
 
         itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            public void getSelectedCount(TextView selected_count){
+                int count = 0;
+                for (int j = 0; j < itemAdapter.getCount(); j++) {
+                    View view_temp = finalItemList.getChildAt(j);
+                    if (view_temp != null) {
+                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                        if (checkBox.isChecked()){
+                            count++;
+                        }
+                    }
+                }
+                selected_count.setText("Selected Items : "+ count);
+            }
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 /*View checkBoxLayout = view.findViewById(R.id.checkbox);
                 checkBoxLayout.setVisibility(View.VISIBLE);*/
+
+
+                /*for (int j = 0; j < itemAdapter.getCount(); j++) {
+                    View view_temp = finalItemList.getChildAt(j);
+                    if (view_temp != null) {
+                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                        checkBox.setVisibility(View.VISIBLE);
+                        checkBox.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                getSelectedCount(selected_count);
+                            }
+                        });
+                    }
+                }      */
+
+
+
+                RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
+                TextView selected_count = findViewById(R.id.selectedItems);
+                select_items.setVisibility(View.VISIBLE);
+                CheckBox select_All = findViewById(R.id.selectAll_checkbox);
 
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
                     if (view_temp != null) {
                         CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
                         checkBox.setVisibility(View.VISIBLE);
+                        checkBox.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                getSelectedCount(selected_count);
+                            }
+                        });
                     }
                 }
-
-
-                RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
-                select_items.setVisibility(View.VISIBLE);
+                select_All.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(select_All.isChecked()){
+                            for(int j = 0; j<finalItemList.getCount();j++){
+                                View view1 = finalItemList.getChildAt(j);
+                                CheckBox checkBox = view1.findViewById(R.id.checkbox);
+                                checkBox.setChecked(true);
+                                getSelectedCount(selected_count);
+                            }
+                        }
+                        if(!select_All.isChecked()){
+                            for(int j = 0; j<finalItemList.getCount();j++){
+                                View view1 = finalItemList.getChildAt(j);
+                                CheckBox checkBox = view1.findViewById(R.id.checkbox);
+                                checkBox.setChecked(false);
+                                getSelectedCount(selected_count);
+                            }
+                        }
+                    }
+                });
                 //changeListViewHeight(Boolean.TRUE);
 
                 ImageButton closebtn = findViewById(R.id.closebtn);
@@ -173,21 +232,20 @@ public class MainActivity extends AppCompatActivity {
                 deletebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        for (int j = 0; j < itemAdapter.getCount(); j++) {
-                            View view_temp = finalItemList.getChildAt(j);
-                            if (view_temp != null) {
-                                CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                                //checkBox.setVisibility(View.GONE);
-                                if(checkBox.isChecked()){
-                                    finalItemAdapter.remove(dataList.get(j));
-                                    finalItemAdapter.notifyDataSetChanged();
-                                    checkBox.setChecked(false);
-                                    dataList.remove(j);
-                                }
-                            }
-                        }
-                        finalItemAdapter.notifyDataSetChanged();
+                         ArrayList<Item> tobeDeleted = getcheckedItems(finalItemList, finalItemAdapter);
+                         for(int i = 0; i<tobeDeleted.size();i++){
+                             itemAdapter.remove(tobeDeleted.get(i));
+                             dataList.remove(tobeDeleted.get(i));
+                             itemAdapter.notifyDataSetChanged();
+                         }
+
+                         for(int i = 0; i<finalItemList.getCount();i++){
+                             View view1 = finalItemList.getChildAt(i);
+                             CheckBox checkBox = view1.findViewById(R.id.checkbox);
+                             checkBox.setChecked(false);
+                         }
                     }
+
                 });
                 /*deletebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -209,6 +267,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });*/
                 //finalItemAdapter.notifyDataSetChanged();
+                itemAdapter.notifyDataSetChanged();
                 return true;
 
             }
@@ -277,6 +336,20 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("requestCode", ADD_ACTIVITY_CODE);
             addEditActivityResultLauncher.launch(intent);
         });
+    }
+
+    private ArrayList<Item> getcheckedItems(ListView L, ArrayAdapter<Item> I) {
+        L = findViewById(R.id.item_list);
+        ArrayList<Item> A = new ArrayList<>();
+        for(int i = 0; i<L.getCount(); i++){
+            View view = L.getChildAt(i);
+            CheckBox checkBox = view.findViewById(R.id.checkbox);
+            Item item = (Item) itemAdapter.getItem(i);
+            if(checkBox.isChecked()){
+                A.add(item);
+            }
+        }
+        return A;
     }
 
     public Item makeCopy(Item item){
