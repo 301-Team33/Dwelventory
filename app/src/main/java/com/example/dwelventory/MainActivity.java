@@ -50,6 +50,8 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.checkerframework.checker.units.qual.A;
 
@@ -65,11 +67,13 @@ public class MainActivity extends AppCompatActivity implements FilterFragment.Fi
     private FirebaseFirestore db;
     private CollectionReference usersRef;
     private ArrayList<Item> dataList;
+    private Boolean initialSpinnerCheck = true;
+
   
     private ArrayAdapter<Item> itemAdapter;
     private float estTotal;
 
-    private Spinner filterSpinner;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements FilterFragment.Fi
 
 
         Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings", 200);
-        Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+        Item item2 = new Item("Jinora", date2, "Something Goat", "Caramel w/ Black Markings", 200);
         dataList.add(item1);
         dataList.add(item2);
 
@@ -211,20 +215,26 @@ public class MainActivity extends AppCompatActivity implements FilterFragment.Fi
 
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
 
-        filterSpinner = findViewById(R.id.filter_spinner);
+        // *** ONE FILTER AT A TIME FOR NOW ***
+
+        Spinner filterSpinner = findViewById(R.id.filter_spinner);
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.filter_spinner_options,
                 android.R.layout.simple_spinner_item
         );
+
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position > 0){
+                if(position >= 0 && !(initialSpinnerCheck)){
                     String filter = parent.getItemAtPosition(position).toString();
                     FilterFragment filterFrag = FilterFragment.newInstance(filter);
                     filterFrag.show(getSupportFragmentManager(), "FilterFragment");
+                }
+                else if(initialSpinnerCheck){
+                    initialSpinnerCheck = false;
                 }
 
             }
@@ -331,26 +341,125 @@ public class MainActivity extends AppCompatActivity implements FilterFragment.Fi
         }
     }
 
+    /**
+     * This method queries the database to filter based on make.
+     *
+     * @param makeInput This is the make types to filter by, specified by the user.
+     */
     @Override
-    public void onMakeFilterApplied(String[] filterInput) {
+    public void onMakeFilterApplied(String[] makeInput) {
         dataList.clear();
-
         CollectionReference itemsRef = db.collection("items");
+        for(String make: makeInput){
+            itemsRef.whereEqualTo("make", make).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(QueryDocumentSnapshot doc : task.getResult()){
+
+                            Item item = new Item(
+                                    doc.getString("description"),
+                                    doc.getDate("date"),
+                                    doc.getString("make"),
+                                    doc.getString("model"),
+                                    doc.getLong("estValue").intValue());
+
+                            dataList.add(item);
+                        }
+                    }
+                }
+            });
+        }
+        itemAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * This method queries the database to find items added within the given date range. Once
+     * retrieved from database, it updates dataList and notifies the adapter about changes.
+     * @param start earliest date that an items date can be
+     * @param end latest date that an items date can be
+     */
     @Override
     public void onDateFilterApplied(Date start, Date end) {
+        dataList.clear();
+        CollectionReference itemsRef = db.collection("item");
+        itemsRef.whereGreaterThanOrEqualTo("date", start)
+                .whereLessThanOrEqualTo("date", end)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for(QueryDocumentSnapshot doc: task.getResult()){
+                                Item item = new Item(
+                                        doc.getString("description"),
+                                        doc.getDate("date"),
+                                        doc.getString("make"),
+                                        doc.getString("model"),
+                                        doc.getLong("estValue").intValue());
 
+                                dataList.add(item);
+                            }
+                        }
+
+                    }
+                });
+        itemAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onKeywordFilterApplied(String[] keywords) {
+        dataList.clear();
+        CollectionReference itemsRef = db.collection("item");
 
+        for(String keyword: keywords){
+            itemsRef.whereEqualTo("description", keyword).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(QueryDocumentSnapshot doc : task.getResult()){
+
+                            Item item = new Item(
+                                    doc.getString("description"),
+                                    doc.getDate("date"),
+                                    doc.getString("make"),
+                                    doc.getString("model"),
+                                    doc.getLong("estValue").intValue());
+
+                            dataList.add(item);
+                        }
+                    }
+                }
+            });
+        }
+        itemAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onTagFilterApplied(String[] tags) {
+        dataList.clear();
+        CollectionReference itemsRef = db.collection("item");
+        for(String tag: tags){
+            itemsRef.whereEqualTo("tag", tag).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(QueryDocumentSnapshot doc : task.getResult()){
 
+                            Item item = new Item(
+                                    doc.getString("description"),
+                                    doc.getDate("date"),
+                                    doc.getString("make"),
+                                    doc.getString("model"),
+                                    doc.getLong("estValue").intValue());
+
+                            dataList.add(item);
+                        }
+                    }
+                }
+            });
+        }
+        itemAdapter.notifyDataSetChanged();
     }
 }
 
