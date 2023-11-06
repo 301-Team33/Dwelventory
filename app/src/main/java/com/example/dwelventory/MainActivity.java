@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,20 +67,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private CollectionReference usersRef;
     private ArrayList<Item> dataList;
-  
     private ArrayAdapter<Item> itemAdapter;
+    boolean reverseOrder = false;
     private ActivityResultLauncher<Intent> addEditActivityResultLauncher;
     private int ADD_ACTIVITY_CODE = 8;
     private int EDIT_ACTIVITY_CODE = 18;
     private int ADD_EDIT_CODE_OK = 818;
-    private float estTotal;
+    private FloatingActionButton addButton;
 
+    private Spinner sortSpinner;
+    private Spinner orderSpinner;
+    private float estTotal;
 
 
     @Override
@@ -93,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
         usersRef = db.collection("users");
 
         dataList = new ArrayList<>();
+
+        addButton = findViewById(R.id.add_item_button);
 
         //ArrayList<Item> dataList = new ArrayList<>();
 
@@ -117,6 +124,10 @@ public class MainActivity extends AppCompatActivity {
         List photos = null;
         Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings",serial,200, comment, photos);
         Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+        ArrayList<Tag> practiceTags = new ArrayList<>();
+        practiceTags.add(new Tag("Tag1"));
+        practiceTags.add(new Tag("Tag2"));
+        item1.setTags(practiceTags);
         dataList.add(item1);
         dataList.add(item2);
 
@@ -280,6 +291,83 @@ public class MainActivity extends AppCompatActivity {
 
 
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
+
+        sortSpinner = findViewById(R.id.sort_spinner);
+        ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.sort_array,
+                android.R.layout.simple_spinner_item
+        );
+        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String sort = parent.getItemAtPosition(position).toString();
+                switch(sort) {
+                    case "Date":
+                        ItemSorter.sortDate(dataList, reverseOrder);
+                        break;
+                    case "Description":
+                        ItemSorter.sortDescription(dataList, reverseOrder);
+                        break;
+                    case "Make":
+                        ItemSorter.sortMake(dataList, reverseOrder);
+                        break;
+                    case "Estimated Value":
+                        ItemSorter.sortEstValue(dataList, reverseOrder);
+                        break;
+                }
+                itemAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        sortSpinner.setAdapter(sortAdapter);
+
+        orderSpinner = findViewById(R.id.order_spinner);
+        ArrayAdapter<CharSequence> orderAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.order_array,
+                android.R.layout.simple_spinner_item
+        );
+        orderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        orderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String order = parent.getItemAtPosition(position).toString();
+                if (order.equals("Descending")) {
+                    reverseOrder = true;
+                }
+                else {
+                    reverseOrder = false;
+                }
+
+                String sort = sortSpinner.getSelectedItem().toString();
+                switch(sort) {
+                    case "Date":
+                        ItemSorter.sortDate(dataList, reverseOrder);
+                        break;
+                    case "Description":
+                        ItemSorter.sortDescription(dataList, reverseOrder);
+                        break;
+                    case "Make":
+                        ItemSorter.sortMake(dataList, reverseOrder);
+                        break;
+                    case "Estimated Value":
+                        ItemSorter.sortEstValue(dataList, reverseOrder);
+                        break;
+                }
+                itemAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        orderSpinner.setAdapter(orderAdapter);
+
         addEditActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -368,9 +456,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d("mainTag", "Make is " + itemMake);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment, itemPhotos);
         return copyItem;
+
     }
-
-
 
     @Override
     public void onStart() {
@@ -447,6 +534,30 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+
+    @Override
+    public void onCloseAction() {
+        TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
+        tagFragment.dismiss();
+    }
+
+    @Override
+    public void onTagApplyAction(ArrayList<Tag> applyTags) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        String date22 = "28-Oct-2023";
+        Date date2;
+        TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
+        tagFragment.dismiss();
+        try {
+            date2 = formatter.parse(date22);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        Item item3 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+        item3.setTags(applyTags);
+        Log.d("tag", "onTagApplyAction: " + item3.getTags().get(0).getTagName() + item3.getTags().get(1).getTagName());
     }
 
 

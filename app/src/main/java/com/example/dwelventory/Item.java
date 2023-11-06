@@ -1,12 +1,20 @@
 package com.example.dwelventory;
 
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 
 public class Item implements Parcelable {
     private String description;
@@ -20,7 +28,11 @@ public class Item implements Parcelable {
     private String comment;
     // optional
     private List photos;
+
+    private ArrayList<Tag> tags;
+
     private boolean selected;
+
 
     // base constructor
     public Item(String description, Date date, String make, String model, int estValue ) {
@@ -130,6 +142,15 @@ public class Item implements Parcelable {
         this.photos = photos;
     }
 
+
+    public void setTags(ArrayList<Tag> tags){
+        this.tags = tags;
+    }
+
+    public ArrayList<Tag> getTags(){
+        return this.tags;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -154,5 +175,6 @@ public class Item implements Parcelable {
        this.selected = selected;
 
     }
+
 
 }
