@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener {
 
@@ -190,10 +191,18 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
                                 //checkBox.setVisibility(View.GONE);
                                 if(checkBox.isChecked()){
+                                    // get item and its id
+                                    Item deleteItem = dataList.get(j);
+                                    UUID refId = deleteItem.getItemRefID();
+                                    // remove from list
                                     finalItemAdapter.remove(dataList.get(j));
                                     finalItemAdapter.notifyDataSetChanged();
                                     checkBox.setChecked(false);
-                                    dataList.remove(j);
+                                    // remove from firebase
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    String path = "/users/"+user.getUid()+"/items/"+refId.toString();
+                                    DocumentReference itemDocRef = db.document(path);
+                                    itemDocRef.delete();
                                 }
                             }
                         }
@@ -250,6 +259,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                             if (requestCode == ADD_ACTIVITY_CODE) {
                                 // Handle the result for adding
                                 Log.d("resultTag", "i am about to add the item");
+                                item.setItemRefID();
+                                Log.d("itemTag", "New Item RefID: " + item.getItemRefID());
                                 dataList.add(item);
                                 itemsRef.document(String.valueOf( item.getItemRefID() )).set(item);
                                 itemAdapter.notifyDataSetChanged();
@@ -257,8 +268,14 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 // Handle the result for editing
                                 Log.d("resultTag", "i am about to edit the item");
                                 int position = data.getIntExtra("position", -1);
-                                dataList.set(position, item);
+                                String itemRefId = data.getStringExtra("itemRefID");
+                                Log.d("itemTag", "from intent RefID: " + itemRefId);
+                                Log.d("itemTag", "from editActivity RefID: " + item.getItemRefID());
+                                item.setItemRefID(UUID.fromString(itemRefId));
+                                Log.d("itemTag", "after setting RefID: " + item.getItemRefID());
                                 itemsRef.document(String.valueOf( item.getItemRefID() )).set(item);
+                                dataList.set(position, item);
+//                                itemsRef.document(itemRefId).set(item);
                                 itemAdapter.notifyDataSetChanged();
                             }
                         }
@@ -271,15 +288,17 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             Intent intent = new Intent(MainActivity.this, AddEditActivity.class);
             intent.putExtra("mode", "edit");
             Log.d("mainTag", "position: " + i);
-            Log.d("mainitemclickTag", "date from list " + dataList.get(i).getDate());
-            Item copyItem = makeCopy( dataList.get(i) );
-
+            Item itemToCopy = dataList.get(i);
+            Item copyItem = makeCopy( itemToCopy);
             Log.d("mainTag", "hi copyDate is " + copyItem.getDate());
 
             intent.putExtra("item", copyItem);
             intent.putExtra("date", copyItem.getDate());
             intent.putExtra("position", i);
             intent.putExtra("requestCode", EDIT_ACTIVITY_CODE);
+            String itemRefID = itemToCopy.getItemRefID().toString();
+            Log.d("itemTag", "RefID going to edit activity: " + itemRefID);
+            intent.putExtra("itemRefID", itemRefID);
             addEditActivityResultLauncher.launch(intent);
 
         });

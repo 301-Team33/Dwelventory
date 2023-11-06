@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 public class AddEditActivity extends AppCompatActivity {
     // All views
@@ -65,7 +66,8 @@ public class AddEditActivity extends AppCompatActivity {
         String mode = intent.getStringExtra("mode");
         int position = intent.getIntExtra("position", -1);
         int requestCode = intent.getIntExtra("requestCode", -1);
-
+        String itemRefID = intent.getStringExtra("itemRefID");
+        Log.d("itemTag", "RefID after opening activity: " + itemRefID);
 
         if (mode.equals("edit")){
             Item item = intent.getParcelableExtra("item");
@@ -109,7 +111,8 @@ public class AddEditActivity extends AppCompatActivity {
                 updatedIntent.putExtra("position", position );
                 updatedIntent.putExtra("requestCode", requestCode);
                 updatedIntent.putExtra("previous name", prevName);
-
+                updatedIntent.putExtra("itemRefID", itemRefID);
+                Log.d("itemTag", "RefID coming out of edit activity: " + itemRefID);
                 setResult(818, updatedIntent);
                 Log.d("aeTag", "finishing aeActivity...");
                 finish();

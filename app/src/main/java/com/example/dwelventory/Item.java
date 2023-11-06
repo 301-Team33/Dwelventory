@@ -28,7 +28,8 @@ public class Item implements Parcelable {
     private ArrayList<Tag> tags;
 
     private boolean selected;
-    UUID itemRefID = UUID.randomUUID();
+    UUID itemRefID;
+            //= UUID.randomUUID();
 
 
     // base constructor
@@ -137,6 +138,14 @@ public class Item implements Parcelable {
 
     public void setPhotos(List photos) {
         this.photos = photos;
+    }
+    // for initializing new items
+    public void setItemRefID() {
+        this.itemRefID = UUID.randomUUID();
+    }
+    // for editing items
+    public void setItemRefID(UUID itemRefID) {
+        this.itemRefID = itemRefID;
     }
 
     public UUID getItemRefID() {
