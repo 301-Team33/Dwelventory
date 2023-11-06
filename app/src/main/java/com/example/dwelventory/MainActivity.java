@@ -32,6 +32,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -53,6 +54,9 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.checkerframework.checker.units.qual.A;
 
@@ -92,44 +96,57 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
-//        itemsRef = db.collection("users").document9
-//                tagsRef = db.collection("users").document(userId).collection("tags");
-
-
+        Log.d("itemTag", "about to access firebase??");
+        Log.d("itemTag", "so sad??");
+        FirebaseUser user = mAuth.getCurrentUser();
+        assert user != null;
+        checkUsers(user);
+        Log.d("itemTag", "after user");
+        String path = "/users/"+user.getUid()+"/items";
+        Log.d("itemTag", "path:"+path);
+        itemsRef = db.collection(path);
         dataList = new ArrayList<>();
 
+        itemsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null){
+                    Log.e("itemTag",error.toString());
+                    return;
+                }
+                if (value != null){
+                    dataList.clear();
+                    for(QueryDocumentSnapshot doc: value){
+                        Log.d("itemTag", "size of value is "+value.size());
+                        Log.d("itemTag", user.getUid());
+                        String storedRefID = doc.getId();
+                        Log.d("itemTag", String.format("Item(%s) fetched", storedRefID));
+                        Log.d("itemTag", "added default");
+                        String name = doc.get("description", String.class);
+                        Log.d("itemTag", String.format("Itemname(%s) fetched", name));
+                        Date date = doc.get("date", Date.class);
+                        String make =  doc.get("make", String.class);
+                        String model = doc.get("model", String.class);
+                        int serial = doc.get("serialNumber", int.class);
+                        int estValue = doc.get("estValue", int.class);
+                        ArrayList photos = doc.get("photos", ArrayList.class);
+                        String comment = doc.get("comment", String.class);
+                        boolean selected = doc.get("selected", boolean.class);
+                        Item item = new Item(name, date, make, model, serial, estValue, comment, photos);
+                        if (!storedRefID.equals("null")){
+                            Log.d("itemTag1", String.format("Item(%s) was not null", storedRefID)+storedRefID.getClass());
+                            item.setItemRefID(UUID.fromString(storedRefID));
+                            dataList.add(item);
+                        }
+//                        Item item = doc.toObject(Item.class);
+                    }
+                    itemAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+
         addButton = findViewById(R.id.add_item_button);
-
-        //ArrayList<Item> dataList = new ArrayList<>();
-
-        // fake data
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-        String date11 = "7-Jun-2013";
-        String date22 = "28-Oct-2023";
-        Date date1;
-        try {
-            date1 = formatter.parse(date11);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        Date date2;
-        try {
-            date2 = formatter.parse(date22);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        int serial = 12731;
-        String comment = "so cute";
-        List photos = null;
-        Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings",serial,200, comment, photos);
-        Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
-        ArrayList<Tag> practiceTags = new ArrayList<>();
-        practiceTags.add(new Tag("Tag1"));
-        practiceTags.add(new Tag("Tag2"));
-        item1.setTags(practiceTags);
-        dataList.add(item1);
-        dataList.add(item2);
-
         itemAdapter = new ItemList(this, dataList);
         ListView itemList = findViewById(R.id.item_list);
         itemList.setAdapter(itemAdapter);

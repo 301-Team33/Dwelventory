@@ -84,14 +84,9 @@ public class AddEditActivity extends AppCompatActivity {
             dateButton.setText(strDate);
             makeButton.setText(item.getMake());
             modelButton.setText(item.getModel());
-            Log.d("aeTag", "before serial");
-            Log.d("aeTag", "serial is "+item.getSerialNumber());
             serialNumButton.setText(String.valueOf(item.getSerialNumber()));
-            Log.d("aeTag", "before est");
             estValButton.setText(String.valueOf(item.getEstValue()));
-            Log.d("aeTag", "before comment");
             commentButton.setText(item.getComment());
-            Log.d("aeTag", "made it to the end");
         }
 
 
