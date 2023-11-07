@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     private int ADD_EDIT_CODE_OK = 818;
     private FloatingActionButton addButton;
     private TextView totalCost;
-    public int estTotalCost;
+    public int estTotalCost=0;
 
 
 
@@ -133,8 +133,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                         String comment = doc.get("comment", String.class);
                         boolean selected = doc.get("selected", boolean.class);
                         Item item = new Item(name, date, make, model, serial, estValue, comment, photos);
-                        estTotalCost += estValue;
-                        Log.d("cost Tag", String.valueOf(estTotalCost));
                         if (!storedRefID.equals("null")){
                             Log.d("itemTag1", String.format("Item(%s) was not null", storedRefID)+storedRefID.getClass());
                             item.setItemRefID(UUID.fromString(storedRefID));
@@ -142,8 +140,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                         }
                     }
                     itemAdapter.notifyDataSetChanged();
-                    String text = getString(R.string.totalcost, estTotalCost);
-                    totalCost.setText(text);
+                    setTotal(dataList);
                 }
             }
         });
@@ -228,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 }
                             }
                         }
+
                         finalItemAdapter.notifyDataSetChanged();
                     }
                 });
@@ -284,6 +282,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 item.setItemRefID();
                                 Log.d("itemTag", "New Item RefID: " + item.getItemRefID());
                                 dataList.add(item);
+                                estTotalCost += item.getEstValue();
                                 itemsRef.document(String.valueOf( item.getItemRefID() )).set(item);
                                 itemAdapter.notifyDataSetChanged();
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
@@ -296,10 +295,10 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 item.setItemRefID(UUID.fromString(itemRefId));
                                 Log.d("itemTag", "after setting RefID: " + item.getItemRefID());
                                 itemsRef.document(String.valueOf( item.getItemRefID() )).set(item);
-                                dataList.set(position, item);
-//                                itemsRef.document(itemRefId).set(item);
                                 itemAdapter.notifyDataSetChanged();
                             }
+                            String cost = getString(R.string.totalcost, estTotalCost);
+                            totalCost.setText(cost);
                         }
                     }
                 }
@@ -332,7 +331,11 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             addEditActivityResultLauncher.launch(intent);
         });
     }
-
+    /*
+    * This makes a copy of the item
+    * @param item the item object to be copied
+    * @return copyItem an Item object with the same values as the input item
+    * */
     public Item makeCopy(Item item){
         Log.d("mainTag", "in copy ");
         assert item != null;
@@ -349,9 +352,22 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         Log.d("mainTag", "Make is " + itemMake);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment, itemPhotos);
         return copyItem;
-
     }
-
+    /*
+    * This calculates the total cost of all the items and then
+    * sets the textview to that cost
+    * @param dataList the arraylist containing the items
+    * */
+    public void setTotal(ArrayList<Item> dataList){
+        estTotalCost = 0;
+        for (int i=0; i < dataList.size(); i++){
+            Item item = dataList.get(i);
+            int val = item.getEstValue();
+            estTotalCost += val;
+            String cost = getString(R.string.totalcost, estTotalCost);
+            totalCost.setText(cost);
+        }
+    }
 
 
     @Override
