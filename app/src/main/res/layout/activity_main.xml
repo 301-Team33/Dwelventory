@@ -7,37 +7,40 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-
     <RelativeLayout
         android:id="@+id/selectMultipleitems"
-        android:layout_height="75dp"
         android:layout_width="match_parent"
-        android:orientation="vertical"
+        android:layout_height="75dp"
         android:background="@color/grey"
-        android:visibility="gone">
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="gone">
+
         <TextView
             android:id="@+id/selectedItems"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/selectItems"
-            android:textSize="30sp"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black"
+            android:textSize="30sp" />
+
         <TextView
             android:id="@+id/selectAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/selectAll"
-            android:textSize="30sp"
             android:layout_below="@id/selectedItems"
-            android:textColor="@color/black"/>
+            android:text="@string/selectAll"
+            android:textColor="@color/black"
+            android:textSize="30sp" />
+
         <CheckBox
             android:id="@+id/selectAll_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/selectAll"
             android:layout_alignParentBottom="true"
             android:layout_marginTop="50dp"
-            />
+            android:layout_toRightOf="@id/selectAll" />
+
 
         <ImageButton
             android:id="@+id/deletebtn"
@@ -48,25 +51,52 @@
             android:layout_marginLeft="236dp"
             android:layout_toRightOf="@+id/selectAll"
             android:background="@color/grey"
-            android:src="@drawable/delete_icon2"
-            android:contentDescription="@string/deleteSelectedItems"/>
+            android:contentDescription="@string/deleteSelectedItems"
+            android:src="@drawable/delete_icon2" />
 
         <ImageButton
             android:id="@+id/closebtn"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/icons8_cancel"
-            android:layout_marginLeft="370dp"
             android:layout_alignParentTop="true"
+
             android:contentDescription="Close"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/multiple_set_tags_button"
+            android:text="Set Tags"
+            android:layout_alignParentBottom="true"
+            ></Button>
+
+            android:layout_marginLeft="370dp"
+            android:contentDescription="Close"
+            android:src="@drawable/icons8_cancel" />
+
     </RelativeLayout>
+
+    <Spinner
+        android:id="@+id/sort_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_below="@+id/selectMultipleitems"
+        />
+
+    <Spinner
+        android:id="@+id/order_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_alignTop="@+id/sort_spinner"
+        android:layout_alignParentEnd="true"
+        />
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/item_list"
         android:choiceMode="multipleChoice"
-        android:layout_below="@+id/selectMultipleitems"
+        android:layout_below="@+id/sort_spinner"
         >
     </ListView>
 
