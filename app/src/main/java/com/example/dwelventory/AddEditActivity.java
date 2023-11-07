@@ -6,17 +6,22 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class AddEditActivity extends AppCompatActivity {
+public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener{
     // All views
     EditText nameButton;
     EditText dateButton;
@@ -37,6 +42,13 @@ public class AddEditActivity extends AppCompatActivity {
     private String make;
     private String model;
     private int estValue;
+
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private CollectionReference usersRef;
+    private Item item;
+
+    private ArrayList<Tag> tagsToApply;
 //    private String comment;
 
 
@@ -60,6 +72,10 @@ public class AddEditActivity extends AppCompatActivity {
         photoButton = findViewById(R.id.photo_button);
         confirmButton = findViewById(R.id.confirm_button);
 
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        usersRef = db.collection("users");
+
         Intent intent = getIntent();
         String mode = intent.getStringExtra("mode");
         int position = intent.getIntExtra("position", -1);
@@ -67,12 +83,15 @@ public class AddEditActivity extends AppCompatActivity {
 
 
         if (mode.equals("edit")){
-            Item item = intent.getParcelableExtra("item");
+            item = (Item) intent.getParcelableExtra("item");
+
             // fill edit texts with information
             assert item != null;
             nameButton.setText(item.getDescription());
             Date date = (Date) intent.getSerializableExtra("date");
             Log.d("aeTag", "um Date is" + date);
+            tagsToApply = intent.getParcelableArrayListExtra("tags");
+            item.setTags(tagsToApply);
             assert date != null;
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault());
             // Format the Date object as a string
@@ -90,6 +109,19 @@ public class AddEditActivity extends AppCompatActivity {
             Log.d("aeTag", "made it to the end");
         }
 
+        editTagButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mode.equals("edit")) {
+                    TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),item);
+                    newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
+                }else{
+                    TagFragment newFragment = TagFragment.newInstance(mAuth.getUid());
+                    newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
+                }
+            }
+        });
+
 
         confirmButton.setOnClickListener(v -> {
             // check for valid inputs
@@ -98,9 +130,17 @@ public class AddEditActivity extends AppCompatActivity {
                 Log.d("editTag", "before making the new item, date is " + date);
                 
                 Item item = new Item(name, date, make, model, estValue);
+                item.setTags(tagsToApply);
+
+
                 // put it in intent
                 Intent updatedIntent = new Intent();
+                if(item.getTags() == null){
+                  ArrayList<Tag>  emptyTagSet = new ArrayList<>();
+                  item.setTags(emptyTagSet);
+                }
                 // go back to main activity
+                updatedIntent.putExtra("tags",item.getTags());
                 updatedIntent.putExtra("item", item);
                 updatedIntent.putExtra("date", date);
                 updatedIntent.putExtra("mode", mode);
@@ -180,5 +220,31 @@ public class AddEditActivity extends AppCompatActivity {
         } catch (ParseException e) {
             return false; // Date is invalid
         }
+    }
+
+    @Override
+    public void onCloseAction() {
+        TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
+        tagFragment.dismiss();
+    }
+
+    @Override
+    public void onTagApplyAction(ArrayList<Tag> applyTags) {
+        TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
+        tagFragment.dismiss();
+        Intent intent = getIntent();
+        String mode = intent.getStringExtra("mode");
+        if (mode.equals("edit")){
+            item.setTags(applyTags);
+            tagsToApply = applyTags;
+        }else{
+            tagsToApply = applyTags;
+
+    }
+}
+
+    @Override
+    public void onTagDeletion(Tag deletedTag) {
+        return;
     }
 }
