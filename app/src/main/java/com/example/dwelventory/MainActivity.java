@@ -442,7 +442,12 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         Log.d("tag", "onTagApplyAction: " + item3.getTags().get(0).getTagName() + item3.getTags().get(1).getTagName());
     }
 
-   
+    @Override
+    public void onTagDeletion(Tag deletedTag) {
+
+    }
+
+
     public void deleteItems(ArrayList<Item> dataList, ArrayList<Item> toremove){
         if (toremove.size() == 0){
             Toast.makeText(MainActivity.this, "Select items to delete",
