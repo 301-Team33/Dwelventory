@@ -22,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -82,7 +83,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     private int EDIT_ACTIVITY_CODE = 18;
     private int ADD_EDIT_CODE_OK = 818;
     private FloatingActionButton addButton;
-    private float estTotal;
+    private TextView totalCost;
+    public int estTotalCost;
 
 
 
@@ -96,8 +98,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
-        Log.d("itemTag", "about to access firebase??");
-        Log.d("itemTag", "so sad??");
         FirebaseUser user = mAuth.getCurrentUser();
         assert user != null;
         checkUsers(user);
@@ -133,19 +133,24 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                         String comment = doc.get("comment", String.class);
                         boolean selected = doc.get("selected", boolean.class);
                         Item item = new Item(name, date, make, model, serial, estValue, comment, photos);
+                        estTotalCost += estValue;
+                        Log.d("cost Tag", String.valueOf(estTotalCost));
                         if (!storedRefID.equals("null")){
                             Log.d("itemTag1", String.format("Item(%s) was not null", storedRefID)+storedRefID.getClass());
                             item.setItemRefID(UUID.fromString(storedRefID));
                             dataList.add(item);
                         }
-//                        Item item = doc.toObject(Item.class);
                     }
                     itemAdapter.notifyDataSetChanged();
+                    String text = getString(R.string.totalcost, estTotalCost);
+                    totalCost.setText(text);
                 }
             }
         });
 
-
+        totalCost = findViewById(R.id.total_cost);
+        String text = getString(R.string.totalcost, estTotalCost);
+        totalCost.setText(text);
         addButton = findViewById(R.id.add_item_button);
         itemAdapter = new ItemList(this, dataList);
         ListView itemList = findViewById(R.id.item_list);
