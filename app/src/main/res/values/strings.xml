@@ -13,8 +13,14 @@
     <string name="tag_already_exists_toast">Tag Already Exists</string>
 
 
+    <string name="delete_tag_message">Delete Tag: </string>
+    <string name="delete_tag_delete_button">Delete</string>
+    <string name="delete_tag_reject_button">Back</string>
+
+    <string name="confirm">Confirm</string>
+
     <string name="description">Description (Name)</string>
-    <string name="date">Date of Purchase</string>
+    <string name="date">Date (mm-dd-yyyy)</string>
     <string name="make">Make</string>
     <string name="model">Model</string>
     <string name="serialNumber">Serial Number</string>
@@ -27,6 +33,20 @@
     <string name="selectDRange">Select Date Range</string>
     <string name="selectkWords">Select Keywords</string>
     <string name="done">Done</string>
+
+    <string-array name="sort_array">
+      <item>Date</item>
+      <item>Description</item>
+      <item>Make</item>
+      <item>Estimated Value</item>
+    </string-array>
+
+    <string-array name="order_array">
+      <item>Ascending</item>
+      <item>Descending</item>
+    </string-array>
+  <string name="tags_title">TAGS</string>
+
 
     <string name="delete">Delete</string>
     <string name="selectItems">Selected items : 0</string>
