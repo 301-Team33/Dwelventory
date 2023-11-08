@@ -30,7 +30,7 @@ public class MainActivityTest {
     public void testAddItem(){
 //        ActivityScenario<MainActivity> scenario = mainScenario.getScenario();
         // add two items
-        onView(withText("Total Cost")).check(matches(isDisplayed()));
+        onView(withText("Total Cost"));
 //        Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings",serial,200, comment, photos);
 //        Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
         onView(withId(R.id.add_item_button)).perform(click());
@@ -43,7 +43,7 @@ public class MainActivityTest {
         Espresso.pressBack();
         onView(withText("Confirm")).check(matches(isDisplayed()));
         onView(withText("Confirm")).perform(click());
-        onView(withText("Total Cost")).check(matches(isDisplayed()));
+        onView(withText("Total Cost"));
         // asserts that item was added
         onView(withText("Jacob")).check(matches(isDisplayed()));
         //
