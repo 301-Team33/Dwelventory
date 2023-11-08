@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -32,6 +33,8 @@ public class Item implements Parcelable {
     private ArrayList<Tag> tags;
 
     private boolean selected;
+    UUID itemRefID;
+            //= UUID.randomUUID();
 
 
     // base constructor
@@ -141,7 +144,18 @@ public class Item implements Parcelable {
     public void setPhotos(List photos) {
         this.photos = photos;
     }
+    // for initializing new items
+    public void setItemRefID() {
+        this.itemRefID = UUID.randomUUID();
+    }
+    // for editing items
+    public void setItemRefID(UUID itemRefID) {
+        this.itemRefID = itemRefID;
+    }
 
+    public UUID getItemRefID() {
+        return itemRefID;
+    }
 
     public void setTags(ArrayList<Tag> tags){
         this.tags = tags;

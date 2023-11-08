@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener{
     // All views
@@ -50,6 +51,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
 
     private ArrayList<Tag> tagsToApply;
 //    private String comment;
+    private String prevName;
 
 
     @Override
@@ -80,14 +82,16 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         String mode = intent.getStringExtra("mode");
         int position = intent.getIntExtra("position", -1);
         int requestCode = intent.getIntExtra("requestCode", -1);
-
+        String itemRefID = intent.getStringExtra("itemRefID");
+        Log.d("itemTag", "RefID after opening activity: " + itemRefID);
 
         if (mode.equals("edit")){
             item = (Item) intent.getParcelableExtra("item");
 
             // fill edit texts with information
             assert item != null;
-            nameButton.setText(item.getDescription());
+            prevName = item.getDescription();
+            nameButton.setText(prevName);
             Date date = (Date) intent.getSerializableExtra("date");
             Log.d("aeTag", "um Date is" + date);
             tagsToApply = intent.getParcelableArrayListExtra("tags");
@@ -99,14 +103,9 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             dateButton.setText(strDate);
             makeButton.setText(item.getMake());
             modelButton.setText(item.getModel());
-            Log.d("aeTag", "before serial");
-            Log.d("aeTag", "serial is "+item.getSerialNumber());
             serialNumButton.setText(String.valueOf(item.getSerialNumber()));
-            Log.d("aeTag", "before est");
             estValButton.setText(String.valueOf(item.getEstValue()));
-            Log.d("aeTag", "before comment");
             commentButton.setText(item.getComment());
-            Log.d("aeTag", "made it to the end");
         }
 
         editTagButton.setOnClickListener(new View.OnClickListener() {
@@ -146,7 +145,9 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 updatedIntent.putExtra("mode", mode);
                 updatedIntent.putExtra("position", position );
                 updatedIntent.putExtra("requestCode", requestCode);
-
+                updatedIntent.putExtra("previous name", prevName);
+                updatedIntent.putExtra("itemRefID", itemRefID);
+                Log.d("itemTag", "RefID coming out of edit activity: " + itemRefID);
                 setResult(818, updatedIntent);
                 Log.d("aeTag", "finishing aeActivity...");
                 finish();

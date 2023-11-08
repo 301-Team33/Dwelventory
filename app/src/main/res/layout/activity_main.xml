@@ -75,9 +75,14 @@
             android:id="@+id/multiple_set_tags_button"
             android:backgroundTint="@color/grey"
             android:layout_alignParentBottom="true"
+
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="110dp"
             android:background="?android:attr/selectableItemBackground"/>
+      
+            android:layout_marginLeft="370dp"
+            android:contentDescription="Close"
+            android:src="@drawable/icons8_cancel" />
 
 
     </RelativeLayout>
@@ -113,6 +118,7 @@
         android:layout_alignParentBottom="true">
 
         <TextView
+            android:id="@+id/total_cost"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/total_cost"
