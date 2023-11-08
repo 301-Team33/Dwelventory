@@ -1,17 +1,25 @@
 package com.example.dwelventory;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Spinner;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -25,15 +33,33 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,28 +67,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private CollectionReference usersRef;
+    private CollectionReference itemsRef;
     private ArrayList<Item> dataList;
+  
     private ArrayAdapter<Item> itemAdapter;
-    boolean reverseOrder = false;
     private ActivityResultLauncher<Intent> addEditActivityResultLauncher;
     private int ADD_ACTIVITY_CODE = 8;
     private int EDIT_ACTIVITY_CODE = 18;
     private int ADD_EDIT_CODE_OK = 818;
     private FloatingActionButton addButton;
-
-    private float estTotal;
-    private ListView finalItemList;
-    private ArrayAdapter<Item> finalItemAdapter;
-
-
-    private Spinner sortSpinner;
-    private Spinner orderSpinner;
+    private TextView totalCost;
+    public int estTotalCost=0;
 
 
 
@@ -71,47 +93,62 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         // Initialize Firebase authentication
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
-
+        FirebaseUser user = mAuth.getCurrentUser();
+        assert user != null;
+        checkUsers(user);
+        Log.d("itemTag", "after user");
+        String path = "/users/"+user.getUid()+"/items";
+        Log.d("itemTag", "path:"+path);
+        itemsRef = db.collection(path);
         dataList = new ArrayList<>();
 
+        itemsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null){
+                    Log.e("itemTag",error.toString());
+                    return;
+                }
+                if (value != null){
+                    dataList.clear();
+                    for(QueryDocumentSnapshot doc: value){
+                        Log.d("itemTag", "size of value is "+value.size());
+                        Log.d("itemTag", user.getUid());
+                        String storedRefID = doc.getId();
+                        Log.d("itemTag", String.format("Item(%s) fetched", storedRefID));
+                        Log.d("itemTag", "added default");
+                        String name = doc.get("description", String.class);
+                        Log.d("itemTag", String.format("Itemname(%s) fetched", name));
+                        Date date = doc.get("date", Date.class);
+                        String make =  doc.get("make", String.class);
+                        String model = doc.get("model", String.class);
+                        int serial = doc.get("serialNumber", int.class);
+                        int estValue = doc.get("estValue", int.class);
+                        ArrayList photos = doc.get("photos", ArrayList.class);
+                        String comment = doc.get("comment", String.class);
+                        boolean selected = doc.get("selected", boolean.class);
+                        Item item = new Item(name, date, make, model, serial, estValue, comment, photos);
+                        if (!storedRefID.equals("null")){
+                            Log.d("itemTag1", String.format("Item(%s) was not null", storedRefID)+storedRefID.getClass());
+                            item.setItemRefID(UUID.fromString(storedRefID));
+                            dataList.add(item);
+                        }
+                    }
+                    itemAdapter.notifyDataSetChanged();
+                    setTotal(dataList);
+                }
+            }
+        });
+
+        totalCost = findViewById(R.id.total_cost);
+        String text = getString(R.string.totalcost, estTotalCost);
+        totalCost.setText(text);
         addButton = findViewById(R.id.add_item_button);
-
-        //ArrayList<Item> dataList = new ArrayList<>();
-
-        // fake data
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-        String date11 = "7-Jun-2013";
-        String date22 = "28-Oct-2023";
-        Date date1;
-        try {
-            date1 = formatter.parse(date11);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        Date date2;
-        try {
-            date2 = formatter.parse(date22);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        int serial = 12731;
-        String comment = "so cute";
-        List photos = null;
-        Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings",serial,200, comment, photos);
-        Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
-        ArrayList<Tag> testtag = new ArrayList<>();
-        ArrayList<Tag> practiceTags = new ArrayList<>();
-        practiceTags.add(new Tag("Tag1"));
-        practiceTags.add(new Tag("Tag2"));
-        item1.setTags(practiceTags);
-        item2.setTags(testtag);
-        dataList.add(item1);
-        dataList.add(item2);
-
         itemAdapter = new ItemList(this, dataList);
         ListView itemList = findViewById(R.id.item_list);
         itemList.setAdapter(itemAdapter);
@@ -121,75 +158,34 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         itemList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         itemList.setAdapter(itemAdapter);
 
+
+
         // Declare itemList as new final variable
         // (This variable is used only for the longClickListener)
-        finalItemList = itemList;
-        finalItemAdapter = itemAdapter;
+        ListView finalItemList = itemList;
+        ArrayAdapter<Item> finalItemAdapter = itemAdapter;
 
         itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-            public void getSelectedCount(TextView selected_count){
-                int count = 0;
-                for (int j = 0; j < itemAdapter.getCount(); j++) {
-                    View view_temp = finalItemList.getChildAt(j);
-                    if (view_temp != null) {
-                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                        if (checkBox.isChecked()){
-                            count++;
-                        }
-                    }
-                }
-                selected_count.setText("Selected Items : "+ count);
-            }
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-
-                addButton.setVisibility(View.GONE);
-                RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
-                TextView selected_count = findViewById(R.id.selectedItems);
-                select_items.setVisibility(View.VISIBLE);
-                CheckBox select_All = findViewById(R.id.selectAll_checkbox);
+                /*View checkBoxLayout = view.findViewById(R.id.checkbox);
+                checkBoxLayout.setVisibility(View.VISIBLE);*/
 
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
                     if (view_temp != null) {
                         CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
                         checkBox.setVisibility(View.VISIBLE);
-                        checkBox.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                getSelectedCount(selected_count);
-                            }
-                        });
                     }
                 }
-                select_All.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(select_All.isChecked()){
-                            for(int j = 0; j<finalItemList.getCount();j++){
-                                View view1 = finalItemList.getChildAt(j);
-                                CheckBox checkBox = view1.findViewById(R.id.checkbox);
-                                checkBox.setChecked(true);
-                                getSelectedCount(selected_count);
-                            }
-                        }
-                        if(!select_All.isChecked()){
-                            for(int j = 0; j<finalItemList.getCount();j++){
-                                View view1 = finalItemList.getChildAt(j);
-                                CheckBox checkBox = view1.findViewById(R.id.checkbox);
-                                checkBox.setChecked(false);
-                                getSelectedCount(selected_count);
-                            }
-                        }
-                    }
-                });
+
+
+                RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
+                select_items.setVisibility(View.VISIBLE);
                 //changeListViewHeight(Boolean.TRUE);
 
                 ImageButton closebtn = findViewById(R.id.closebtn);
                 ImageButton deletebtn = findViewById(R.id.deletebtn);
-                Button tagButton = findViewById(R.id.multiple_set_tags_button);
                 closebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -202,36 +198,35 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 checkBox.setVisibility(View.GONE);
                             }
                         }
-                        addButton.setVisibility(View.VISIBLE);
                     }
                 });
 
                 deletebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                         ArrayList<Item> tobeDeleted = getcheckedItems(finalItemList, finalItemAdapter);
-                         for(int i = 0; i<tobeDeleted.size();i++){
-                             itemAdapter.remove(tobeDeleted.get(i));
-                             dataList.remove(tobeDeleted.get(i));
-                             itemAdapter.notifyDataSetChanged();
-                         }
+                        for (int j = 0; j < itemAdapter.getCount(); j++) {
+                            View view_temp = finalItemList.getChildAt(j);
+                            if (view_temp != null) {
+                                CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                                //checkBox.setVisibility(View.GONE);
+                                if(checkBox.isChecked()){
+                                    // get item and its id
+                                    Item deleteItem = dataList.get(j);
+                                    UUID refId = deleteItem.getItemRefID();
+                                    // remove from list
+                                    finalItemAdapter.remove(dataList.get(j));
+                                    finalItemAdapter.notifyDataSetChanged();
+                                    checkBox.setChecked(false);
+                                    // remove from firebase
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    String path = "/users/"+user.getUid()+"/items/"+refId.toString();
+                                    DocumentReference itemDocRef = db.document(path);
+                                    itemDocRef.delete();
+                                }
+                            }
+                        }
 
-                         for(int i = 0; i<finalItemList.getCount();i++){
-                             View view1 = finalItemList.getChildAt(i);
-                             CheckBox checkBox = view1.findViewById(R.id.checkbox);
-                             checkBox.setChecked(false);
-                         }
-                         getSelectedCount(selected_count);
-                         select_All.setChecked(false);
-                    }
-
-                });
-
-                tagButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),"edit");
-                        newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
+                        finalItemAdapter.notifyDataSetChanged();
                     }
                 });
                 /*deletebtn.setOnClickListener(new View.OnClickListener() {
@@ -247,8 +242,13 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 itemRemovedCount++;
                             }
                         }
+
+                        if (itemRemovedCount > 0) {
+                            Toast.makeText(MainActivity.this, "Deleted " + itemRemovedCount + " Items", Toast.LENGTH_LONG).show();
+                        }
+                    }
                 });*/
-                itemAdapter.notifyDataSetChanged();
+                //finalItemAdapter.notifyDataSetChanged();
                 return true;
 
             }
@@ -260,83 +260,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         //itemAdapter.notifyDataSetChanged();
 
 
-        final FloatingActionButton addButton = findViewById(R.id.add_item_button);
-
-        sortSpinner = findViewById(R.id.sort_spinner);
-        ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(
-                this,
-                R.array.sort_array,
-                android.R.layout.simple_spinner_item
-        );
-        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String sort = parent.getItemAtPosition(position).toString();
-                switch(sort) {
-                    case "Date":
-                        ItemSorter.sortDate(dataList, reverseOrder);
-                        break;
-                    case "Description":
-                        ItemSorter.sortDescription(dataList, reverseOrder);
-                        break;
-                    case "Make":
-                        ItemSorter.sortMake(dataList, reverseOrder);
-                        break;
-                    case "Estimated Value":
-                        ItemSorter.sortEstValue(dataList, reverseOrder);
-                        break;
-                }
-                itemAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        sortSpinner.setAdapter(sortAdapter);
-
-        orderSpinner = findViewById(R.id.order_spinner);
-        ArrayAdapter<CharSequence> orderAdapter = ArrayAdapter.createFromResource(
-                this,
-                R.array.order_array,
-                android.R.layout.simple_spinner_item
-        );
-        orderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        orderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String order = parent.getItemAtPosition(position).toString();
-                if (order.equals("Descending")) {
-                    reverseOrder = true;
-                }
-                else {
-                    reverseOrder = false;
-                }
-
-                String sort = sortSpinner.getSelectedItem().toString();
-                switch(sort) {
-                    case "Date":
-                        ItemSorter.sortDate(dataList, reverseOrder);
-                        break;
-                    case "Description":
-                        ItemSorter.sortDescription(dataList, reverseOrder);
-                        break;
-                    case "Make":
-                        ItemSorter.sortMake(dataList, reverseOrder);
-                        break;
-                    case "Estimated Value":
-                        ItemSorter.sortEstValue(dataList, reverseOrder);
-                        break;
-                }
-                itemAdapter.notifyDataSetChanged();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-        orderSpinner.setAdapter(orderAdapter);
 
         addEditActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -348,25 +271,34 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                         if (data != null) {
                             // Extract item
                             Item item = data.getParcelableExtra("item");
-                            ArrayList<Tag> tags = data.getParcelableArrayListExtra("tags");
                             // Get and set date bc its weird
                             Date date = (Date) data.getSerializableExtra("date");
                             item.setDate(date);
-                            item.setTags(tags);
                             int requestCode = data.getIntExtra("requestCode", -1);
                             Log.d("resultTag", "request code: " + requestCode);
                             if (requestCode == ADD_ACTIVITY_CODE) {
                                 // Handle the result for adding
                                 Log.d("resultTag", "i am about to add the item");
+                                item.setItemRefID();
+                                Log.d("itemTag", "New Item RefID: " + item.getItemRefID());
                                 dataList.add(item);
+                                estTotalCost += item.getEstValue();
+                                itemsRef.document(String.valueOf( item.getItemRefID() )).set(item);
                                 itemAdapter.notifyDataSetChanged();
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
                                 // Handle the result for editing
                                 Log.d("resultTag", "i am about to edit the item");
                                 int position = data.getIntExtra("position", -1);
-                                dataList.set(position, item);
+                                String itemRefId = data.getStringExtra("itemRefID");
+                                Log.d("itemTag", "from intent RefID: " + itemRefId);
+                                Log.d("itemTag", "from editActivity RefID: " + item.getItemRefID());
+                                item.setItemRefID(UUID.fromString(itemRefId));
+                                Log.d("itemTag", "after setting RefID: " + item.getItemRefID());
+                                itemsRef.document(String.valueOf( item.getItemRefID() )).set(item);
                                 itemAdapter.notifyDataSetChanged();
                             }
+                            String cost = getString(R.string.totalcost, estTotalCost);
+                            totalCost.setText(cost);
                         }
                     }
                 }
@@ -377,17 +309,17 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             Intent intent = new Intent(MainActivity.this, AddEditActivity.class);
             intent.putExtra("mode", "edit");
             Log.d("mainTag", "position: " + i);
-            Log.d("mainitemclickTag", "date from list " + dataList.get(i).getDate());
-            Item copyItem = makeCopy( dataList.get(i) );
-
+            Item itemToCopy = dataList.get(i);
+            Item copyItem = makeCopy( itemToCopy);
             Log.d("mainTag", "hi copyDate is " + copyItem.getDate());
 
             intent.putExtra("item", copyItem);
             intent.putExtra("date", copyItem.getDate());
-            intent.putExtra("tags",copyItem.getTags());
-
             intent.putExtra("position", i);
             intent.putExtra("requestCode", EDIT_ACTIVITY_CODE);
+            String itemRefID = itemToCopy.getItemRefID().toString();
+            Log.d("itemTag", "RefID going to edit activity: " + itemRefID);
+            intent.putExtra("itemRefID", itemRefID);
             addEditActivityResultLauncher.launch(intent);
 
         });
@@ -399,21 +331,11 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             addEditActivityResultLauncher.launch(intent);
         });
     }
-
-    private ArrayList<Item> getcheckedItems(ListView L, ArrayAdapter<Item> I) {
-        L = findViewById(R.id.item_list);
-        ArrayList<Item> A = new ArrayList<>();
-        for(int i = 0; i<L.getCount(); i++){
-            View view = L.getChildAt(i);
-            CheckBox checkBox = view.findViewById(R.id.checkbox);
-            Item item = (Item) itemAdapter.getItem(i);
-            if(checkBox.isChecked()){
-                A.add(item);
-            }
-        }
-        return A;
-    }
-
+    /*
+    * This makes a copy of the item
+    * @param item the item object to be copied
+    * @return copyItem an Item object with the same values as the input item
+    * */
     public Item makeCopy(Item item){
         Log.d("mainTag", "in copy ");
         assert item != null;
@@ -425,15 +347,28 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         int itemSerial = item.getSerialNumber();
         int itemValue = item.getEstValue();
         String itemComment = item.getComment();
-
         List itemPhotos = item.getPhotos();
         Log.d("mainTag", "Date is" + itemDate);
         Log.d("mainTag", "Make is " + itemMake);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment, itemPhotos);
-        copyItem.setTags(item.getTags());
         return copyItem;
-
     }
+    /*
+    * This calculates the total cost of all the items and then
+    * sets the textview to that cost
+    * @param dataList the arraylist containing the items
+    * */
+    public void setTotal(ArrayList<Item> dataList){
+        estTotalCost = 0;
+        for (int i=0; i < dataList.size(); i++){
+            Item item = dataList.get(i);
+            int val = item.getEstValue();
+            estTotalCost += val;
+            String cost = getString(R.string.totalcost, estTotalCost);
+            totalCost.setText(cost);
+        }
+    }
+
 
     @Override
     public void onStart() {
@@ -449,16 +384,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         }
     }
 
-
-    //@Override
-    /*public void onOKPressed(Item item) {
-
-
-    public void onOKPressed(Item item) {
-
-        dataList.add(item);
-        itemAdapter.notifyDataSetChanged();
-    }
 
     /**
      * This method will attempt to sign on anonymously, if the user is not already signed in
@@ -496,6 +421,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
+                    // make item collection after verifying user
+                    itemsRef = db.collection("users").document(user.getUid()).collection("items");
                     if (document.exists()) {
                         Log.d("userCheck", "User document exists");
                     } else {
@@ -515,56 +442,30 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
     @Override
     public void onCloseAction() {
-        // simply say, it closes the fragment.
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
     }
 
     @Override
     public void onTagApplyAction(ArrayList<Tag> applyTags) {
-        // simply close the fragment first since selected tags are now going to be applied.
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        String date22 = "28-Oct-2023";
+        Date date2;
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
-        for (int j = 0; j < itemAdapter.getCount(); j++) {
-            View view_temp = finalItemList.getChildAt(j);
-            if (view_temp != null) {
-                CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                //checkBox.setVisibility(View.GONE);
-                if(checkBox.isChecked()){
-                    // Must process the tags for this item.
-                    for (int i = 0; i < applyTags.size(); i++){
-                        boolean contained = false;
-                        // check to see if the tags that were wanting to be applied are already
-                        // associated with the item. This double for loop checks all the items
-                        // that were selected via the checkbox and only applies UNIQUE tags not already
-                        // specified for the item.
-                        for (int k = 0; k < dataList.get(j).getTags().size();k++){
-                            if (dataList.get(j).getTags().get(k).getTagName().equals(applyTags.get(i).getTagName())) {
-                                contained = true; // tag was already defined for the item.
-                                break;
-                            }
-                        }
-                        // if the tag was not specified for the item then add it for that item!
-                        if (!contained){
-                            dataList.get(j).getTags().add(new Tag(applyTags.get(i).getTagName()));
-                        }
-                    }
-                }
-            }
+        try {
+            date2 = formatter.parse(date22);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
+        Item item3 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+        item3.setTags(applyTags);
+        Log.d("tag", "onTagApplyAction: " + item3.getTags().get(0).getTagName() + item3.getTags().get(1).getTagName());
     }
 
     @Override
     public void onTagDeletion(Tag deletedTag) {
-        // check all the items in the listview. and if the item has the tag that was defined to be
-        // deleted then delete it from the arraylist of tags associated with the item!!
-        for (Item currentItem: dataList){
-            for (Tag currentTag: currentItem.getTags()){
-                if (currentTag.getTagName().equals(deletedTag.getTagName())){
-                    currentItem.getTags().remove(currentTag);
-                }
-            }
-        }
+
     }
 
 
