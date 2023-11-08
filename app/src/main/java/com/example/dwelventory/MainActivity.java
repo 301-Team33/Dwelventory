@@ -186,6 +186,10 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
                 ImageButton closebtn = findViewById(R.id.closebtn);
                 ImageButton deletebtn = findViewById(R.id.deletebtn);
+
+
+                ImageButton tagButton = findViewById(R.id.multiple_set_tags_button);
+
                 closebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
