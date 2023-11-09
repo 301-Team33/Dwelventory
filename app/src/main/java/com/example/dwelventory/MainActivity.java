@@ -108,9 +108,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             checkUsers(mAuth.getCurrentUser());
         }
 
-
-//        assert user != null;
-//        checkUsers(user);
+        assert user != null;
         Log.d("itemTag", "after user");
         String path = "/users/"+user.getUid()+"/items";
 //        String path = "/users/rQ2PrfCOKsYkdi1bfzqvLJVZOqq1/items";
