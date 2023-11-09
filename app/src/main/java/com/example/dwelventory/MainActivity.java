@@ -99,6 +99,15 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
         FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user == null) {
+            signOnAnonymously();
+        } else {
+            Toast.makeText(MainActivity.this, "Already signed in",
+                    Toast.LENGTH_SHORT).show();
+            checkUsers(mAuth.getCurrentUser());
+        }
+
         assert user != null;
         checkUsers(user);
         Log.d("itemTag", "after user");
@@ -202,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                 ImageButton deletebtn = findViewById(R.id.deletebtn);
                 ImageButton tagButton = findViewById(R.id.multiple_set_tags_button);
                 CheckBox select_All = findViewById(R.id.selectAll_checkbox);
+                addButton.setVisibility(View.GONE);
 
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
@@ -220,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                     @Override
                     public void onClick(View view) {
                         select_items.setVisibility(View.GONE);
+                        addButton.setVisibility(View.VISIBLE);
 
                         for (int j = 0; j < itemAdapter.getCount(); j++) {
                             View view_temp = finalItemList.getChildAt(j);
