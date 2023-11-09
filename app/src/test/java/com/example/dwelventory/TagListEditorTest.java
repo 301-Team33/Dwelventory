@@ -108,4 +108,41 @@ public class TagListEditorTest {
         assertEquals("Knife",tagList.get(1).getTagName());
         assertEquals(true,tagList.contains(mockTag1));
     }
+
+    @Test
+    public void testCheckMultipleItemTagAddition(){
+        // Create the mocks for the tests
+        TagListEditor editor = mockTagListEditor();
+        ArrayList<Tag> tagList1 = mockTagList();
+        ArrayList<Tag> tagList2 = mockTagList();
+
+        // Test to see if no tag is added since both lists are the same
+        // Both contain "Bathroom"
+        editor.checkMultipleItemTagAddition(tagList1,tagList2);
+        assertEquals(1,tagList1.size());
+        assertEquals("Bathroom",tagList1.get(0).getTagName());
+
+        // Check if having unique tags in both lists doesnt remove the tag
+        // from the first list, but rather adds the tag from the second
+        tagList2.remove(0);
+        tagList2.add(mockTag2());
+
+        editor.checkMultipleItemTagAddition(tagList1,tagList2);
+        assertEquals(2,tagList1.size());
+        assertEquals("Bathroom",tagList1.get(0).getTagName());
+        assertEquals("Kitchen",tagList1.get(1).getTagName());
+
+        // Check that the list contains the exact same object reference.
+        Tag mockTag1 = new Tag("Mouth");
+        tagList2.clear();
+        tagList2.add(mockTag1);
+
+        editor.checkMultipleItemTagAddition(tagList1,tagList2);
+        assertEquals(true,tagList1.contains(mockTag1));
+
+        // Assert that tags cant be cleared.
+        editor.checkMultipleItemTagAddition(tagList1, new ArrayList<Tag>());
+        assertEquals(3,tagList1.size());
+
+    }
 }
