@@ -268,6 +268,7 @@ public class TagFragment extends DialogFragment{
             }
         });
 
+
         // Will apply the tag name in the current edit text if not already defined and valid (non null / empty)
         tagCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -303,6 +304,7 @@ public class TagFragment extends DialogFragment{
             public void onClick(View v) {
                 if (tagsToApply.size() == 0){
                     produceTagToast(R.string.no_tags_selected);
+                    listener.onTagApplyAction(tagsToApply);
                 }else {
                     listener.onTagApplyAction(tagsToApply);
                 }

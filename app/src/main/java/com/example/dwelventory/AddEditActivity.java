@@ -106,6 +106,9 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             int numTags = tagsToApply.size();
             int i = 0;
             while (i <= 2 || i < numTags){
+                if (i == 3 || i == numTags){
+                    break;
+                }
                 if (i == 0){
                     tagDisplay1Button.setText(tagsToApply.get(i).getTagName());
                     tagDisplay1Button.setVisibility(View.VISIBLE);
@@ -118,6 +121,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                     tagDisplay3Button.setText(tagsToApply.get(i).getTagName());
                     tagDisplay3Button.setVisibility(View.VISIBLE);
                 }
+                i++;
             }
 
             assert date != null;
@@ -148,6 +152,29 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                     TagFragment newFragment = TagFragment.newInstance(mAuth.getUid());
                     newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
                 }
+            }
+        });
+
+
+        // These on click listeners display a toast with the tag name
+        tagDisplay1Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                produceTagToast("Tag: " + tagDisplay1Button.getText().toString());
+            }
+        });
+
+        tagDisplay2Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                produceTagToast("Tag: " + tagDisplay2Button.getText().toString());
+            }
+        });
+
+        tagDisplay3Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                produceTagToast("Tag: " + tagDisplay3Button.getText().toString());
             }
         });
 
@@ -262,15 +289,19 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
         Intent intent = getIntent();
+        if (tagsToApply == null){
+            tagsToApply = new ArrayList<>();
+        }
         String mode = intent.getStringExtra("mode");
         TagListEditor editor = new TagListEditor();
-        if (mode.equals("edit")){
+        if (!mode.equals("edit")){
             editor.checkSingleItemTagAddition(tagsToApply,applyTags);
+        }
+        if (tagsToApply == null || applyTags.size() == 0){
+            tagsToApply = new ArrayList<>();
             item.setTags(tagsToApply);
-        }else{
-            if (tagsToApply == null || applyTags.size() == 0){
-                tagsToApply = new ArrayList<>();
-            }
+        }else if(mode.equals("edit")){
+            editor.checkSingleItemTagAddition(tagsToApply,applyTags);
             item.setTags(tagsToApply);
     }
         tagDisplay3Button.setVisibility(View.GONE);
@@ -279,7 +310,10 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
 
         int numTags = tagsToApply.size();
         int i = 0;
-        while (i <= 2 || i < numTags){
+        while (i < numTags && i <= 2){
+            if (i == 3 || i == numTags) {
+                break;
+            }
             if (i == 0){
                 tagDisplay1Button.setText(tagsToApply.get(i).getTagName());
                 tagDisplay1Button.setVisibility(View.VISIBLE);
@@ -288,15 +322,22 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 tagDisplay2Button.setText(tagsToApply.get(i).getTagName());
                 tagDisplay2Button.setVisibility(View.VISIBLE);
             }
-            else if(i == 3){
+            else if(i == 2){
                 tagDisplay3Button.setText(tagsToApply.get(i).getTagName());
                 tagDisplay3Button.setVisibility(View.VISIBLE);
             }
+            i++;
         }
 }
 
     @Override
     public void onTagDeletion(Tag deletedTag) {
         return;
+    }
+
+    private void produceTagToast(String stringResource){
+        // create a toast with the specified string resource on the appropiate action.
+        Toast toast = Toast.makeText(this,stringResource,Toast.LENGTH_SHORT);
+        toast.show();
     }
 }
