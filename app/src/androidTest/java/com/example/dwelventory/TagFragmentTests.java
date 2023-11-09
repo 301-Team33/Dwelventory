@@ -87,6 +87,17 @@ public class TagFragmentTests {
         onView(withText("TAGS")).check(doesNotExist());
     }
 
+    @Test
+    public void testTagApplication(){
+        // navigate to the fragment
+        onView(withId(R.id.add_item_button)).perform(click());
+        onView(withId(R.id.edit_tag_button)).perform(click());
+
+        onView(withId(R.id.tag_edittext)).perform(ViewActions.typeText("Kitchen2"));
+        onView(withId(R.id.tag_create_button)).perform(click());
+        onView(withId(R.id.tag_apply_button))
+
+    }
     @Rule
     public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
 }
