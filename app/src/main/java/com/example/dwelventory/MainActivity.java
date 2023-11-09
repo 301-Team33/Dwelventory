@@ -326,6 +326,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 estTotalCost += item.getEstValue();
                                 itemsRef.document(String.valueOf( item.getItemRefID() )).set(item);
                                 itemAdapter.notifyDataSetChanged();
+                                Log.d("tagtag", "onCreate: tags " + item.getTags());
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
                                 // Handle the result for editing
                                 Log.d("resultTag", "i am about to edit the item");
@@ -494,6 +495,20 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         Date date2;
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
+
+        TagListEditor editor = new TagListEditor();
+        for (int j = 0; j < itemAdapter.getCount(); j++) {
+            View view_temp = finalItemList.getChildAt(j);
+            if (view_temp != null) {
+                CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                //checkBox.setVisibility(View.GONE);
+                if(checkBox.isChecked()){
+                    // Must process the tags for this item.
+                    editor.checkMultipleItemTagAddition(dataList.get(j).getTags(),applyTags);
+                    }
+                }
+            }
+
         try {
             date2 = formatter.parse(date22);
         } catch (ParseException e) {
@@ -506,13 +521,21 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             Log.d("tag", "onTagApplyAction: " + tags.get(0).getTagName() + tags.get(1).getTagName());
         } else {
             Log.d("tag", "Not enough tags in the list");
+
         }
-    }
+
 
     @Override
     public void onTagDeletion(Tag deletedTag) {
-
+        // check all the items in the listview. and if the item has the tag that was defined to be
+        // deleted then delete it from the arraylist of tags associated with the item!!
+        TagListEditor checker = new TagListEditor();
+        for (Item currentItem : dataList) {
+            checker.checkDeletion(currentItem.getTags(), deletedTag);
+        }
     }
+
+
 
 
     public void deleteItems(ArrayList<Item> dataList, ArrayList<Item> toremove){

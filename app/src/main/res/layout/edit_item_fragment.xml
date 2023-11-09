@@ -187,6 +187,7 @@
         <com.google.android.material.button.MaterialButton
             android:layout_width="80dp"
             android:layout_height="48dp"
+            app:autoSizeTextType="uniform"
             android:text="tag 1"
             android:textSize="20sp"
             app:cornerRadius="0dp"
@@ -199,7 +200,8 @@
         <com.google.android.material.button.MaterialButton
             android:layout_width="80dp"
             android:layout_height="48dp"
-            android:text="tag 2"
+            app:autoSizeTextType="uniform"
+            android:text="tag 3"
             android:textSize="20sp"
             app:cornerRadius="0dp"
             android:textColor="@color/black"
@@ -211,6 +213,7 @@
         <com.google.android.material.button.MaterialButton
             android:layout_width="80dp"
             android:layout_height="48dp"
+            app:autoSizeTextType="uniform"
             android:text="tag 3"
             android:textSize="20sp"
             app:cornerRadius="0dp"

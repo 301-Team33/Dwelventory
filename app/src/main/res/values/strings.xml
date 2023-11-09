@@ -11,6 +11,7 @@
     <string name="tag_create_toast">Tag Created</string>
     <string name="invalid_tag_toast">Invalid Tag</string>
     <string name="tag_already_exists_toast">Tag Already Exists</string>
+  <string name="no_tags_selected">Please Select a Tag</string>
 
 
     <string name="delete_tag_message">Delete Tag: </string>
