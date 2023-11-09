@@ -301,7 +301,11 @@ public class TagFragment extends DialogFragment{
         tagApplyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onTagApplyAction(tagsToApply);
+                if (tagsToApply.size() == 0){
+                    produceTagToast(R.string.no_tags_selected);
+                }else {
+                    listener.onTagApplyAction(tagsToApply);
+                }
             }
         });
 

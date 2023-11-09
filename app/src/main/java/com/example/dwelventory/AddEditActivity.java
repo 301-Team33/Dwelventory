@@ -62,6 +62,10 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         tagDisplay2Button = findViewById(R.id.tag_display_2);
         tagDisplay3Button  =findViewById(R.id.tag_display_3);
 
+        tagDisplay3Button.setVisibility(View.GONE);
+        tagDisplay2Button.setVisibility(View.GONE);
+        tagDisplay1Button.setVisibility(View.GONE);
+
         nameButton = findViewById(R.id.item_name_button);
         dateButton = findViewById(R.id.date_button);
         makeButton = findViewById(R.id.make_button);
@@ -97,6 +101,25 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             }
             Log.d("", "onCreate: SEE HERE " + tagsToApply);
             item.setTags(tagsToApply);
+
+            // Now display any tags that are already applied. Up to 3
+            int numTags = tagsToApply.size();
+            int i = 0;
+            while (i <= 2 || i < numTags){
+                if (i == 0){
+                    tagDisplay1Button.setText(tagsToApply.get(i).getTagName());
+                    tagDisplay1Button.setVisibility(View.VISIBLE);
+                }
+                else if (i == 1){
+                    tagDisplay2Button.setText(tagsToApply.get(i).getTagName());
+                    tagDisplay2Button.setVisibility(View.VISIBLE);
+                }
+                else if(i == 3){
+                    tagDisplay3Button.setText(tagsToApply.get(i).getTagName());
+                    tagDisplay3Button.setVisibility(View.VISIBLE);
+                }
+            }
+
             assert date != null;
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault());
             // Format the Date object as a string
@@ -250,6 +273,26 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             }
             item.setTags(tagsToApply);
     }
+        tagDisplay3Button.setVisibility(View.GONE);
+        tagDisplay2Button.setVisibility(View.GONE);
+        tagDisplay1Button.setVisibility(View.GONE);
+
+        int numTags = tagsToApply.size();
+        int i = 0;
+        while (i <= 2 || i < numTags){
+            if (i == 0){
+                tagDisplay1Button.setText(tagsToApply.get(i).getTagName());
+                tagDisplay1Button.setVisibility(View.VISIBLE);
+            }
+            else if (i == 1){
+                tagDisplay2Button.setText(tagsToApply.get(i).getTagName());
+                tagDisplay2Button.setVisibility(View.VISIBLE);
+            }
+            else if(i == 3){
+                tagDisplay3Button.setText(tagsToApply.get(i).getTagName());
+                tagDisplay3Button.setVisibility(View.VISIBLE);
+            }
+        }
 }
 
     @Override
