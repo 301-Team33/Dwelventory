@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -101,14 +102,15 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         FirebaseUser user = mAuth.getCurrentUser();
 
         if (user == null) {
+            Log.d("NULL", "user was null");
             signOnAnonymously();
+            Log.d("NULL", "after signing anon");
         } else {
             Toast.makeText(MainActivity.this, "Already signed in",
                     Toast.LENGTH_SHORT).show();
             checkUsers(mAuth.getCurrentUser());
         }
 
-        assert user != null;
         Log.d("itemTag", "after user");
         String path = "/users/"+user.getUid()+"/items";
 //        String path = "/users/rQ2PrfCOKsYkdi1bfzqvLJVZOqq1/items";
@@ -397,10 +399,14 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     /**
      * This method will attempt to sign on anonymously, if the user is not already signed in
      */
+
     private void signOnAnonymously() {
+        Log.d("NULL", "sign on");
+        Log.d("NULL1", String.valueOf(mAuth.signInAnonymously()));
         mAuth.signInAnonymously().addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+                Log.d("NULL", "completed");
                 if (task.isSuccessful()) {
                     // Sign in succeeds
                     Log.d("AnonymousAuth", "signInAnonymously:success");
@@ -415,7 +421,13 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                             Toast.LENGTH_SHORT).show();
                 }
             }
-        });
+        })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("NULL", "listening failure");
+                    }
+                });
     }
 
     /**
