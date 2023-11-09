@@ -99,10 +99,21 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
         FirebaseUser user = mAuth.getCurrentUser();
-        assert user != null;
-        checkUsers(user);
+
+        if (user == null) {
+            signOnAnonymously();
+        } else {
+            Toast.makeText(MainActivity.this, "Already signed in",
+                    Toast.LENGTH_SHORT).show();
+            checkUsers(mAuth.getCurrentUser());
+        }
+
+
+//        assert user != null;
+//        checkUsers(user);
         Log.d("itemTag", "after user");
         String path = "/users/"+user.getUid()+"/items";
+//        String path = "/users/rQ2PrfCOKsYkdi1bfzqvLJVZOqq1/items";
         Log.d("itemTag", "path:"+path);
         itemsRef = db.collection(path);
         dataList = new ArrayList<>();
@@ -118,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                     dataList.clear();
                     for(QueryDocumentSnapshot doc: value){
                         Log.d("itemTag", "size of value is "+value.size());
-                        Log.d("itemTag", user.getUid());
+//                        Log.d("itemTag", user.getUid());
                         String storedRefID = doc.getId();
                         Log.d("itemTag", String.format("Item(%s) fetched", storedRefID));
                         Log.d("itemTag", "added default");
