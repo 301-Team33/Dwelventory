@@ -64,6 +64,10 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         tagDisplay2Button = findViewById(R.id.tag_display_2);
         tagDisplay3Button  =findViewById(R.id.tag_display_3);
 
+        tagDisplay3Button.setVisibility(View.GONE);
+        tagDisplay2Button.setVisibility(View.GONE);
+        tagDisplay1Button.setVisibility(View.GONE);
+
         nameButton = findViewById(R.id.item_name_button);
         dateButton = findViewById(R.id.date_button);
         makeButton = findViewById(R.id.make_button);
@@ -95,7 +99,35 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             Date date = (Date) intent.getSerializableExtra("date");
             Log.d("aeTag", "um Date is" + date);
             tagsToApply = intent.getParcelableArrayListExtra("tags");
+            if(tagsToApply == null){
+                tagsToApply = new ArrayList<>();
+                Log.d("", "onCreate: SEE HERE 1" + tagsToApply);
+            }
+            Log.d("", "onCreate: SEE HERE " + tagsToApply);
             item.setTags(tagsToApply);
+
+            // Now display any tags that are already applied. Up to 3
+            int numTags = tagsToApply.size();
+            int i = 0;
+            while (i <= 2 || i < numTags){
+                if (i == 3 || i == numTags){
+                    break;
+                }
+                if (i == 0){
+                    tagDisplay1Button.setText(tagsToApply.get(i).getTagName());
+                    tagDisplay1Button.setVisibility(View.VISIBLE);
+                }
+                else if (i == 1){
+                    tagDisplay2Button.setText(tagsToApply.get(i).getTagName());
+                    tagDisplay2Button.setVisibility(View.VISIBLE);
+                }
+                else if(i == 3){
+                    tagDisplay3Button.setText(tagsToApply.get(i).getTagName());
+                    tagDisplay3Button.setVisibility(View.VISIBLE);
+                }
+                i++;
+            }
+
             assert date != null;
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault());
             // Format the Date object as a string
@@ -112,12 +144,36 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             @Override
             public void onClick(View v) {
                 if(mode.equals("edit")) {
-                    TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),item);
+                    Log.d("", "onClick: The current tags.." + tagsToApply);
+                    TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),tagsToApply);
                     newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
                 }else{
                     TagFragment newFragment = TagFragment.newInstance(mAuth.getUid());
                     newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
                 }
+            }
+        });
+
+
+        // These on click listeners display a toast with the tag name
+        tagDisplay1Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                produceTagToast("Tag: " + tagDisplay1Button.getText().toString());
+            }
+        });
+
+        tagDisplay2Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                produceTagToast("Tag: " + tagDisplay2Button.getText().toString());
+            }
+        });
+
+        tagDisplay3Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                produceTagToast("Tag: " + tagDisplay3Button.getText().toString());
             }
         });
 
@@ -234,18 +290,55 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
         Intent intent = getIntent();
+        if (tagsToApply == null){
+            tagsToApply = new ArrayList<>();
+        }
         String mode = intent.getStringExtra("mode");
-        if (mode.equals("edit")){
-            item.setTags(applyTags);
-            tagsToApply = applyTags;
-        }else{
-            tagsToApply = applyTags;
-
+        TagListEditor editor = new TagListEditor();
+        if (!mode.equals("edit")){
+            editor.checkSingleItemTagAddition(tagsToApply,applyTags);
+        }
+        if (tagsToApply == null || applyTags.size() == 0){
+            tagsToApply = new ArrayList<>();
+            item.setTags(tagsToApply);
+        }else if(mode.equals("edit")){
+            editor.checkSingleItemTagAddition(tagsToApply,applyTags);
+            item.setTags(tagsToApply);
     }
+        tagDisplay3Button.setVisibility(View.GONE);
+        tagDisplay2Button.setVisibility(View.GONE);
+        tagDisplay1Button.setVisibility(View.GONE);
+
+        int numTags = tagsToApply.size();
+        int i = 0;
+        while (i < numTags && i <= 2){
+            if (i == 3 || i == numTags) {
+                break;
+            }
+            if (i == 0){
+                tagDisplay1Button.setText(tagsToApply.get(i).getTagName());
+                tagDisplay1Button.setVisibility(View.VISIBLE);
+            }
+            else if (i == 1){
+                tagDisplay2Button.setText(tagsToApply.get(i).getTagName());
+                tagDisplay2Button.setVisibility(View.VISIBLE);
+            }
+            else if(i == 2){
+                tagDisplay3Button.setText(tagsToApply.get(i).getTagName());
+                tagDisplay3Button.setVisibility(View.VISIBLE);
+            }
+            i++;
+        }
 }
 
     @Override
     public void onTagDeletion(Tag deletedTag) {
         return;
+    }
+
+    private void produceTagToast(String stringResource){
+        // create a toast with the specified string resource on the appropiate action.
+        Toast toast = Toast.makeText(this,stringResource,Toast.LENGTH_SHORT);
+        toast.show();
     }
 }

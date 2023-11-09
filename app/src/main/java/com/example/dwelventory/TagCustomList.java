@@ -3,6 +3,7 @@ package com.example.dwelventory;
 import static androidx.core.content.res.ResourcesCompat.getColor;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,9 @@ public class TagCustomList extends ArrayAdapter<Tag> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+
+        Log.d("", "getView: the tagdatalist" + tags);
+        Log.d("", "getView: currently applied" + currentlyApplied);
         View view = convertView;
 
         if(view == null){
@@ -46,15 +50,15 @@ public class TagCustomList extends ArrayAdapter<Tag> {
                     // This is the case where the item already has tags specified to it that are
                     // in the database, we set it's background to the selected option.
                     view.setBackgroundColor(ContextCompat.getColor(context,R.color.selected));
+                    Log.d("", "getView: SET VIEW TO SELECTED ");
                     return view;
                 } else {
                     // else the item doesnt have this tag so it is not implied to be selected through the UI.
                     view.setBackgroundColor(ContextCompat.getColor(context,R.color.gray));
+                    Log.d("", "getView: SET VIEW TO UNSELECTED ");
                 }
             }
         }
-
-
         return view;
     }
 }
