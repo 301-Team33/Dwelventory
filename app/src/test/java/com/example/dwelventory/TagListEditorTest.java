@@ -67,9 +67,45 @@ public class TagListEditorTest {
         // Check to see if the first Tag and only Tag is the mock tag name
         assertEquals("Bathroom",tagList.get(0).getTagName());
 
+        // Add Some New Tags to the Second List and see if the list contains them when Added.
+        Tag mockTag1 = new Tag("Knife");
+        Tag mockTag2 = new Tag("Spoon");
+        Tag mockTag3 = new Tag("Fork");
 
+        tagList2.add(mockTag1);
+        tagList2.add(mockTag2);
+        tagList2.add(mockTag3);
+
+        editor.checkSingleItemTagAddition(tagList,tagList2);
+
+        // Check if the tagList contains all 3 new mock tags.
+        assertEquals(true,tagList.contains(mockTag1));
+        assertEquals(true,tagList.contains(mockTag2));
+        assertEquals(true,tagList.contains(mockTag3));
+
+        // check size has increased
+        assertEquals(4,tagList.size());
+
+        // Next test is to try and remove the tags from the item by 'deselecting them'
+        tagList2.remove(mockTag1);
+
+        editor.checkSingleItemTagAddition(tagList,tagList2);
+        assertEquals(3,tagList.size());
+        assertEquals(false,tagList.contains(mockTag1));
+
+        // Removing all items from the tag list
+        editor.checkSingleItemTagAddition(tagList, new ArrayList<Tag>());
+        assertEquals(0,tagList.size());
+
+        // Check That Adding a 1 additional item while keeping the same item holds true
+        tagList2 = mockTagList();
+        tagList2.add(mockTag1);
+        tagList = mockTagList();
+        editor.checkSingleItemTagAddition(tagList,tagList2);
+
+        assertEquals(2,tagList.size());
+        assertEquals("Bathroom",tagList.get(0).getTagName());
+        assertEquals("Knife",tagList.get(1).getTagName());
+        assertEquals(true,tagList.contains(mockTag1));
     }
-
-
-
 }

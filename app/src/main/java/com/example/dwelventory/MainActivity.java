@@ -526,6 +526,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         // simply close the fragment first since selected tags are now going to be applied.
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
+        TagListEditor editor = new TagListEditor();
         for (int j = 0; j < itemAdapter.getCount(); j++) {
             View view_temp = finalItemList.getChildAt(j);
             if (view_temp != null) {
@@ -533,27 +534,12 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                 //checkBox.setVisibility(View.GONE);
                 if(checkBox.isChecked()){
                     // Must process the tags for this item.
-                    for (int i = 0; i < applyTags.size(); i++){
-                        boolean contained = false;
-                        // check to see if the tags that were wanting to be applied are already
-                        // associated with the item. This double for loop checks all the items
-                        // that were selected via the checkbox and only applies UNIQUE tags not already
-                        // specified for the item.
-                        for (int k = 0; k < dataList.get(j).getTags().size();k++){
-                            if (dataList.get(j).getTags().get(k).getTagName().equals(applyTags.get(i).getTagName())) {
-                                contained = true; // tag was already defined for the item.
-                                break;
-                            }
-                        }
-                        // if the tag was not specified for the item then add it for that item!
-                        if (!contained){
-                            dataList.get(j).getTags().add(new Tag(applyTags.get(i).getTagName()));
-                        }
+                    editor.checkMultipleItemTagAddition(dataList.get(j).getTags(),applyTags);
                     }
                 }
             }
         }
-    }
+
 
     @Override
     public void onTagDeletion(Tag deletedTag) {
