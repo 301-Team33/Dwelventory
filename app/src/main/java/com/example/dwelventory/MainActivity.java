@@ -166,10 +166,25 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         ArrayAdapter<Item> finalItemAdapter = itemAdapter;
 
         itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public void getSelectedCount(TextView selected_count){
+                int count = 0;
+                for (int j = 0; j < itemAdapter.getCount(); j++) {
+                    View view_temp = finalItemList.getChildAt(j);
+                    if (view_temp != null) {
+                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                        if (checkBox.isChecked()){
+                            count++;
+                        }
+                    }
+                }
+                selected_count.setText("Selected Items : "+ count);
+            }
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 /*View checkBoxLayout = view.findViewById(R.id.checkbox);
                 checkBoxLayout.setVisibility(View.VISIBLE);*/
+
+
 
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
@@ -182,14 +197,25 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
                 RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
                 select_items.setVisibility(View.VISIBLE);
-                //changeListViewHeight(Boolean.TRUE);
-
+                TextView selected_count = findViewById(R.id.selectedItems);
                 ImageButton closebtn = findViewById(R.id.closebtn);
                 ImageButton deletebtn = findViewById(R.id.deletebtn);
-
-
                 ImageButton tagButton = findViewById(R.id.multiple_set_tags_button);
+                CheckBox select_All = findViewById(R.id.selectAll_checkbox);
 
+                for (int j = 0; j < itemAdapter.getCount(); j++) {
+                    View view_temp = finalItemList.getChildAt(j);
+                    if (view_temp != null) {
+                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                        checkBox.setVisibility(View.VISIBLE);
+                        checkBox.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                getSelectedCount(selected_count);
+                            }
+                        });
+                    }
+                }
                 closebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -233,26 +259,37 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                         finalItemAdapter.notifyDataSetChanged();
                     }
                 });
-                /*deletebtn.setOnClickListener(new View.OnClickListener() {
+
+                select_All.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        int itemRemovedCount = 0;
-
-                        for (int j = dataList.size() - 1; j >= 0; j--) {
-                            Item currentItem = dataList.get(j);
-                            if (currentItem.isSelected()) {
-                                finalItemAdapter.remove(currentItem);
-                                dataList.remove(j);
-                                itemRemovedCount++;
+                        if(select_All.isChecked()){
+                            for(int j = 0; j<finalItemList.getCount();j++){
+                                View view1 = finalItemList.getChildAt(j);
+                                CheckBox checkBox = view1.findViewById(R.id.checkbox);
+                                checkBox.setChecked(true);
+                                getSelectedCount(selected_count);
                             }
                         }
-
-                        if (itemRemovedCount > 0) {
-                            Toast.makeText(MainActivity.this, "Deleted " + itemRemovedCount + " Items", Toast.LENGTH_LONG).show();
+                        if(!select_All.isChecked()){
+                            for(int j = 0; j<finalItemList.getCount();j++){
+                                View view1 = finalItemList.getChildAt(j);
+                                CheckBox checkBox = view1.findViewById(R.id.checkbox);
+                                checkBox.setChecked(false);
+                                getSelectedCount(selected_count);
+                            }
                         }
                     }
-                });*/
-                //finalItemAdapter.notifyDataSetChanged();
+                });
+
+                tagButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),"edit");
+                        newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
+                    }
+                });
+
                 return true;
 
             }
@@ -464,7 +501,12 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         }
         Item item3 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
         item3.setTags(applyTags);
-        Log.d("tag", "onTagApplyAction: " + item3.getTags().get(0).getTagName() + item3.getTags().get(1).getTagName());
+        List<Tag> tags = item3.getTags();
+        if (tags.size() >= 2) {
+            Log.d("tag", "onTagApplyAction: " + tags.get(0).getTagName() + tags.get(1).getTagName());
+        } else {
+            Log.d("tag", "Not enough tags in the list");
+        }
     }
 
     @Override
