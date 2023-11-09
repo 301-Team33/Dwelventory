@@ -151,6 +151,7 @@ public class TagFragment extends DialogFragment{
         // get the collection for the current user defined tag names
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        Log.d("database Tag", "/users/"+userId+"/tags");
         tagsRef = db.collection("users").document(userId).collection("tags");
 
         tagEditText = view.findViewById(R.id.tag_edittext);

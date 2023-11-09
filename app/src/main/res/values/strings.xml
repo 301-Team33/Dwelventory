@@ -34,6 +34,7 @@
     <string name="selectDRange">Select Date Range</string>
     <string name="selectkWords">Select Keywords</string>
     <string name="done">Done</string>
+    <string name="totalcost">Total Cost: $%d</string>
 
     <string-array name="sort_array">
       <item>Date</item>
@@ -54,6 +55,9 @@
     <string name="selectAll">Select all</string>
     <string name="deleteSelectedItems">Delete selected items</string>
     <string name="separate">(separate input with spaces)</string>
+    <string name="close_selection_mode">Close Selection Mode</string>
+  <string name="total_cost">Total Cost</string>
+    <string name="add_item">Add Item</string>
 
 </resources>
 
