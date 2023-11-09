@@ -360,6 +360,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 Log.d("resultTag", "i am about to add the item");
                                 dataList.add(item);
                                 itemAdapter.notifyDataSetChanged();
+                                Log.d("tagtag", "onCreate: tags " + item.getTags());
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
                                 // Handle the result for editing
                                 Log.d("resultTag", "i am about to edit the item");
@@ -558,14 +559,13 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     public void onTagDeletion(Tag deletedTag) {
         // check all the items in the listview. and if the item has the tag that was defined to be
         // deleted then delete it from the arraylist of tags associated with the item!!
-        for (Item currentItem: dataList){
-            for (Tag currentTag: currentItem.getTags()){
-                if (currentTag.getTagName().equals(deletedTag.getTagName())){
-                    currentItem.getTags().remove(currentTag);
-                }
-            }
+        TagListEditor checker = new TagListEditor();
+        for (Item currentItem : dataList) {
+            checker.checkDeletion(currentItem.getTags(), deletedTag);
         }
     }
+
+
 
 
     public void deleteItems(ArrayList<Item> dataList, ArrayList<Item> toremove){

@@ -91,6 +91,11 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             Date date = (Date) intent.getSerializableExtra("date");
             Log.d("aeTag", "um Date is" + date);
             tagsToApply = intent.getParcelableArrayListExtra("tags");
+            if(tagsToApply == null){
+                tagsToApply = new ArrayList<>();
+                Log.d("", "onCreate: SEE HERE 1" + tagsToApply);
+            }
+            Log.d("", "onCreate: SEE HERE " + tagsToApply);
             item.setTags(tagsToApply);
             assert date != null;
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault());
@@ -113,7 +118,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             @Override
             public void onClick(View v) {
                 if(mode.equals("edit")) {
-                    TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),item);
+                    Log.d("", "onClick: The current tags.." + tagsToApply);
+                    TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),tagsToApply);
                     newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
                 }else{
                     TagFragment newFragment = TagFragment.newInstance(mAuth.getUid());
@@ -234,12 +240,15 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         tagFragment.dismiss();
         Intent intent = getIntent();
         String mode = intent.getStringExtra("mode");
+        TagListEditor editor = new TagListEditor();
         if (mode.equals("edit")){
-            item.setTags(applyTags);
-            tagsToApply = applyTags;
+            editor.checkSingleItemTagAddition(tagsToApply,applyTags);
+            item.setTags(tagsToApply);
         }else{
-            tagsToApply = applyTags;
-
+            if (tagsToApply == null || applyTags.size() == 0){
+                tagsToApply = new ArrayList<>();
+            }
+            item.setTags(tagsToApply);
     }
 }
 

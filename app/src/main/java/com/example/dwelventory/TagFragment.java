@@ -1,5 +1,6 @@
 package com.example.dwelventory;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -139,11 +140,12 @@ public class TagFragment extends DialogFragment{
 
         // check if the bundle contains an Item in it, if so, we are updating the Items Tags
         if (bundle.containsKey("current_item")){
-            Item currentItem = bundle.getParcelable("current_item"); // retrieve the item
-            tagsCurrentApply = currentItem.getTags(); // get the currently applied tags
+            tagsCurrentApply = bundle.getParcelableArrayList("current_item"); // retrieve the item
             // check if the item is there but never had tags initialized.
+            Log.d("", "onCreate: IN THE FRAGMENT!!" + tagsCurrentApply);
             if (tagsCurrentApply == null) {
                 tagsCurrentApply = new ArrayList<>();
+                Log.d("", "onCreateDialog: SAID WAS NULL" + tagsCurrentApply);
             }
         }
         // get the collection for the current user defined tag names
@@ -238,7 +240,6 @@ public class TagFragment extends DialogFragment{
                     tagArrayAdapter.notifyDataSetChanged(); // notify the adapter of the changed dataset.
                 }
             }
-
 
         });
 
@@ -367,11 +368,11 @@ public class TagFragment extends DialogFragment{
      * @return
      *      TagFragment - the instance of the Tag Fragment to be shown in the UI
      */
-    static TagFragment newInstance(String userId,Item item){
+    static TagFragment newInstance(String userId,ArrayList<Tag> item){
         Bundle args = new Bundle();
         args.putString("user_id",userId);
         // place the item to edit into the bundle to retrieve in the fragment.
-        args.putParcelable("current_item",item);
+        args.putParcelableArrayList("current_item",item);
 
         TagFragment tagFragment = new TagFragment();
         tagFragment.setArguments(args);
