@@ -42,6 +42,7 @@ public class FilterFragment extends DialogFragment {
         void onDateFilterApplied(Date start, Date end);
         void onKeywordFilterApplied(String[] keywords);
         void onTagFilterApplied(String[] tags);
+        void onClearFilterApplied();
     }
     public static FilterFragment newInstance(String filterOption) {
         FilterFragment fragment = new FilterFragment();
@@ -76,7 +77,7 @@ public class FilterFragment extends DialogFragment {
                 @Override
                 public void onClick(View v){
                     String makeText = makeInput.getText().toString();
-                    filterInput = makeText.split("\\s+");
+                    filterInput = makeText.split(" ");
                     if (listener != null) {
                         listener.onMakeFilterApplied(filterInput);
                     }
@@ -91,16 +92,13 @@ public class FilterFragment extends DialogFragment {
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.popup_select_drange, null);
 
             EditText dateStart = view.findViewById(R.id.filter_date_cal1);
-            String dateStartText = dateStart.getText().toString();
-
             EditText dateEnd = view.findViewById(R.id.filter_date_cal2);
-            String dateEndText = dateEnd.getText().toString();
-
             Button doneButton = view.findViewById(R.id.filter_date_donebtn);
-
             doneButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v){
+                    String dateStartText = dateStart.getText().toString();
+                    String dateEndText = dateEnd.getText().toString();
                     if (listener != null) {
                         Date start;
                         Date end;
@@ -122,17 +120,14 @@ public class FilterFragment extends DialogFragment {
         }
         else if("Description Words".equals(filterOption)) {
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.popup_select_keywords, null);
-
             EditText keywordInput = view.findViewById(R.id.filter_kwords_etext);
-
-
             Button doneButton = view.findViewById(R.id.filter_kwords_donebtn);
 
             doneButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v){
                     String keywordText = keywordInput.getText().toString();
-                    filterInput = keywordText.split("\\s+");
+                    filterInput = keywordText.split(" ");
                     if (listener != null) {
                         listener.onKeywordFilterApplied(filterInput);
                     }
@@ -166,8 +161,11 @@ public class FilterFragment extends DialogFragment {
             builder.setView(view);
             return builder.create();
         }
+        else if("Clear Filter".equals(filterOption)){
+            listener.onClearFilterApplied();
+            return builder.create();
+        }
         else {
-            // Use some default dialog or log an error
             builder.setTitle("Error")
                     .setMessage("No filter option was provided or an unknown filter option was used.")
                     .setPositiveButton("OK", null);

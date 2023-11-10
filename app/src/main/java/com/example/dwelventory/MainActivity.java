@@ -22,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,6 +69,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener, FilterFragment.FilterFragmentListener {
     private FirebaseAuth mAuth;
@@ -75,15 +77,16 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     private CollectionReference usersRef;
     private CollectionReference itemsRef;
     private ArrayList<Item> dataList;
-    private Boolean initialSpinnerCheck = true;
-
+    private boolean initialSpinnerCheck = true;
     private ArrayAdapter<Item> itemAdapter;
     private ActivityResultLauncher<Intent> addEditActivityResultLauncher;
     private int ADD_ACTIVITY_CODE = 8;
     private int EDIT_ACTIVITY_CODE = 18;
     private int ADD_EDIT_CODE_OK = 818;
+    private Spinner sortSpinner;
     private FloatingActionButton addButton;
     private TextView totalCost;
+    private boolean reverseOrder;
     public int estTotalCost=0;
 
 
@@ -293,7 +296,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         itemList.setAdapter(itemAdapter);
         //itemAdapter.notifyDataSetChanged();
 
-
         final FloatingActionButton addButton = findViewById(R.id.add_item_button);
 
         // *** ONE FILTER AT A TIME FOR NOW ***
@@ -305,10 +307,11 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         );
 
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterSpinner.setSelection(0);
         filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position >= 0 && !(initialSpinnerCheck)){
+                if(position > 0 && !(initialSpinnerCheck)){
                     String filter = parent.getItemAtPosition(position).toString();
                     FilterFragment filterFrag = FilterFragment.newInstance(filter);
                     filterFrag.show(getSupportFragmentManager(), "FilterFragment");
@@ -316,6 +319,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                 else if(initialSpinnerCheck){
                     initialSpinnerCheck = false;
                 }
+                filterSpinner.setSelection(0);
             }
 
             @Override
@@ -358,6 +362,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             }
         });
         sortSpinner.setAdapter(sortAdapter);
+
+        Spinner orderSpinner;
 
         orderSpinner = findViewById(R.id.order_spinner);
         ArrayAdapter<CharSequence> orderAdapter = ArrayAdapter.createFromResource(
@@ -628,12 +634,17 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
      */
     @Override
     public void onMakeFilterApplied(String[] makeInput) {
+        estTotalCost = 0;
         dataList.clear();
-        CollectionReference itemsRef = db.collection("items");
+//        CollectionReference itemsRef = db.collection("items");
+
+        AtomicInteger pendingQueries = new AtomicInteger(makeInput.length);
         for(String make: makeInput){
             itemsRef.whereEqualTo("make", make).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                    pendingQueries.decrementAndGet();
                     if(task.isSuccessful()){
                         for(QueryDocumentSnapshot doc : task.getResult()){
 
@@ -643,14 +654,23 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                     doc.getString("make"),
                                     doc.getString("model"),
                                     doc.getLong("estValue").intValue());
+                            item.setSerialNumber(doc.getLong("serialNumber").intValue());
+
+                            item.setItemRefID(UUID.fromString(doc.getId()));
 
                             dataList.add(item);
+                            estTotalCost += doc.getLong("estValue").intValue();
                         }
+                    }
+                    if (pendingQueries.get() == 0) {
+                        // Now that all asynchronous queries are done, notify the adapter
+                        itemAdapter.notifyDataSetChanged();
+                        setTotal(dataList);
                     }
                 }
             });
         }
-        itemAdapter.notifyDataSetChanged();
+
     }
 
     /**
@@ -662,8 +682,9 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
      */
     @Override
     public void onDateFilterApplied(Date start, Date end) {
+        estTotalCost = 0;
         dataList.clear();
-        CollectionReference itemsRef = db.collection("item");
+
         itemsRef.whereGreaterThanOrEqualTo("date", start)
                 .whereLessThanOrEqualTo("date", end)
                 .get()
@@ -678,31 +699,33 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                         doc.getString("make"),
                                         doc.getString("model"),
                                         doc.getLong("estValue").intValue());
-
+                                item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                item.setItemRefID(UUID.fromString(doc.getId()));
                                 dataList.add(item);
+                                estTotalCost += doc.getLong("estValue").intValue();
                             }
+                            itemAdapter.notifyDataSetChanged();
+                            setTotal(dataList);
                         }
-
                     }
                 });
-        itemAdapter.notifyDataSetChanged();
     }
 
     /**
      * This method queries the database to find items containing given keywords. Once
      * retrieved from database, it updates dataList and notifies the adapter about changes.
      *
-     * @param keywords
+     * @param keywords holds user input keywords to filter by
      */
     @Override
     public void onKeywordFilterApplied(String[] keywords) {
         dataList.clear();
-        CollectionReference itemsRef = db.collection("item");
-
+        AtomicInteger pendingQueries = new AtomicInteger(keywords.length);
         for(String keyword: keywords){
             itemsRef.whereEqualTo("description", keyword).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    pendingQueries.decrementAndGet();
                     if(task.isSuccessful()){
                         for(QueryDocumentSnapshot doc : task.getResult()){
 
@@ -712,19 +735,27 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                     doc.getString("make"),
                                     doc.getString("model"),
                                     doc.getLong("estValue").intValue());
-
+                            item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                            item.setItemRefID(UUID.fromString(doc.getId()));
                             dataList.add(item);
+                            estTotalCost += doc.getLong("estValue").intValue();
                         }
+                    }
+                    if (pendingQueries.get() == 0) {
+                        // Now that all asynchronous queries are done, notify the adapter
+                        itemAdapter.notifyDataSetChanged();
+                        setTotal(dataList);
                     }
                 }
             });
         }
-        itemAdapter.notifyDataSetChanged();
+
     }
 
     /**
      * This method queries the database to find items containing specified tags. Once
      * retrieved from database, it updates dataList and notifies the adapter about changes.
+     * NOT FINISHED YET.
      *
      * @param tags
      */
@@ -732,10 +763,12 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     public void onTagFilterApplied(String[] tags) {
         dataList.clear();
         CollectionReference itemsRef = db.collection("item");
+        AtomicInteger pendingQueries = new AtomicInteger(tags.length);
         for(String tag: tags){
             itemsRef.whereEqualTo("tag", tag).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    pendingQueries.decrementAndGet();
                     if(task.isSuccessful()){
                         for(QueryDocumentSnapshot doc : task.getResult()){
 
@@ -745,14 +778,47 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                     doc.getString("make"),
                                     doc.getString("model"),
                                     doc.getLong("estValue").intValue());
-
+                            item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                            item.setItemRefID(UUID.fromString(doc.getId()));
                             dataList.add(item);
+                            estTotalCost += doc.getLong("estValue").intValue();
                         }
+                    }
+                    if (pendingQueries.get() == 0) {
+                        // Now that all asynchronous queries are done, notify the adapter
+                        itemAdapter.notifyDataSetChanged();
+                        setTotal(dataList);
                     }
                 }
             });
         }
+    }
+    public void onClearFilterApplied() {
+        estTotalCost = 0;
+        itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    dataList.clear();
+                    for(QueryDocumentSnapshot doc : task.getResult()) {
+                        Item item = new Item(
+                                doc.getString("description"),
+                                doc.getDate("date"),
+                                doc.getString("make"),
+                                doc.getString("model"),
+                                doc.getLong("estValue").intValue());
+                        item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                        item.setItemRefID(UUID.fromString(doc.getId()));
+                        dataList.add(item);
+                        estTotalCost += doc.getLong("estValue").intValue();
+                    }
+
+                    setTotal(dataList);
+                }
+            }
+        });
         itemAdapter.notifyDataSetChanged();
+//        totalCost.setText(getString(R.string.totalcost, estTotalCost));
     }
 }
 

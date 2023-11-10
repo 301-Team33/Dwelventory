@@ -27,7 +27,6 @@
         android:layout_marginTop="70dp"
         android:layout_marginBottom="20dp"
         android:background="@color/white"
-        android:focusable="false"
         android:textSize="25dp"></EditText>
 
     <EditText
@@ -41,7 +40,6 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="70dp"
         android:background="@color/white"
-        android:focusable="false"
         android:textSize="25dp"></EditText>
 
     <Button
