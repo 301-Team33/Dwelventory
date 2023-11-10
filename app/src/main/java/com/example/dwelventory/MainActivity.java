@@ -900,6 +900,7 @@ public class MainActivity extends AppCompatActivity
     public void onKeywordFilterApplied(String[] keywords) {
         dataList.clear();
         AtomicInteger pendingQueries = new AtomicInteger(keywords.length);
+        estTotalCost = 0;
         for (String keyword : keywords) {
             itemsRef.whereEqualTo("description", keyword).get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -933,11 +934,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * This method queries the database to find items containing specified tags.
-     * Once
-     * retrieved from database, it updates dataList and notifies the adapter about
-     * changes.
-     * NOT FINISHED YET.
+     * This method queries the database to find items containing specified tags. Once
+     * retrieved from database, it updates dataList and notifies the adapter about changes.
+     *
+     * NOT FINISHED YET. NOT PART OF HALFWAY CHECKPOINT.
      *
      * @param tags
      */
@@ -976,6 +976,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * This function is run when the use clicks on the "Clear Filter" option. It retrieves all
+     * items from firebase and restores them in the data list to display on screen.
+     */
     public void onClearFilterApplied() {
         estTotalCost = 0;
         itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -1001,6 +1005,5 @@ public class MainActivity extends AppCompatActivity
             }
         });
         itemAdapter.notifyDataSetChanged();
-        // totalCost.setText(getString(R.string.totalcost, estTotalCost));
     }
 }

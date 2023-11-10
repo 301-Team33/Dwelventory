@@ -4,11 +4,15 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.anything;
 
 import androidx.test.core.app.ActivityScenario;
@@ -81,7 +85,135 @@ public class MainActivityTest {
 
         onView(withText("Confirm")).perform(click());
         onView(withText("Total Cost")).check(matches(isDisplayed()));
+
+
+
+        onView(withId(R.id.add_item_button)).perform(click());
+        onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Odell"));
+        onView(withId(R.id.date_button)).perform(ViewActions.typeText("05-12-2420"));
+        onView(withId(R.id.make_button)).perform(ViewActions.typeText("Husky"));
+        onView(withId(R.id.model_button)).perform(ViewActions.typeText("White with blue eyes"));
+        Espresso.pressBack();
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("100"));
+        Espresso.pressBack();
+
+        onView(withText("Confirm")).perform(click());
+
+        onView(withId(R.id.add_item_button)).perform(click());
+        onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Johnson"));
+        onView(withId(R.id.date_button)).perform(ViewActions.typeText("10-25-2038"));
+        onView(withId(R.id.make_button)).perform(ViewActions.typeText("Husky"));
+        onView(withId(R.id.model_button)).perform(ViewActions.typeText("White with blue eyes"));
+        Espresso.pressBack();
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("150"));
+        Espresso.pressBack();
+
+        onView(withText("Confirm")).perform(click());
+
+        onView(withId(R.id.filter_spinner)).perform(click());
+        onData(allOf(is(instanceOf(String.class)), is("Make"))).perform(click());
+        onView(withId(R.id.filter_make_etext)).perform(ViewActions.typeText("Poodle"));
+        onView(withId(R.id.filter_make_donebtn)).perform(click());
+        onView(withText("Tom")).check(matches(isDisplayed()));
+        onView(withText("Odell")).check(doesNotExist());
+        onView(withText("Johnson")).check(doesNotExist());
+        onView(withText("35")).check(matches(isDisplayed()));
     }
+
+    @Test
+    public void testDateFilter() {
+        onView(withId(R.id.add_item_button)).perform(click());
+        onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Tom"));
+        onView(withId(R.id.date_button)).perform(ViewActions.typeText("03-21-2050"));
+        onView(withId(R.id.make_button)).perform(ViewActions.typeText("Poodle"));
+        onView(withId(R.id.model_button)).perform(ViewActions.typeText("Black with brown eyes"));
+        Espresso.pressBack();
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("35"));
+        Espresso.pressBack();
+
+        onView(withText("Confirm")).perform(click());
+
+
+        onView(withId(R.id.add_item_button)).perform(click());
+        onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Odell"));
+        onView(withId(R.id.date_button)).perform(ViewActions.typeText("05-12-2420"));
+        onView(withId(R.id.make_button)).perform(ViewActions.typeText("Husky"));
+        onView(withId(R.id.model_button)).perform(ViewActions.typeText("White with blue eyes"));
+        Espresso.pressBack();
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("100"));
+        Espresso.pressBack();
+
+        onView(withText("Confirm")).perform(click());
+
+        onView(withId(R.id.add_item_button)).perform(click());
+        onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Johnson"));
+        onView(withId(R.id.date_button)).perform(ViewActions.typeText("10-25-2038"));
+        onView(withId(R.id.make_button)).perform(ViewActions.typeText("Husky"));
+        onView(withId(R.id.model_button)).perform(ViewActions.typeText("White with blue eyes"));
+        Espresso.pressBack();
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("150"));
+        Espresso.pressBack();
+
+        onView(withText("Confirm")).perform(click());
+
+        onView(withId(R.id.filter_spinner)).perform(click());
+        onData(allOf(is(instanceOf(String.class)), is("Date"))).perform(click());
+        onView(withId(R.id.filter_date_cal1)).perform(ViewActions.typeText("01/01/2038"));
+        onView(withId(R.id.filter_date_cal2)).perform(ViewActions.typeText("01/01/2039"));
+        onView(withId(R.id.filter_date_donebtn)).perform(click());
+        onView(withText("Johnson")).check(matches(isDisplayed()));
+        onView(withText("Odell")).check(doesNotExist());
+        onView(withText("Tom")).check(doesNotExist());
+        onView(withText("150")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testKeywordFilter(){
+        onView(withId(R.id.add_item_button)).perform(click());
+        onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Tom"));
+        onView(withId(R.id.date_button)).perform(ViewActions.typeText("03-21-2050"));
+        onView(withId(R.id.make_button)).perform(ViewActions.typeText("Poodle"));
+        onView(withId(R.id.model_button)).perform(ViewActions.typeText("Black with brown eyes"));
+        Espresso.pressBack();
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("35"));
+        Espresso.pressBack();
+
+        onView(withText("Confirm")).perform(click());
+
+
+        onView(withId(R.id.add_item_button)).perform(click());
+        onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Odell"));
+        onView(withId(R.id.date_button)).perform(ViewActions.typeText("05-12-2420"));
+        onView(withId(R.id.make_button)).perform(ViewActions.typeText("Husky"));
+        onView(withId(R.id.model_button)).perform(ViewActions.typeText("White with blue eyes"));
+        Espresso.pressBack();
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("100"));
+        Espresso.pressBack();
+
+        onView(withText("Confirm")).perform(click());
+
+        onView(withId(R.id.add_item_button)).perform(click());
+        onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Johnson"));
+        onView(withId(R.id.date_button)).perform(ViewActions.typeText("10-25-2038"));
+        onView(withId(R.id.make_button)).perform(ViewActions.typeText("Husky"));
+        onView(withId(R.id.model_button)).perform(ViewActions.typeText("White with blue eyes"));
+        Espresso.pressBack();
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("150"));
+        Espresso.pressBack();
+
+        onView(withText("Confirm")).perform(click());
+
+        onView(withId(R.id.filter_spinner)).perform(click());
+        onData(allOf(is(instanceOf(String.class)), is("Description Word"))).perform(click());
+        onView(withId(R.id.filter_kwords_etext)).perform(ViewActions.typeText("Odell"));
+        onView(withId(R.id.filter_kwords_donebtn)).perform(click());
+        onView(withText("Odell")).check(matches(isDisplayed()));
+        onView(withText("Tom")).check(doesNotExist());
+        onView(withText("Johnson")).check(doesNotExist());
+        onView(withText("100")).check(matches(isDisplayed()));
+    }
+    @Rule
+    public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
 
     @Test
     public void testSelectionMode() {

@@ -79,7 +79,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="110dp"
             android:background="?android:attr/selectableItemBackground"/>
-      
+
             android:layout_marginLeft="370dp"
             android:contentDescription="Close"
             android:src="@drawable/icons8_cancel" />
