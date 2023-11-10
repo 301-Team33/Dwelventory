@@ -640,6 +640,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     }
 
 
+
     @Override
     public void onCloseAction() {
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");

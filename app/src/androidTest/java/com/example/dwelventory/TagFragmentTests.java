@@ -95,7 +95,7 @@ public class TagFragmentTests {
 
         onView(withId(R.id.tag_edittext)).perform(ViewActions.typeText("Kitchen2"));
         onView(withId(R.id.tag_create_button)).perform(click());
-        onView(withId(R.id.tag_apply_button))
+        onView(withId(R.id.tag_apply_button));
 
     }
     @Rule
