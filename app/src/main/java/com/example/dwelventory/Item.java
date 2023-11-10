@@ -8,7 +8,9 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import android.os.Parcel;
@@ -190,5 +192,31 @@ public class Item implements Parcelable {
 
     }
 
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("description", description);
+        map.put("date", date);
+        map.put("make", make);
+        map.put("model", model);
+        map.put("serialNumber", serialNumber);
+        map.put("estValue", estValue);
+        map.put("comment", comment);
+        map.put("tags", makeStringTagList(tags));
+        return map;
+    }
+
+    /**
+     *  This creates an arraylist of strings of tag names
+     * from an arraylist of tsg objects
+     * @param tags
+     * @return stringTags
+     * */
+    private ArrayList<String> makeStringTagList(ArrayList<Tag> tags){
+        ArrayList<String> stringTags = new ArrayList<>();
+        for (int i =0; i < tags.size();i++){
+            stringTags.add(tags.get(i).getTagName());
+        }
+        return stringTags;
+    }
 
 }

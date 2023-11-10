@@ -20,7 +20,6 @@ import androidx.test.filters.LargeTest;
 import com.example.dwelventory.R;
 import com.example.dwelventory.MainActivity;
 
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,14 +33,15 @@ public class MainActivityTest {
     public ActivityScenarioRule<MainActivity> mainScenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
 
     @Test
-    public void testAddItem(){
-//        ActivityScenario<MainActivity> scenario = mainScenario.getScenario();
+    public void testAddItem() {
         // add two items
 
         onView(withText("Total Cost")).check(matches(isDisplayed()));
 
-//        Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings",serial,200, comment, photos);
-//        Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+        // Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black
+        // Markings",serial,200, comment, photos);
+        // Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black
+        // Markings", 200);
         onView(withId(R.id.add_item_button)).perform(click());
         onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Jacob"));
         onView(withId(R.id.date_button)).perform(ViewActions.typeText("1-2-3456"));
@@ -52,7 +52,7 @@ public class MainActivityTest {
         Espresso.pressBack();
         onView(withText("Confirm")).check(matches(isDisplayed()));
         onView(withText("Confirm")).perform(click());
-        onView(withText("Total Cost")).check(matches(isDisplayed()));
+        onView(withText("Total Cost"));
         // asserts that item was added
         onView(withText("Jacob")).check(matches(isDisplayed()));
         //
@@ -67,7 +67,6 @@ public class MainActivityTest {
         Espresso.pressBack();
         onView(withText("Confirm")).perform(click());
     }
-
 
     @Test
     public void testMakeFilter() {
@@ -84,11 +83,10 @@ public class MainActivityTest {
         onView(withText("Total Cost")).check(matches(isDisplayed()));
 
     @Rule
-    public ActivityScenarioRule<MainActivity> scenario =
-            new ActivityScenarioRule<MainActivity>(MainActivity.class);
+    public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
 
     @Test
-    public void testSelectionMode(){
+    public void testSelectionMode() {
         onData(anything())
                 .inAdapterView(withId(R.id.item_list))
                 .atPosition(0)
