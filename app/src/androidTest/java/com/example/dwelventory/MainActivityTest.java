@@ -35,7 +35,9 @@ public class MainActivityTest {
     @Test
     public void testAddItem() {
         // add two items
-        onView(withText("Total Cost"));
+
+        onView(withText("Total Cost")).check(matches(isDisplayed()));
+
         // Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black
         // Markings",serial,200, comment, photos);
         // Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black
@@ -59,11 +61,26 @@ public class MainActivityTest {
         onView(withId(R.id.date_button)).perform(ViewActions.typeText("10-21-9876"));
         onView(withId(R.id.make_button)).perform(ViewActions.typeText("Pygmy Goat"));
         onView(withId(R.id.model_button)).perform(ViewActions.typeText("Caramel w/ Black Markings"));
+
         Espresso.pressBack();
         onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("200"));
         Espresso.pressBack();
         onView(withText("Confirm")).perform(click());
     }
+
+    @Test
+    public void testMakeFilter() {
+        onView(withId(R.id.add_item_button)).perform(click());
+        onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Tom"));
+        onView(withId(R.id.date_button)).perform(ViewActions.typeText("03-21-2050"));
+        onView(withId(R.id.make_button)).perform(ViewActions.typeText("Poodle"));
+        onView(withId(R.id.model_button)).perform(ViewActions.typeText("Black with brown eyes"));
+        Espresso.pressBack();
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("35"));
+        Espresso.pressBack();
+
+        onView(withText("Confirm")).perform(click());
+        onView(withText("Total Cost")).check(matches(isDisplayed()));
 
     @Rule
     public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
@@ -86,5 +103,6 @@ public class MainActivityTest {
         onView(withText("Selected Items : 0")).check(matches(isDisplayed()));
 
         onView(withId(R.id.closebtn)).perform(click());
+
     }
 }
