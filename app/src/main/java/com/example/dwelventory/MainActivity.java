@@ -141,8 +141,12 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                         int estValue = doc.get("estValue", int.class);
                         ArrayList photos = doc.get("photos", ArrayList.class);
                         String comment = doc.get("comment", String.class);
-                        boolean selected = doc.get("selected", boolean.class);
+                        // get tags from fire base
+                        ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
+                        Log.d("result", tags.toString());
+                        ArrayList<Tag> realTags = makeTagList(tags);
                         Item item = new Item(name, date, make, model, serial, estValue, comment, photos);
+                        item.setTags(realTags);
                         if (!storedRefID.equals("null")) {
                             Log.d("itemTag1",
                                     String.format("Item(%s) was not null", storedRefID) + storedRefID.getClass());
@@ -319,13 +323,19 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                     if (result.getResultCode() == ADD_EDIT_CODE_OK) {
                         Intent data = result.getData();
                         if (data != null) {
-                            // Extract item
+                            // Extract item and create tag sub collection
                             Item item = data.getParcelableExtra("item");
                             // Get and set date bc its weird
                             Date date = (Date) data.getSerializableExtra("date");
                             item.setDate(date);
+                            // Request code for handling
                             int requestCode = data.getIntExtra("requestCode", -1);
                             Log.d("resultTag", "request code: " + requestCode);
+                            // Get tags and set them to the item
+                            ArrayList<Tag> tags = data.getParcelableArrayListExtra("tags");
+                            ArrayList<String> stringTags = makeStringTagList(tags); // THIS IS FOR FIREBASE ONLY
+                            item.setTags(tags); // set tags
+                            Log.d("# result from ae", "after setting tags"+String.valueOf(item.getTags()));
                             if (requestCode == ADD_ACTIVITY_CODE) {
                                 // Handle the result for adding
                                 Log.d("resultTag", "i am about to add the item");
@@ -333,8 +343,12 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 Log.d("itemTag", "New Item RefID: " + item.getItemRefID());
                                 dataList.add(item);
                                 estTotalCost += item.getEstValue();
-                                itemsRef.document(String.valueOf(item.getItemRefID())).set(item);
-                                itemAdapter.notifyDataSetChanged();
+                                // set item in firebase
+                                itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
+                                // set STRING tags to items
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.put("tags", stringTags);
+                                itemsRef.document(String.valueOf(item.getItemRefID())).update(map);                                itemAdapter.notifyDataSetChanged();
                                 Log.d("tagtag", "onCreate: tags " + item.getTags());
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
                                 // Handle the result for editing
@@ -345,7 +359,14 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 Log.d("itemTag", "from editActivity RefID: " + item.getItemRefID());
                                 item.setItemRefID(UUID.fromString(itemRefId));
                                 Log.d("itemTag", "after setting RefID: " + item.getItemRefID());
-                                itemsRef.document(String.valueOf(item.getItemRefID())).set(item);
+                                dataList.remove(position);
+                                dataList.add(position, item);
+                                Log.d("# item in handler", "position:"+position+" "+item.getItemRefID());
+                                Log.d("# handling edit result", "after setting tags"+String.valueOf(item.getTags()));
+                                // set item in firebase
+                                itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
+                                // set STRING tags to items
+
                                 itemAdapter.notifyDataSetChanged();
                             }
                             String cost = getString(R.string.totalcost, estTotalCost);
@@ -360,13 +381,16 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             intent.putExtra("mode", "edit");
             Log.d("mainTag", "position: " + i);
             Item itemToCopy = dataList.get(i);
+            Log.d("# item", "position:"+i+" "+itemToCopy.getItemRefID());
+            ArrayList<Tag> copyTags = itemToCopy.getTags();
+            Log.d("# sending to ae activity in edit mode", String.valueOf(itemToCopy.getMake())+" "+String.valueOf(copyTags));
             Item copyItem = makeCopy(itemToCopy);
-            Log.d("mainTag", "hi copyDate is " + copyItem.getDate());
 
             intent.putExtra("item", copyItem);
             intent.putExtra("date", copyItem.getDate());
             intent.putExtra("position", i);
             intent.putExtra("requestCode", EDIT_ACTIVITY_CODE);
+            intent.putExtra("tags",copyTags);
             String itemRefID = itemToCopy.getItemRefID().toString();
             Log.d("itemTag", "RefID going to edit activity: " + itemRefID);
             intent.putExtra("itemRefID", itemRefID);
@@ -423,6 +447,33 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             String cost = getString(R.string.totalcost, estTotalCost);
             totalCost.setText(cost);
         }
+    }
+    /**
+     *  This creates an arraylist of strings of tag names
+     * from an arraylist of tsg objects
+     * @param tags
+     * @return stringTags
+    * */
+    public ArrayList<String> makeStringTagList(ArrayList<Tag> tags){
+        ArrayList<String> stringTags = new ArrayList<>();
+        for (int i =0; i < tags.size();i++){
+            stringTags.add(tags.get(i).getTagName());
+        }
+        return stringTags;
+    }
+    /**
+     *  This creates an arraylist of tags
+     * from an arraylist of tag name strings
+     * @param stringTags
+     * @return tags
+     * */
+    public ArrayList<Tag> makeTagList(ArrayList<String> stringTags){
+        ArrayList<Tag> tags = new ArrayList<>();
+        for (int i =0; i < stringTags.size();i++){
+            Tag tag = new Tag(stringTags.get(i));
+            tags.add(tag);
+        }
+        return tags;
     }
 
     @Override
@@ -526,8 +577,11 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                 CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
                 // checkBox.setVisibility(View.GONE);
                 if (checkBox.isChecked()) {
-                    // Must process the tags for this item.
-                    editor.checkMultipleItemTagAddition(dataList.get(j).getTags(), applyTags);
+                    // Must process the tags for this item.;
+                    Item item = dataList.get(j);
+                    ArrayList<Tag> tags = item.getTags();
+                    item.setTags(editor.checkMultipleItemTagAddition(tags, applyTags));
+                    itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
                 }
             }
         }

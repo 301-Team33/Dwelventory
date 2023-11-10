@@ -97,8 +97,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             prevName = item.getDescription();
             nameButton.setText(prevName);
             Date date = (Date) intent.getSerializableExtra("date");
-            Log.d("aeTag", "um Date is" + date);
             tagsToApply = intent.getParcelableArrayListExtra("tags");
+            Log.d("# just opened on edit mode", String.valueOf(tagsToApply));
             if(tagsToApply == null){
                 tagsToApply = new ArrayList<>();
                 Log.d("", "onCreate: SEE HERE 1" + tagsToApply);
@@ -121,7 +121,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                     tagDisplay2Button.setText(tagsToApply.get(i).getTagName());
                     tagDisplay2Button.setVisibility(View.VISIBLE);
                 }
-                else if(i == 3){
+                else if(i == 2){
                     tagDisplay3Button.setText(tagsToApply.get(i).getTagName());
                     tagDisplay3Button.setVisibility(View.VISIBLE);
                 }
@@ -185,6 +185,9 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 Log.d("editTag", "before making the new item, date is " + date);
                 
                 Item item = new Item(name, date, make, model, estValue);
+                if ( tagsToApply == null){
+                    tagsToApply = new ArrayList<>();
+                };
                 item.setTags(tagsToApply);
 
 
@@ -195,7 +198,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                   item.setTags(emptyTagSet);
                 }
                 // go back to main activity
-                updatedIntent.putExtra("tags",item.getTags());
+                updatedIntent.putParcelableArrayListExtra("tags",tagsToApply);
+                Log.d("# tag TAg hitting confirm", String.valueOf(tagsToApply));
                 updatedIntent.putExtra("item", item);
                 updatedIntent.putExtra("date", date);
                 updatedIntent.putExtra("mode", mode);
@@ -295,10 +299,11 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         }
         String mode = intent.getStringExtra("mode");
         TagListEditor editor = new TagListEditor();
-        if (!mode.equals("edit")){
+        if (mode.equals("add")){
+            Log.d("addTag", "in add mode");
             editor.checkSingleItemTagAddition(tagsToApply,applyTags);
         }
-        if (tagsToApply == null || applyTags.size() == 0){
+        else if (tagsToApply == null || applyTags.size() == 0){
             tagsToApply = new ArrayList<>();
             item.setTags(tagsToApply);
         }else if(mode.equals("edit")){
