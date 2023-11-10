@@ -22,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,22 +69,24 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class MainActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener {
-
+public class MainActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener, FilterFragment.FilterFragmentListener {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private CollectionReference usersRef;
     private CollectionReference itemsRef;
     private ArrayList<Item> dataList;
-  
+    private boolean initialSpinnerCheck = true;
     private ArrayAdapter<Item> itemAdapter;
     private ActivityResultLauncher<Intent> addEditActivityResultLauncher;
     private int ADD_ACTIVITY_CODE = 8;
     private int EDIT_ACTIVITY_CODE = 18;
     private int ADD_EDIT_CODE_OK = 818;
+    private Spinner sortSpinner;
     private FloatingActionButton addButton;
     private TextView totalCost;
+    private boolean reverseOrder;
     public int estTotalCost=0;
     private ListView finalItemList;
     ArrayAdapter<Item> finalItemAdapter;
@@ -160,6 +163,40 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         String text = getString(R.string.totalcost, estTotalCost);
         totalCost.setText(text);
         addButton = findViewById(R.id.add_item_button);
+
+        //ArrayList<Item> dataList = new ArrayList<>();
+
+        // fake data
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        String date11 = "7-Jun-2013";
+        String date22 = "28-Oct-2023";
+        Date date1;
+        try {
+            date1 = formatter.parse(date11);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        Date date2;
+        try {
+            date2 = formatter.parse(date22);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        int serial = 12731;
+        String comment = "so cute";
+        List photos = null;
+        Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings",serial,200, comment, photos);
+        Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+        ArrayList<Tag> testtag = new ArrayList<>();
+        ArrayList<Tag> practiceTags = new ArrayList<>();
+        practiceTags.add(new Tag("Tag1"));
+        practiceTags.add(new Tag("Tag2"));
+        item1.setTags(practiceTags);
+        item2.setTags(testtag);
+        dataList.add(item1);
+        dataList.add(item2);
+
         itemAdapter = new ItemList(this, dataList);
         ListView itemList = findViewById(R.id.item_list);
         itemList.setAdapter(itemAdapter);
@@ -313,7 +350,115 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         itemList.setAdapter(itemAdapter);
         //itemAdapter.notifyDataSetChanged();
 
+        final FloatingActionButton addButton = findViewById(R.id.add_item_button);
 
+        // *** ONE FILTER AT A TIME FOR NOW ***
+        Spinner filterSpinner = findViewById(R.id.filter_spinner);
+        ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.filter_spinner_options,
+                android.R.layout.simple_spinner_item
+        );
+
+        filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterSpinner.setSelection(0);
+        filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position > 0 && !(initialSpinnerCheck)){
+                    String filter = parent.getItemAtPosition(position).toString();
+                    FilterFragment filterFrag = FilterFragment.newInstance(filter);
+                    filterFrag.show(getSupportFragmentManager(), "FilterFragment");
+                }
+                else if(initialSpinnerCheck){
+                    initialSpinnerCheck = false;
+                }
+                filterSpinner.setSelection(0);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        sortSpinner = findViewById(R.id.sort_spinner);
+        ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.sort_array,
+                android.R.layout.simple_spinner_item
+        );
+        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String sort = parent.getItemAtPosition(position).toString();
+                switch (sort) {
+                    case "Date":
+                        ItemSorter.sortDate(dataList, reverseOrder);
+                        break;
+                    case "Description":
+                        ItemSorter.sortDescription(dataList, reverseOrder);
+                        break;
+                    case "Make":
+                        ItemSorter.sortMake(dataList, reverseOrder);
+                        break;
+                    case "Estimated Value":
+                        ItemSorter.sortEstValue(dataList, reverseOrder);
+                        break;
+                }
+                itemAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                
+            }
+        });
+        sortSpinner.setAdapter(sortAdapter);
+
+        Spinner orderSpinner;
+
+        orderSpinner = findViewById(R.id.order_spinner);
+        ArrayAdapter<CharSequence> orderAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.order_array,
+                android.R.layout.simple_spinner_item
+        );
+        orderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        orderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String order = parent.getItemAtPosition(position).toString();
+                if (order.equals("Descending")) {
+                    reverseOrder = true;
+                }
+                else {
+                    reverseOrder = false;
+                }
+
+                String sort = sortSpinner.getSelectedItem().toString();
+                switch(sort) {
+                    case "Date":
+                        ItemSorter.sortDate(dataList, reverseOrder);
+                        break;
+                    case "Description":
+                        ItemSorter.sortDescription(dataList, reverseOrder);
+                        break;
+                    case "Make":
+                        ItemSorter.sortMake(dataList, reverseOrder);
+                        break;
+                    case "Estimated Value":
+                        ItemSorter.sortEstValue(dataList, reverseOrder);
+                        break;
+                }
+                itemAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        orderSpinner.setAdapter(orderAdapter);
 
         addEditActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -562,6 +707,201 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                 itemAdapter.notifyDataSetChanged();
             }
         }
+    }
+
+    /**
+     * This method queries the database to filter based on make. Once retrieved from database,
+     * it updates dataList and notifies the adapter about changes.
+     *
+     * @param makeInput This is the make types to filter by, specified by the user.
+     */
+    @Override
+    public void onMakeFilterApplied(String[] makeInput) {
+        estTotalCost = 0;
+        dataList.clear();
+//        CollectionReference itemsRef = db.collection("items");
+
+        AtomicInteger pendingQueries = new AtomicInteger(makeInput.length);
+        for(String make: makeInput){
+            itemsRef.whereEqualTo("make", make).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                    pendingQueries.decrementAndGet();
+                    if(task.isSuccessful()){
+                        for(QueryDocumentSnapshot doc : task.getResult()){
+
+                            Item item = new Item(
+                                    doc.getString("description"),
+                                    doc.getDate("date"),
+                                    doc.getString("make"),
+                                    doc.getString("model"),
+                                    doc.getLong("estValue").intValue());
+                            item.setSerialNumber(doc.getLong("serialNumber").intValue());
+
+                            item.setItemRefID(UUID.fromString(doc.getId()));
+
+                            dataList.add(item);
+                            estTotalCost += doc.getLong("estValue").intValue();
+                        }
+                    }
+                    if (pendingQueries.get() == 0) {
+                        // Now that all asynchronous queries are done, notify the adapter
+                        itemAdapter.notifyDataSetChanged();
+                        setTotal(dataList);
+                    }
+                }
+            });
+        }
+
+    }
+
+    /**
+     * This method queries the database to find items added within the given date range. Once
+     * retrieved from database, it updates dataList and notifies the adapter about changes.
+     *
+     * @param start earliest date that an items date can be
+     * @param end latest date that an items date can be
+     */
+    @Override
+    public void onDateFilterApplied(Date start, Date end) {
+        estTotalCost = 0;
+        dataList.clear();
+
+        itemsRef.whereGreaterThanOrEqualTo("date", start)
+                .whereLessThanOrEqualTo("date", end)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for(QueryDocumentSnapshot doc: task.getResult()){
+                                Item item = new Item(
+                                        doc.getString("description"),
+                                        doc.getDate("date"),
+                                        doc.getString("make"),
+                                        doc.getString("model"),
+                                        doc.getLong("estValue").intValue());
+                                item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                item.setItemRefID(UUID.fromString(doc.getId()));
+                                dataList.add(item);
+                                estTotalCost += doc.getLong("estValue").intValue();
+                            }
+                            itemAdapter.notifyDataSetChanged();
+                            setTotal(dataList);
+                        }
+                    }
+                });
+    }
+
+    /**
+     * This method queries the database to find items containing given keywords. Once
+     * retrieved from database, it updates dataList and notifies the adapter about changes.
+     *
+     * @param keywords holds user input keywords to filter by
+     */
+    @Override
+    public void onKeywordFilterApplied(String[] keywords) {
+        dataList.clear();
+        AtomicInteger pendingQueries = new AtomicInteger(keywords.length);
+        for(String keyword: keywords){
+            itemsRef.whereEqualTo("description", keyword).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    pendingQueries.decrementAndGet();
+                    if(task.isSuccessful()){
+                        for(QueryDocumentSnapshot doc : task.getResult()){
+
+                            Item item = new Item(
+                                    doc.getString("description"),
+                                    doc.getDate("date"),
+                                    doc.getString("make"),
+                                    doc.getString("model"),
+                                    doc.getLong("estValue").intValue());
+                            item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                            item.setItemRefID(UUID.fromString(doc.getId()));
+                            dataList.add(item);
+                            estTotalCost += doc.getLong("estValue").intValue();
+                        }
+                    }
+                    if (pendingQueries.get() == 0) {
+                        // Now that all asynchronous queries are done, notify the adapter
+                        itemAdapter.notifyDataSetChanged();
+                        setTotal(dataList);
+                    }
+                }
+            });
+        }
+
+    }
+
+    /**
+     * This method queries the database to find items containing specified tags. Once
+     * retrieved from database, it updates dataList and notifies the adapter about changes.
+     * NOT FINISHED YET.
+     *
+     * @param tags
+     */
+    @Override
+    public void onTagFilterApplied(String[] tags) {
+        dataList.clear();
+        CollectionReference itemsRef = db.collection("item");
+        AtomicInteger pendingQueries = new AtomicInteger(tags.length);
+        for(String tag: tags){
+            itemsRef.whereEqualTo("tag", tag).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    pendingQueries.decrementAndGet();
+                    if(task.isSuccessful()){
+                        for(QueryDocumentSnapshot doc : task.getResult()){
+
+                            Item item = new Item(
+                                    doc.getString("description"),
+                                    doc.getDate("date"),
+                                    doc.getString("make"),
+                                    doc.getString("model"),
+                                    doc.getLong("estValue").intValue());
+                            item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                            item.setItemRefID(UUID.fromString(doc.getId()));
+                            dataList.add(item);
+                            estTotalCost += doc.getLong("estValue").intValue();
+                        }
+                    }
+                    if (pendingQueries.get() == 0) {
+                        // Now that all asynchronous queries are done, notify the adapter
+                        itemAdapter.notifyDataSetChanged();
+                        setTotal(dataList);
+                    }
+                }
+            });
+        }
+    }
+    public void onClearFilterApplied() {
+        estTotalCost = 0;
+        itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    dataList.clear();
+                    for(QueryDocumentSnapshot doc : task.getResult()) {
+                        Item item = new Item(
+                                doc.getString("description"),
+                                doc.getDate("date"),
+                                doc.getString("make"),
+                                doc.getString("model"),
+                                doc.getLong("estValue").intValue());
+                        item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                        item.setItemRefID(UUID.fromString(doc.getId()));
+                        dataList.add(item);
+                        estTotalCost += doc.getLong("estValue").intValue();
+                    }
+
+                    setTotal(dataList);
+                }
+            }
+        });
+        itemAdapter.notifyDataSetChanged();
+//        totalCost.setText(getString(R.string.totalcost, estTotalCost));
     }
 }
 
