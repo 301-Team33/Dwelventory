@@ -107,6 +107,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             item.setTags(tagsToApply);
 
             // Now display any tags that are already applied. Up to 3
+            // Add the Tags indentifiers to the Top right corner of the screen setting up to 3 Tag Names.
+            // If a Item has less than 3 Tags then the remaining unused Tag buttons will be hidden.
             int numTags = tagsToApply.size();
             int i = 0;
             while (i <= 2 || i < numTags){
@@ -283,12 +285,23 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         }
     }
 
+    /***
+     * This overriden method will close the currently opened TagFragment without creating any side
+     * effects.
+     */
     @Override
     public void onCloseAction() {
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
     }
 
+    /***
+     * This method which is overriden applies an ArrayList of Tags to the currently specified Item.
+     * If the Item has already been created and is being edited, then the specified Item's ArrayList of
+     * current Tags will be updated. Else if the Item is being created for the firts time, we just
+     * Set a current ArrayList of Tags which will thus later be applied to an Item.
+     * @param applyTags
+     */
     @Override
     public void onTagApplyAction(ArrayList<Tag> applyTags) {
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
@@ -310,10 +323,13 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             editor.checkSingleItemTagAddition(tagsToApply,applyTags);
             item.setTags(tagsToApply);
     }
+
         tagDisplay3Button.setVisibility(View.GONE);
         tagDisplay2Button.setVisibility(View.GONE);
         tagDisplay1Button.setVisibility(View.GONE);
 
+        // Add the Tags indentifiers to the Top right corner of the screen setting up to 3 Tag Names.
+        // If a Item has less than 3 Tags then the remaining unused Tag buttons will be hidden.
         int numTags = tagsToApply.size();
         int i = 0;
         while (i < numTags && i <= 2){
@@ -336,11 +352,22 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         }
 }
 
+    /***
+     * Hook which is not implemented for the AddEditActivity as Tags should not be allowed to be deleted
+     * from this Activity
+     * @param deletedTag
+     *      Wouldve been the Tag instance of the Tag to be deleted.
+     */
     @Override
     public void onTagDeletion(Tag deletedTag) {
         return;
     }
 
+    /***
+     * Produces a toast for the specified action by accepting a String to be displayed as the toast message
+     * @param stringResource
+     *      String object representing the String that will be displayed within the customized Toast.
+     */
     private void produceTagToast(String stringResource){
         // create a toast with the specified string resource on the appropiate action.
         Toast toast = Toast.makeText(this,stringResource,Toast.LENGTH_SHORT);

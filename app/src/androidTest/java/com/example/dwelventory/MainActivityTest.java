@@ -81,9 +81,7 @@ public class MainActivityTest {
 
         onView(withText("Confirm")).perform(click());
         onView(withText("Total Cost")).check(matches(isDisplayed()));
-
-    @Rule
-    public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
+    }
 
     @Test
     public void testSelectionMode() {

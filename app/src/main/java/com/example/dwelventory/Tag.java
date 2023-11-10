@@ -5,11 +5,21 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import java.io.Serializable;
 
+/***
+ * A specified object to depict a defining characteristic for a specific Item. Can be associated with
+ * multiple Items and an Item can have many Tag objects. (Basically acts as a descriptor//identifier//classifier)
+ * @Author
+ *      Ethan Keys
+ */
 public class Tag implements Parcelable {
     String tagName;
 
+    /***
+     * Constructor to set the name of the currently created Tag object
+     * @param tagName
+     *      String, representing the name of the Tag we want associated with the Object
+     */
     public Tag(String tagName){
         this.tagName = tagName;
     }
@@ -30,6 +40,11 @@ public class Tag implements Parcelable {
         }
     };
 
+    /***
+     * Get the specified Tag Name field of the object
+     * @return
+     *      String representing the tag name associated to the Tag object.
+     */
     public String getTagName(){
         return tagName;
     }

@@ -116,9 +116,10 @@ public class TagListEditorTest {
         ArrayList<Tag> tagList1 = mockTagList();
         ArrayList<Tag> tagList2 = mockTagList();
 
+
         // Test to see if no tag is added since both lists are the same
         // Both contain "Bathroom"
-        editor.checkMultipleItemTagAddition(tagList1,tagList2);
+        tagList1 = editor.checkMultipleItemTagAddition(tagList1,tagList2);
         assertEquals(1,tagList1.size());
         assertEquals("Bathroom",tagList1.get(0).getTagName());
 
@@ -127,7 +128,7 @@ public class TagListEditorTest {
         tagList2.remove(0);
         tagList2.add(mockTag2());
 
-        editor.checkMultipleItemTagAddition(tagList1,tagList2);
+        tagList1 = editor.checkMultipleItemTagAddition(tagList1,tagList2);
         assertEquals(2,tagList1.size());
         assertEquals("Bathroom",tagList1.get(0).getTagName());
         assertEquals("Kitchen",tagList1.get(1).getTagName());
@@ -137,11 +138,11 @@ public class TagListEditorTest {
         tagList2.clear();
         tagList2.add(mockTag1);
 
-        editor.checkMultipleItemTagAddition(tagList1,tagList2);
+        tagList1 = editor.checkMultipleItemTagAddition(tagList1,tagList2);
         assertEquals(true,tagList1.contains(mockTag1));
 
         // Assert that tags cant be cleared.
-        editor.checkMultipleItemTagAddition(tagList1, new ArrayList<Tag>());
+        tagList1 = editor.checkMultipleItemTagAddition(tagList1, new ArrayList<Tag>());
         assertEquals(3,tagList1.size());
 
     }
