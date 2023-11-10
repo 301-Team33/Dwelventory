@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     private FloatingActionButton addButton;
     private TextView totalCost;
     public int estTotalCost=0;
+    private ListView finalItemList;
+    ArrayAdapter<Item> finalItemAdapter;
 
 
 
@@ -171,8 +173,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
 
         // Declare itemList as new final variable
         // (This variable is used only for the longClickListener)
-        ListView finalItemList = itemList;
-        ArrayAdapter<Item> finalItemAdapter = itemAdapter;
+        finalItemList = itemList;
+        finalItemAdapter = itemAdapter;
 
         itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public void getSelectedCount(TextView selected_count){
@@ -513,12 +515,12 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             if (view_temp != null) {
                 CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
                 //checkBox.setVisibility(View.GONE);
-                if(checkBox.isChecked()){
+                if (checkBox.isChecked()) {
                     // Must process the tags for this item.
-                    editor.checkMultipleItemTagAddition(dataList.get(j).getTags(),applyTags);
-                    }
+                    editor.checkMultipleItemTagAddition(dataList.get(j).getTags(), applyTags);
                 }
             }
+        }
 
         try {
             date2 = formatter.parse(date22);
@@ -534,6 +536,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             Log.d("tag", "Not enough tags in the list");
 
         }
+    }
 
 
     @Override
