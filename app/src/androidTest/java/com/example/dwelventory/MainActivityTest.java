@@ -93,9 +93,10 @@ public class MainActivityTest {
         onView(withId(R.id.item_name_button)).perform(ViewActions.replaceText(""));
         onView(withId(R.id.item_name_button)).perform(ViewActions.clearText());
         onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Oz"));
+        Espresso.pressBack();
         onView(withText("Confirm")).perform(click());
         // accidentally types Ozg not Oz
-        onView(withText(containsString("Ozg"))).check(matches(isDisplayed()));
+        onView(withText(containsString("Oz"))).check(matches(isDisplayed()));
     }
     @Test
     public void testDeleteItem(){
@@ -136,9 +137,10 @@ public class MainActivityTest {
         onView(withId(R.id.estimated_val_button)).perform(ViewActions.replaceText(""));
         onView(withId(R.id.estimated_val_button)).perform(ViewActions.clearText());
         onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("250"));
+        Espresso.pressBack();
         onView(withText("Confirm")).perform(click());
         // accidentally types a 6 at the end
-        onView(withText(containsString("Total Cost: $2506"))).check(matches(isDisplayed()));
+        onView(withText(containsString("Total Cost: $250"))).check(matches(isDisplayed()));
     }
 
     @Test
