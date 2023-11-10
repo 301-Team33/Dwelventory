@@ -37,6 +37,10 @@ public class FilterFragment extends DialogFragment {
         }
     }
 
+    /**
+     * This interface defines call back methods for communicating about filter related actions
+     * from the filter fragment to the MainActivity.
+     */
     public interface FilterFragmentListener {
         void onMakeFilterApplied(String[] filterInput);
         void onDateFilterApplied(Date start, Date end);
@@ -55,7 +59,6 @@ public class FilterFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-
         // Verify arguments
         if (getArguments() != null) {
             filterOption = getArguments().getString("filter_option");
@@ -63,13 +66,11 @@ public class FilterFragment extends DialogFragment {
         else {
             throw new IllegalStateException("No filter option provided to FilterFragment");
         }
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
         // If filter option selected was make
         if("Make".equals(filterOption)){
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.popup_select_make, null);
-
             EditText makeInput = view.findViewById(R.id.filter_make_etext);
             Button doneButton = view.findViewById(R.id.filter_make_donebtn);
 
@@ -90,10 +91,10 @@ public class FilterFragment extends DialogFragment {
         }
         else if("Date".equals(filterOption)){   // For date filter
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.popup_select_drange, null);
-
             EditText dateStart = view.findViewById(R.id.filter_date_cal1);
             EditText dateEnd = view.findViewById(R.id.filter_date_cal2);
             Button doneButton = view.findViewById(R.id.filter_date_donebtn);
+
             doneButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v){
@@ -140,10 +141,7 @@ public class FilterFragment extends DialogFragment {
         }
         else if("Tags".equals(filterOption)) {
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.popup_select_tags,null);
-
             EditText tagsInput = view.findViewById(R.id.filter_tags_etext);
-
-
             Button doneButton = view.findViewById(R.id.filter_tags_donebtn);
 
             doneButton.setOnClickListener(new View.OnClickListener() {

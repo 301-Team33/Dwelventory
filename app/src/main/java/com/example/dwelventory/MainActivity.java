@@ -839,7 +839,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     /**
      * This method queries the database to find items containing specified tags. Once
      * retrieved from database, it updates dataList and notifies the adapter about changes.
-     * NOT FINISHED YET.
+     *
+     * NOT FINISHED YET. NOT PART OF HALFWAY CHECKPOINT.
      *
      * @param tags
      */
@@ -877,6 +878,11 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             });
         }
     }
+
+    /**
+     * This function is run when the use clicks on the "Clear Filter" option. It retrieves all
+     * items from firebase and restores them in the data list to display on screen.
+     */
     public void onClearFilterApplied() {
         estTotalCost = 0;
         itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -902,7 +908,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             }
         });
         itemAdapter.notifyDataSetChanged();
-//        totalCost.setText(getString(R.string.totalcost, estTotalCost));
     }
 }
 
