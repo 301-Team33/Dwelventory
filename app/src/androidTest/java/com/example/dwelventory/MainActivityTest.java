@@ -84,6 +84,8 @@ public class MainActivityTest {
         Espresso.pressBack();
 
         onView(withText("Confirm")).perform(click());
+        onView(withText("Total Cost")).check(matches(isDisplayed()));
+
 
 
         onView(withId(R.id.add_item_button)).perform(click());

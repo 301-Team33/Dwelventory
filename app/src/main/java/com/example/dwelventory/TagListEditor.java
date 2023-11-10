@@ -11,10 +11,28 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
+/***
+ * A list editor for Tag ArrayLists that only update array lists based on tags that need to be
+ * unspecified from an item, or new tags that need to be added to an item from an array list. This class
+ * also handles the deletion of tags from a user database of specified tags and removes such tags from
+ * all items containing it.
+ * @Author
+ *      Ethan Keys
+ * @see
+ *      Item, Tag
+ */
 public class TagListEditor {
-
     public TagListEditor(){};
 
+    /***
+     * A method to edit a current array list of tags associated with an Item after a tag has been deleted
+     * from the set of user defined tags as stored in the database.
+     * @param currentTags
+     *      An ArrayList of Tags specifying the set of Tags currently associated with the item.
+     * @param tagToDelete
+     *      A Tag representing the Tag that needs to be deleted from the ArrayList of Tags for a specified
+     *      Item if the Item contains the Tag.
+     */
     public void checkDeletion(ArrayList<Tag> currentTags, Tag tagToDelete) {
         Iterator<Tag> tagIterator = currentTags.iterator();
         while (tagIterator.hasNext()){
@@ -25,6 +43,16 @@ public class TagListEditor {
         }
     }
 
+    /***
+     * Adds unique Tags to a set of items in which Tags that are not specified in the current Item being applied
+     * Tags to, it wont be readded.
+     * @param currentTags
+     *      An ArrayList of Tags representing the current Tags already associated with the Item
+     * @param tagsToAdd
+     *      An ArrayList of Tags representing the set of Tags we want to mass add to the Item
+     * @return
+     *      An ArrayList of Tags representing the updated Tag array list for the current Item.
+     */
     // Used only for adding to multiple items since we can't remove previously added on tags for
     // Multiple items
     public ArrayList<Tag> checkMultipleItemTagAddition(ArrayList<Tag> currentTags, ArrayList<Tag> tagsToAdd){
@@ -49,6 +77,15 @@ public class TagListEditor {
         return uniqueAdditionTags;
     }
 
+    /***
+     * Adds a set of Tags to a single Item. If an Item has a current Tag that is not specified in the
+     * ArrayList of Tags to be added, then it it removed. Otherwise the Tag is either added if it
+     * does not contain it, or kept the same (not removed) if it is already specified.
+     * @param currentTags
+     *      The ArrayList of current Tags associated with the specified Item
+     * @param tagsToAdd
+     *      The ArrayList of Tags to update the set of Tags associated to an Item to.
+     */
     public void checkSingleItemTagAddition(ArrayList<Tag> currentTags, ArrayList<Tag> tagsToAdd) {
 
         // First check all tags. any tags that Are currently not in current tags need to be

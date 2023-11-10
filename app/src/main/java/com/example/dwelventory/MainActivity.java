@@ -72,6 +72,11 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/***
+ * The startup activity for Dwelventory
+ * @Author
+ *      CMPUT 301 FALL 2023 TEAM33
+ */
 public class MainActivity extends AppCompatActivity
         implements TagFragment.OnFragmentInteractionListener, FilterFragment.FilterFragmentListener {
     private FirebaseAuth mAuth;
@@ -217,6 +222,11 @@ public class MainActivity extends AppCompatActivity
         finalItemAdapter = itemAdapter;
 
         itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            /**
+             * Get the number of items that are selected by checking whether checkbox is checked.
+             * @param selected_count
+             *      TextView to have it's text updated to the number of items that have been selected
+             */
             public void getSelectedCount(TextView selected_count) {
                 int count = 0;
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
@@ -552,7 +562,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    /*
+    /**
      * This makes a copy of the item
      * 
      * @param item the item object to be copied
@@ -578,7 +588,7 @@ public class MainActivity extends AppCompatActivity
         return copyItem;
     }
 
-    /*
+    /**
      * This calculates the total cost of all the items and then
      * sets the textview to that cost
      * 
@@ -706,12 +716,21 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    /***
+     * This overriden method closes the TagFragment instance if it exists.
+     */
     @Override
     public void onCloseAction() {
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
     }
 
+    /***
+     * This method applies a set of Tags to 1 or more items. Any Tags that are currently not associated
+     * with an Item will not be readded allowing for unique Tag classifiers
+     * @param applyTags
+     *      An ArrayList of Tags representing the set of Tags we want associated to all 1 or more Item.
+     */
     @Override
     public void onTagApplyAction(ArrayList<Tag> applyTags) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
@@ -752,6 +771,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /***
+     * This method deletes a Tag from all Items in the Item dataList if the Tag is deleted from the
+     * database itself. This not leaving any dangling Tag references.
+     * @param deletedTag
+     *      A Tag object depicting the Tag we want to delete from the set of all Items.
+     */
     @Override
     public void onTagDeletion(Tag deletedTag) {
         // check all the items in the listview. and if the item has the tag that was
