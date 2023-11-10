@@ -14,6 +14,9 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.containsString;
+
+import android.widget.ListView;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
@@ -39,8 +42,7 @@ public class MainActivityTest {
     @Test
     public void testAddItem() {
         // add two items
-
-        onView(withText("Total Cost")).check(matches(isDisplayed()));
+        onView(withText(containsString("Total Cost"))).check(matches(isDisplayed()));
 
         // Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black
         // Markings",serial,200, comment, photos);
@@ -70,6 +72,75 @@ public class MainActivityTest {
         onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("200"));
         Espresso.pressBack();
         onView(withText("Confirm")).perform(click());
+    }
+    @Test
+    public void testEditItem(){
+        ActivityScenario<MainActivity> scenario = mainScenario.getScenario();
+        onView(withId(R.id.add_item_button)).perform(click());
+        onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Ozzie"));
+        onView(withId(R.id.date_button)).perform(ViewActions.typeText("09-11-2076"));
+        onView(withId(R.id.make_button)).perform(ViewActions.typeText("Pygmy Goat"));
+        onView(withId(R.id.model_button)).perform(ViewActions.typeText("Caramel w/ Black Markings"));
+        Espresso.pressBack();
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("200"));
+        Espresso.pressBack();
+        onView(withText("Confirm")).perform(click());
+        onView(withText(containsString("Ozzie"))).check(matches(isDisplayed()));
+        scenario.onActivity(activity -> {
+            ListView itemList = activity.findViewById(R.id.item_list);
+            itemList.performItemClick(itemList.getAdapter().getView(0,null,null),0,itemList.getAdapter().getItemId(0));
+        });
+        onView(withId(R.id.item_name_button)).perform(ViewActions.replaceText(""));
+        onView(withId(R.id.item_name_button)).perform(ViewActions.clearText());
+        onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Oz"));
+        Espresso.pressBack();
+        onView(withText("Confirm")).perform(click());
+        // accidentally types Ozg not Oz
+        onView(withText(containsString("Oz"))).check(matches(isDisplayed()));
+    }
+    @Test
+    public void testDeleteItem(){
+        onView(withId(R.id.add_item_button)).perform(click());
+        onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("George"));
+        onView(withId(R.id.date_button)).perform(ViewActions.typeText("01-04-1999"));
+        onView(withId(R.id.make_button)).perform(ViewActions.typeText("Pygmy Goat"));
+        onView(withId(R.id.model_button)).perform(ViewActions.typeText("Caramel w/ Black Markings"));
+        Espresso.pressBack();
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("200"));
+        Espresso.pressBack();
+        onView(withText("Confirm")).perform(click());
+        onView(withText("George")).check(matches(isDisplayed()));
+        onView(withText("George")).perform(longClick());
+        onView(withId(R.id.checkbox)).perform(click());
+        onView(withId(R.id.deletebtn)).perform(click());
+        // delete
+        onView(withText("George")).check(doesNotExist());
+    }
+
+    @Test
+    public void testTotalCost(){
+        ActivityScenario<MainActivity> scenario = mainScenario.getScenario();
+        onView(withId(R.id.add_item_button)).perform(click());
+        onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Ozzie"));
+        onView(withId(R.id.date_button)).perform(ViewActions.typeText("09-11-2076"));
+        onView(withId(R.id.make_button)).perform(ViewActions.typeText("Pygmy Goat"));
+        onView(withId(R.id.model_button)).perform(ViewActions.typeText("Caramel w/ Black Markings"));
+        Espresso.pressBack();
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("200"));
+        Espresso.pressBack();
+        onView(withText("Confirm")).perform(click());
+        onView(withText(containsString("Total Cost: $200"))).check(matches(isDisplayed()));
+        scenario.onActivity(activity -> {
+            ListView itemList = activity.findViewById(R.id.item_list);
+            itemList.performItemClick(itemList.getAdapter().getView(0,null,null),0,itemList.getAdapter().getItemId(0));
+        });
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.replaceText(""));
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.clearText());
+        onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("250"));
+        Espresso.pressBack();
+        onView(withText("Confirm")).perform(click());
+        // accidentally types a 6 at the end
+        onView(withText(containsString("Total Cost: $250"))).check(matches(isDisplayed()));
     }
 
     @Test

@@ -13,17 +13,32 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-
+/**
+ * This sets up the item list adapter for the list view
+ * @author Maggie Lacson
+ * */
 public class ItemList extends ArrayAdapter<Item> {
     private final Context context;
     private ArrayList<Item> items;
-
+    /**
+     * Constructor
+     * @param context (Context)
+     * @param items (ArrayList<Item>) an array list of items that are going to be displayed
+     * @see Item
+     * @see MainActivity
+     * */
     public ItemList(Context context, ArrayList<Item> items){
         super(context,android.R.layout.simple_list_item_multiple_choice, items);
         this.context = context;
         this.items = items;
     }
-
+    /**
+     * This sets up the list view and displays the item name, cost, and picture
+     * @param position (int) the position inside the list
+     * @param convertView (View) the view in which the item information is being displayed
+     * @param parent (ViewGroup) the view parent in which this view sits
+     * @return view (View) the view after being populated with the item's information
+     * */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {

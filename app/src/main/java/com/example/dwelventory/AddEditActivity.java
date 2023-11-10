@@ -21,7 +21,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
-
+/**
+ * This is the activity that allows the user to input the item's information
+ * for the creation of a new item, allows the user to view the item's information,
+ * allows the user to edit an item's information, and allows the user to edit the
+ * the tags associated with the item.
+ * @author Maggie Lacson and Ethan Keys
+ * @see MainActivity
+ * @see TagFragment
+ * */
 public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener{
     // All views
     EditText nameButton;
@@ -52,8 +60,11 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
     private ArrayList<Tag> tagsToApply;
 //    private String comment;
     private String prevName;
-
-
+    /**
+     * This sets up the activity. Either blank if the user is adding an item
+     * or with the item's information loaded into the text boxes if the user
+     * is viewing or editing the item.
+     * */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -273,7 +284,11 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         // All inputs valid!!!
         return valid;
     }
-
+    /**
+     * This checks if the given date is valid
+     * @param dateStr (String) the string version of the data given by the user
+     * @return true or false depending if the given string was a valid date
+     */
     private boolean isDateValid(String dateStr) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault());
         dateFormat.setLenient(false); // Disallow lenient date parsing
