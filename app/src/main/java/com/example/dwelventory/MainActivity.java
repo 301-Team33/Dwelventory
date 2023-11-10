@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     private CollectionReference usersRef;
     private CollectionReference itemsRef;
     private ArrayList<Item> dataList;
-  
+
     private ArrayAdapter<Item> itemAdapter;
     private ActivityResultLauncher<Intent> addEditActivityResultLauncher;
     private int ADD_ACTIVITY_CODE = 8;
@@ -85,15 +85,14 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     private int ADD_EDIT_CODE_OK = 818;
     private FloatingActionButton addButton;
     private TextView totalCost;
-    public int estTotalCost=0;
-
-
+    public int estTotalCost = 0;
+    private ListView finalItemList;
+    ArrayAdapter<Item> finalItemAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         // Initialize Firebase authentication
         mAuth = FirebaseAuth.getInstance();
@@ -102,41 +101,41 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         FirebaseUser user = mAuth.getCurrentUser();
 
         if (user == null) {
-            Log.d("NULL", "user was null");
             signOnAnonymously();
-            Log.d("NULL", "after signing anon");
         } else {
             Toast.makeText(MainActivity.this, "Already signed in",
                     Toast.LENGTH_SHORT).show();
             checkUsers(mAuth.getCurrentUser());
         }
 
+        assert user != null;
+        checkUsers(user);
         Log.d("itemTag", "after user");
-        String path = "/users/"+user.getUid()+"/items";
-//        String path = "/users/rQ2PrfCOKsYkdi1bfzqvLJVZOqq1/items";
-        Log.d("itemTag", "path:"+path);
+        String path = "/users/" + user.getUid() + "/items";
+        // String path = "/users/rQ2PrfCOKsYkdi1bfzqvLJVZOqq1/items";
+        Log.d("itemTag", "path:" + path);
         itemsRef = db.collection(path);
         dataList = new ArrayList<>();
 
         itemsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null){
-                    Log.e("itemTag",error.toString());
+                if (error != null) {
+                    Log.e("itemTag", error.toString());
                     return;
                 }
-                if (value != null){
+                if (value != null) {
                     dataList.clear();
-                    for(QueryDocumentSnapshot doc: value){
-                        Log.d("itemTag", "size of value is "+value.size());
-//                        Log.d("itemTag", user.getUid());
+                    for (QueryDocumentSnapshot doc : value) {
+                        Log.d("itemTag", "size of value is " + value.size());
+                        // Log.d("itemTag", user.getUid());
                         String storedRefID = doc.getId();
                         Log.d("itemTag", String.format("Item(%s) fetched", storedRefID));
                         Log.d("itemTag", "added default");
                         String name = doc.get("description", String.class);
                         Log.d("itemTag", String.format("Itemname(%s) fetched", name));
                         Date date = doc.get("date", Date.class);
-                        String make =  doc.get("make", String.class);
+                        String make = doc.get("make", String.class);
                         String model = doc.get("model", String.class);
                         int serial = doc.get("serialNumber", int.class);
                         int estValue = doc.get("estValue", int.class);
@@ -144,8 +143,9 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                         String comment = doc.get("comment", String.class);
                         boolean selected = doc.get("selected", boolean.class);
                         Item item = new Item(name, date, make, model, serial, estValue, comment, photos);
-                        if (!storedRefID.equals("null")){
-                            Log.d("itemTag1", String.format("Item(%s) was not null", storedRefID)+storedRefID.getClass());
+                        if (!storedRefID.equals("null")) {
+                            Log.d("itemTag1",
+                                    String.format("Item(%s) was not null", storedRefID) + storedRefID.getClass());
                             item.setItemRefID(UUID.fromString(storedRefID));
                             dataList.add(item);
                         }
@@ -169,33 +169,32 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         itemList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         itemList.setAdapter(itemAdapter);
 
-
-
         // Declare itemList as new final variable
         // (This variable is used only for the longClickListener)
-        ListView finalItemList = itemList;
-        ArrayAdapter<Item> finalItemAdapter = itemAdapter;
+        finalItemList = itemList;
+        finalItemAdapter = itemAdapter;
 
         itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            public void getSelectedCount(TextView selected_count){
+            public void getSelectedCount(TextView selected_count) {
                 int count = 0;
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
                     if (view_temp != null) {
                         CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                        if (checkBox.isChecked()){
+                        if (checkBox.isChecked()) {
                             count++;
                         }
                     }
                 }
-                selected_count.setText("Selected Items : "+ count);
+                selected_count.setText("Selected Items : " + count);
             }
+
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                /*View checkBoxLayout = view.findViewById(R.id.checkbox);
-                checkBoxLayout.setVisibility(View.VISIBLE);*/
-
-
+                /*
+                 * View checkBoxLayout = view.findViewById(R.id.checkbox);
+                 * checkBoxLayout.setVisibility(View.VISIBLE);
+                 */
 
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
@@ -205,7 +204,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                     }
                 }
 
-
                 RelativeLayout select_items = findViewById(R.id.selectMultipleitems);
                 select_items.setVisibility(View.VISIBLE);
                 TextView selected_count = findViewById(R.id.selectedItems);
@@ -213,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                 ImageButton deletebtn = findViewById(R.id.deletebtn);
                 ImageButton tagButton = findViewById(R.id.multiple_set_tags_button);
                 CheckBox select_All = findViewById(R.id.selectAll_checkbox);
+                addButton.setVisibility(View.GONE);
 
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
@@ -231,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                     @Override
                     public void onClick(View view) {
                         select_items.setVisibility(View.GONE);
+                        addButton.setVisibility(View.VISIBLE);
 
                         for (int j = 0; j < itemAdapter.getCount(); j++) {
                             View view_temp = finalItemList.getChildAt(j);
@@ -249,8 +249,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                             View view_temp = finalItemList.getChildAt(j);
                             if (view_temp != null) {
                                 CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                                //checkBox.setVisibility(View.GONE);
-                                if(checkBox.isChecked()){
+                                // checkBox.setVisibility(View.GONE);
+                                if (checkBox.isChecked()) {
                                     // get item and its id
                                     Item deleteItem = dataList.get(j);
                                     UUID refId = deleteItem.getItemRefID();
@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                     checkBox.setChecked(false);
                                     // remove from firebase
                                     FirebaseUser user = mAuth.getCurrentUser();
-                                    String path = "/users/"+user.getUid()+"/items/"+refId.toString();
+                                    String path = "/users/" + user.getUid() + "/items/" + refId.toString();
                                     DocumentReference itemDocRef = db.document(path);
                                     itemDocRef.delete();
                                 }
@@ -274,16 +274,16 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                 select_All.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(select_All.isChecked()){
-                            for(int j = 0; j<finalItemList.getCount();j++){
+                        if (select_All.isChecked()) {
+                            for (int j = 0; j < finalItemList.getCount(); j++) {
                                 View view1 = finalItemList.getChildAt(j);
                                 CheckBox checkBox = view1.findViewById(R.id.checkbox);
                                 checkBox.setChecked(true);
                                 getSelectedCount(selected_count);
                             }
                         }
-                        if(!select_All.isChecked()){
-                            for(int j = 0; j<finalItemList.getCount();j++){
+                        if (!select_All.isChecked()) {
+                            for (int j = 0; j < finalItemList.getCount(); j++) {
                                 View view1 = finalItemList.getChildAt(j);
                                 CheckBox checkBox = view1.findViewById(R.id.checkbox);
                                 checkBox.setChecked(false);
@@ -296,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                 tagButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),"edit");
+                        TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(), "edit");
                         newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
                     }
                 });
@@ -309,9 +309,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         itemList = finalItemList;
         itemAdapter = finalItemAdapter;
         itemList.setAdapter(itemAdapter);
-        //itemAdapter.notifyDataSetChanged();
-
-
+        // itemAdapter.notifyDataSetChanged();
 
         addEditActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -335,7 +333,7 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 Log.d("itemTag", "New Item RefID: " + item.getItemRefID());
                                 dataList.add(item);
                                 estTotalCost += item.getEstValue();
-                                itemsRef.document(String.valueOf( item.getItemRefID() )).set(item);
+                                itemsRef.document(String.valueOf(item.getItemRefID())).set(item);
                                 itemAdapter.notifyDataSetChanged();
                                 Log.d("tagtag", "onCreate: tags " + item.getTags());
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
@@ -347,23 +345,22 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
                                 Log.d("itemTag", "from editActivity RefID: " + item.getItemRefID());
                                 item.setItemRefID(UUID.fromString(itemRefId));
                                 Log.d("itemTag", "after setting RefID: " + item.getItemRefID());
-                                itemsRef.document(String.valueOf( item.getItemRefID() )).set(item);
+                                itemsRef.document(String.valueOf(item.getItemRefID())).set(item);
                                 itemAdapter.notifyDataSetChanged();
                             }
                             String cost = getString(R.string.totalcost, estTotalCost);
                             totalCost.setText(cost);
                         }
                     }
-                }
-        );
+                });
 
         // View and/or edit the item when clicked
-        itemList.setOnItemClickListener((adapterView, view, i, l)->{
+        itemList.setOnItemClickListener((adapterView, view, i, l) -> {
             Intent intent = new Intent(MainActivity.this, AddEditActivity.class);
             intent.putExtra("mode", "edit");
             Log.d("mainTag", "position: " + i);
             Item itemToCopy = dataList.get(i);
-            Item copyItem = makeCopy( itemToCopy);
+            Item copyItem = makeCopy(itemToCopy);
             Log.d("mainTag", "hi copyDate is " + copyItem.getDate());
 
             intent.putExtra("item", copyItem);
@@ -384,12 +381,15 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             addEditActivityResultLauncher.launch(intent);
         });
     }
+
     /*
-    * This makes a copy of the item
-    * @param item the item object to be copied
-    * @return copyItem an Item object with the same values as the input item
-    * */
-    public Item makeCopy(Item item){
+     * This makes a copy of the item
+     * 
+     * @param item the item object to be copied
+     * 
+     * @return copyItem an Item object with the same values as the input item
+     */
+    public Item makeCopy(Item item) {
         Log.d("mainTag", "in copy ");
         assert item != null;
         String itemName = item.getDescription();
@@ -403,17 +403,20 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         List itemPhotos = item.getPhotos();
         Log.d("mainTag", "Date is" + itemDate);
         Log.d("mainTag", "Make is " + itemMake);
-        Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment, itemPhotos);
+        Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment,
+                itemPhotos);
         return copyItem;
     }
+
     /*
-    * This calculates the total cost of all the items and then
-    * sets the textview to that cost
-    * @param dataList the arraylist containing the items
-    * */
-    public void setTotal(ArrayList<Item> dataList){
+     * This calculates the total cost of all the items and then
+     * sets the textview to that cost
+     * 
+     * @param dataList the arraylist containing the items
+     */
+    public void setTotal(ArrayList<Item> dataList) {
         estTotalCost = 0;
-        for (int i=0; i < dataList.size(); i++){
+        for (int i = 0; i < dataList.size(); i++) {
             Item item = dataList.get(i);
             int val = item.getEstValue();
             estTotalCost += val;
@@ -421,7 +424,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             totalCost.setText(cost);
         }
     }
-
 
     @Override
     public void onStart() {
@@ -437,9 +439,9 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         }
     }
 
-
     /**
-     * This method will attempt to sign on anonymously, if the user is not already signed in
+     * This method will attempt to sign on anonymously, if the user is not already
+     * signed in
      */
 
     private void signOnAnonymously() {
@@ -473,7 +475,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
     }
 
     /**
-     * This method checks the Firestore database to see if a corresponding 'users' document exists
+     * This method checks the Firestore database to see if a corresponding 'users'
+     * document exists
      *
      * @param user This is the given user currently accessing the app/database
      */
@@ -502,7 +505,6 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         });
     }
 
-
     @Override
     public void onCloseAction() {
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
@@ -522,13 +524,13 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             View view_temp = finalItemList.getChildAt(j);
             if (view_temp != null) {
                 CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                //checkBox.setVisibility(View.GONE);
-                if(checkBox.isChecked()){
+                // checkBox.setVisibility(View.GONE);
+                if (checkBox.isChecked()) {
                     // Must process the tags for this item.
-                    editor.checkMultipleItemTagAddition(dataList.get(j).getTags(),applyTags);
-                    }
+                    editor.checkMultipleItemTagAddition(dataList.get(j).getTags(), applyTags);
                 }
             }
+        }
 
         try {
             date2 = formatter.parse(date22);
@@ -544,11 +546,12 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
             Log.d("tag", "Not enough tags in the list");
 
         }
-
+    }
 
     @Override
     public void onTagDeletion(Tag deletedTag) {
-        // check all the items in the listview. and if the item has the tag that was defined to be
+        // check all the items in the listview. and if the item has the tag that was
+        // defined to be
         // deleted then delete it from the arraylist of tags associated with the item!!
         TagListEditor checker = new TagListEditor();
         for (Item currentItem : dataList) {
@@ -556,11 +559,8 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         }
     }
 
-
-
-
-    public void deleteItems(ArrayList<Item> dataList, ArrayList<Item> toremove){
-        if (toremove.size() == 0){
+    public void deleteItems(ArrayList<Item> dataList, ArrayList<Item> toremove) {
+        if (toremove.size() == 0) {
             Toast.makeText(MainActivity.this, "Select items to delete",
                     Toast.LENGTH_SHORT).show();
         } else {
@@ -571,5 +571,3 @@ public class MainActivity extends AppCompatActivity implements TagFragment.OnFra
         }
     }
 }
-
-
