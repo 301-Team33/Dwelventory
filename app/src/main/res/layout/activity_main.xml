@@ -79,46 +79,71 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="110dp"
             android:background="?android:attr/selectableItemBackground"/>
-      
+
             android:layout_marginLeft="370dp"
             android:contentDescription="Close"
             android:src="@drawable/icons8_cancel" />
 
 
     </RelativeLayout>
+    
+    <LinearLayout
+        android:id="@+id/spinner_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:layout_below="@id/selectMultipleitems">
 
-    <Spinner
-        android:id="@+id/sort_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_below="@+id/selectMultipleitems"
-        />
+        <Spinner
+            android:id="@+id/sort_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            />
+        <View
+            android:id="@+id/sort_spinner_end"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_alignEnd="@+id/sort_spinner"
+            />
 
-    <Spinner
-        android:id="@+id/order_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_alignTop="@+id/sort_spinner"
-        android:layout_alignParentEnd="true"
-        />
+        <Spinner
+            android:id="@+id/order_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_alignTop="@+id/sort_spinner"
+            android:layout_alignStart="@+id/sort_spinner_end"
+            android:layout_weight="1"
+            />
+
+        <View
+            android:id="@+id/order_spinner_end"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_alignEnd="@+id/order_spinner"
+            />
+
+        <Spinner
+            android:id="@+id/filter_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_alignTop="@id/sort_spinner"
+            android:layout_alignStart="@+id/order_spinner_end"
+            android:entries="@array/filter_spinner_options"
+            android:layout_weight="1"
+            />
+    </LinearLayout>
+
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/item_list"
         android:choiceMode="multipleChoice"
-        android:layout_below="@+id/sort_spinner"
+        android:layout_below="@+id/spinner_layout"
         >
     </ListView>
-
-
-    <Spinner
-        android:id="@+id/filter_spinner"
-        android:layout_width="150dp"
-        android:layout_height="40dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:entries="@array/filter_spinner_options" />
 
     <LinearLayout
         android:layout_width="match_parent"

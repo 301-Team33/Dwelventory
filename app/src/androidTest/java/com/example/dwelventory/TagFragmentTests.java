@@ -1,8 +1,10 @@
 package com.example.dwelventory;
 
 import static android.app.PendingIntent.getActivity;
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
@@ -12,6 +14,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.anything;
 
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -93,9 +96,15 @@ public class TagFragmentTests {
         onView(withId(R.id.add_item_button)).perform(click());
         onView(withId(R.id.edit_tag_button)).perform(click());
 
-        onView(withId(R.id.tag_edittext)).perform(ViewActions.typeText("Kitchen2"));
+        onView(withId(R.id.tag_edittext)).perform(ViewActions.typeText("Kit"));
         onView(withId(R.id.tag_create_button)).perform(click());
-        onView(withId(R.id.tag_apply_button))
+
+        onData(anything())
+                .inAdapterView(withId(R.id.tag_listview))
+                .atPosition(0)
+                .perform(click());
+        onView(withId(R.id.tag_apply_button));
+        onView(withText("Kit")).check(matches(isDisplayed()));
 
     }
     @Rule

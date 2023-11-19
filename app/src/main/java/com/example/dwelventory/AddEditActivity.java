@@ -21,7 +21,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
-
+/**
+ * This is the activity that allows the user to input the item's information
+ * for the creation of a new item, allows the user to view the item's information,
+ * allows the user to edit an item's information, and allows the user to edit the
+ * the tags associated with the item.
+ * @author Maggie Lacson and Ethan Keys
+ * @see MainActivity
+ * @see TagFragment
+ * */
 public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener{
     // All views
     EditText nameButton;
@@ -52,8 +60,11 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
     private ArrayList<Tag> tagsToApply;
 //    private String comment;
     private String prevName;
-
-
+    /**
+     * This sets up the activity. Either blank if the user is adding an item
+     * or with the item's information loaded into the text boxes if the user
+     * is viewing or editing the item.
+     * */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,8 +108,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             prevName = item.getDescription();
             nameButton.setText(prevName);
             Date date = (Date) intent.getSerializableExtra("date");
-            Log.d("aeTag", "um Date is" + date);
             tagsToApply = intent.getParcelableArrayListExtra("tags");
+            Log.d("# just opened on edit mode", String.valueOf(tagsToApply));
             if(tagsToApply == null){
                 tagsToApply = new ArrayList<>();
                 Log.d("", "onCreate: SEE HERE 1" + tagsToApply);
@@ -107,6 +118,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             item.setTags(tagsToApply);
 
             // Now display any tags that are already applied. Up to 3
+            // Add the Tags indentifiers to the Top right corner of the screen setting up to 3 Tag Names.
+            // If a Item has less than 3 Tags then the remaining unused Tag buttons will be hidden.
             int numTags = tagsToApply.size();
             int i = 0;
             while (i <= 2 || i < numTags){
@@ -121,7 +134,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                     tagDisplay2Button.setText(tagsToApply.get(i).getTagName());
                     tagDisplay2Button.setVisibility(View.VISIBLE);
                 }
-                else if(i == 3){
+                else if(i == 2){
                     tagDisplay3Button.setText(tagsToApply.get(i).getTagName());
                     tagDisplay3Button.setVisibility(View.VISIBLE);
                 }
@@ -185,6 +198,9 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 Log.d("editTag", "before making the new item, date is " + date);
                 
                 Item item = new Item(name, date, make, model, estValue);
+                if ( tagsToApply == null){
+                    tagsToApply = new ArrayList<>();
+                };
                 item.setTags(tagsToApply);
 
 
@@ -195,7 +211,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                   item.setTags(emptyTagSet);
                 }
                 // go back to main activity
-                updatedIntent.putExtra("tags",item.getTags());
+                updatedIntent.putParcelableArrayListExtra("tags",tagsToApply);
+                Log.d("# tag TAg hitting confirm", String.valueOf(tagsToApply));
                 updatedIntent.putExtra("item", item);
                 updatedIntent.putExtra("date", date);
                 updatedIntent.putExtra("mode", mode);
@@ -267,7 +284,11 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         // All inputs valid!!!
         return valid;
     }
-
+    /**
+     * This checks if the given date is valid
+     * @param dateStr (String) the string version of the data given by the user
+     * @return true or false depending if the given string was a valid date
+     */
     private boolean isDateValid(String dateStr) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault());
         dateFormat.setLenient(false); // Disallow lenient date parsing
@@ -279,12 +300,23 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         }
     }
 
+    /***
+     * This overriden method will close the currently opened TagFragment without creating any side
+     * effects.
+     */
     @Override
     public void onCloseAction() {
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
         tagFragment.dismiss();
     }
 
+    /***
+     * This method which is overriden applies an ArrayList of Tags to the currently specified Item.
+     * If the Item has already been created and is being edited, then the specified Item's ArrayList of
+     * current Tags will be updated. Else if the Item is being created for the firts time, we just
+     * Set a current ArrayList of Tags which will thus later be applied to an Item.
+     * @param applyTags
+     */
     @Override
     public void onTagApplyAction(ArrayList<Tag> applyTags) {
         TagFragment tagFragment = (TagFragment) getSupportFragmentManager().findFragmentByTag("TAG_FRAG");
@@ -295,20 +327,24 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         }
         String mode = intent.getStringExtra("mode");
         TagListEditor editor = new TagListEditor();
-        if (!mode.equals("edit")){
+        if (mode.equals("add")){
+            Log.d("addTag", "in add mode");
             editor.checkSingleItemTagAddition(tagsToApply,applyTags);
         }
-        if (tagsToApply == null || applyTags.size() == 0){
+        else if (tagsToApply == null || applyTags.size() == 0){
             tagsToApply = new ArrayList<>();
             item.setTags(tagsToApply);
         }else if(mode.equals("edit")){
             editor.checkSingleItemTagAddition(tagsToApply,applyTags);
             item.setTags(tagsToApply);
     }
+
         tagDisplay3Button.setVisibility(View.GONE);
         tagDisplay2Button.setVisibility(View.GONE);
         tagDisplay1Button.setVisibility(View.GONE);
 
+        // Add the Tags indentifiers to the Top right corner of the screen setting up to 3 Tag Names.
+        // If a Item has less than 3 Tags then the remaining unused Tag buttons will be hidden.
         int numTags = tagsToApply.size();
         int i = 0;
         while (i < numTags && i <= 2){
@@ -331,11 +367,22 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         }
 }
 
+    /***
+     * Hook which is not implemented for the AddEditActivity as Tags should not be allowed to be deleted
+     * from this Activity
+     * @param deletedTag
+     *      Wouldve been the Tag instance of the Tag to be deleted.
+     */
     @Override
     public void onTagDeletion(Tag deletedTag) {
         return;
     }
 
+    /***
+     * Produces a toast for the specified action by accepting a String to be displayed as the toast message
+     * @param stringResource
+     *      String object representing the String that will be displayed within the customized Toast.
+     */
     private void produceTagToast(String stringResource){
         // create a toast with the specified string resource on the appropiate action.
         Toast toast = Toast.makeText(this,stringResource,Toast.LENGTH_SHORT);
