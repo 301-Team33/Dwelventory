@@ -830,7 +830,9 @@ public class MainActivity extends AppCompatActivity
                                     doc.getString("model"),
                                     doc.getLong("estValue").intValue());
                             item.setSerialNumber(doc.getLong("serialNumber").intValue());
-
+                            ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
+                            ArrayList<Tag> realTags = makeTagList(tags);
+                            item.setTags(realTags);
                             item.setItemRefID(UUID.fromString(doc.getId()));
 
                             dataList.add(item);
@@ -877,6 +879,9 @@ public class MainActivity extends AppCompatActivity
                                         doc.getString("model"),
                                         doc.getLong("estValue").intValue());
                                 item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
+                                ArrayList<Tag> realTags = makeTagList(tags);
+                                item.setTags(realTags);
                                 item.setItemRefID(UUID.fromString(doc.getId()));
                                 dataList.add(item);
                                 estTotalCost += doc.getLong("estValue").intValue();
@@ -917,6 +922,9 @@ public class MainActivity extends AppCompatActivity
                                             doc.getString("model"),
                                             doc.getLong("estValue").intValue());
                                     item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                    ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
+                                    ArrayList<Tag> realTags = makeTagList(tags);
+                                    item.setTags(realTags);
                                     item.setItemRefID(UUID.fromString(doc.getId()));
                                     dataList.add(item);
                                     estTotalCost += doc.getLong("estValue").intValue();
