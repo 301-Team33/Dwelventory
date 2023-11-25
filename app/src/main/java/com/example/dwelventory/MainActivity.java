@@ -785,6 +785,8 @@ public class MainActivity extends AppCompatActivity
         TagListEditor checker = new TagListEditor();
         for (Item currentItem : dataList) {
             checker.checkDeletion(currentItem.getTags(), deletedTag);
+            currentItem.setTags(checker.checkDeletion(currentItem.getTags(), deletedTag));
+            itemsRef.document(String.valueOf(currentItem.getItemRefID())).set(currentItem.toMap());
         }
     }
 
