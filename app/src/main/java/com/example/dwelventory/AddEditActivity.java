@@ -1,14 +1,13 @@
 package com.example.dwelventory;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.UUID;
 /**
  * This is the activity that allows the user to input the item's information
  * for the creation of a new item, allows the user to view the item's information,
@@ -224,6 +222,14 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 setResult(818, updatedIntent);
                 Log.d("aeTag", "finishing aeActivity...");
                 finish();
+            }
+        });
+
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PhotoFragment photoFrag = PhotoFragment.newInstance(null);
+                photoFrag.show(getSupportFragmentManager(), "PHOTO_FRAG");
             }
         });
     }
