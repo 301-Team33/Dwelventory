@@ -5,18 +5,32 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -48,10 +62,11 @@ public class FilterFragment extends DialogFragment {
         void onTagFilterApplied(String[] tags);
         void onClearFilterApplied();
     }
-    public static FilterFragment newInstance(String filterOption) {
+    public static FilterFragment newInstance(String filterOption,String userId) {
         FilterFragment fragment = new FilterFragment();
         Bundle args = new Bundle();
         args.putString("filter_option", filterOption);
+        args.putString("user",userId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -141,21 +156,81 @@ public class FilterFragment extends DialogFragment {
         }
         else if("Tags".equals(filterOption)) {
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.popup_select_tags,null);
-            EditText tagsInput = view.findViewById(R.id.filter_tags_etext);
             Button doneButton = view.findViewById(R.id.filter_tags_donebtn);
+            ListView tagListView = view.findViewById(R.id.filter_tag_lv);
+            TextView tagCount = view.findViewById(R.id.tag_selected_count);
 
-            doneButton.setOnClickListener(new View.OnClickListener() {
+            // initialize the tag listview nessecities..
+             ArrayAdapter<Tag> tagArrayAdapter;
+             ArrayList<Tag> tagDataList = new ArrayList<>();
+
+            tagArrayAdapter = new TagCustomList(this.getContext(), tagDataList,new ArrayList<Tag>());
+            tagListView.setAdapter(tagArrayAdapter);
+
+            // get the firebase data to fill the list view with the required tags.
+             FirebaseAuth mAuth;
+             FirebaseFirestore db;
+             CollectionReference tagsRef;
+             String userId = (String) getArguments().getString("user");
+
+             // Initialize an ArrayLiST FOR THE TAGS that we will be filtering by..
+             ArrayList<Tag> selectedTags = new ArrayList<>();
+
+            // get the collection for the current user defined tag names
+            mAuth = FirebaseAuth.getInstance();
+            db = FirebaseFirestore.getInstance();
+            Log.d("database Tag", "/users/"+userId+"/tags");
+            tagsRef = db.collection("users").document(userId).collection("tags");
+
+            tagsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
-                public void onClick(View v){
-                    String tagsText = tagsInput.getText().toString();
-                    filterInput = tagsText.split("\\s+");
-                    if (listener != null) {
-                        listener.onTagFilterApplied(filterInput);
+                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                    if (error != null){
+                        Log.e("Firestore",error.toString());
+                        return;
                     }
+                    if (value != null){
+                        tagDataList.clear();
+                        for(QueryDocumentSnapshot doc: value){
+                            String storedTagName = doc.getId();
+                            Log.d("Firestore", String.format("Tag(%s) fetched", storedTagName));
+                            Tag storedTag = new Tag(storedTagName);
+                            tagDataList.add(storedTag);
+                        }
+                        tagArrayAdapter.notifyDataSetChanged(); // notify the adapter of the changed dataset.
+                    }
+                }
 
-                    dismiss();
+            });
+
+            tagListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        if (selectedTags.contains(tagDataList.get(position)) == false){
+                            view.setBackgroundColor(getResources().getColor(R.color.selected,null));
+                            selectedTags.add(tagDataList.get(position));
+                            int numTags = selectedTags.size();
+                            if (numTags >= 10){
+                                tagCount.setText("TAGS: 9+");
+                            }else{
+                                tagCount.setText("TAGS: " + numTags);
+                            }
+                        }else{
+                            view.setBackgroundColor(getResources().getColor(R.color.gray,null));
+                            selectedTags.remove(tagDataList.get(position));
+                            int numTags = selectedTags.size();
+                            if (numTags >= 10){
+                                tagCount.setText("TAGS: 9+");
+                            }else{
+                                tagCount.setText("TAGS: " + numTags);
+                            }
+                        }
                 }
             });
+
+
+
+
             builder.setView(view);
             return builder.create();
         }

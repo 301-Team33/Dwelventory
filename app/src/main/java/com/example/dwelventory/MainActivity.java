@@ -379,7 +379,7 @@ public class MainActivity extends AppCompatActivity
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0 && !(initialSpinnerCheck)) {
                     String filter = parent.getItemAtPosition(position).toString();
-                    FilterFragment filterFrag = FilterFragment.newInstance(filter);
+                    FilterFragment filterFrag = FilterFragment.newInstance(filter,mAuth.getUid());
                     filterFrag.show(getSupportFragmentManager(), "FilterFragment");
                 } else if (initialSpinnerCheck) {
                     initialSpinnerCheck = false;
