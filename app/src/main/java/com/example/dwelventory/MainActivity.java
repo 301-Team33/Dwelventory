@@ -945,8 +945,8 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onTagFilterApplied(ArrayList<Tag> filterTags) {
-        AtomicInteger pendingQueries = new AtomicInteger(filterTags.size());
-
+        AtomicInteger pendingQueries = new AtomicInteger(1);
+        estTotalCost = 0;
         itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -994,7 +994,6 @@ public class MainActivity extends AppCompatActivity
                 }
 
             });
-        itemAdapter.notifyDataSetChanged();
     }
 
     /**
