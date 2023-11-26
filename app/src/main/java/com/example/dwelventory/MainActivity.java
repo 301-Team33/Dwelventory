@@ -945,12 +945,13 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onTagFilterApplied(ArrayList<Tag> filterTags) {
-        dataList.clear();
         AtomicInteger pendingQueries = new AtomicInteger(filterTags.size());
 
         itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    dataList.clear();
+                    itemAdapter.notifyDataSetChanged();
                     pendingQueries.decrementAndGet();
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot doc : task.getResult()) {
@@ -991,7 +992,9 @@ public class MainActivity extends AppCompatActivity
                         setTotal(dataList);
                     }
                 }
+
             });
+        itemAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -1000,6 +1003,8 @@ public class MainActivity extends AppCompatActivity
      */
     public void onClearFilterApplied() {
         estTotalCost = 0;
+        dataList.clear();
+        itemAdapter.notifyDataSetChanged();
         itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
