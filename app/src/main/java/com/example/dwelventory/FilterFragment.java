@@ -59,7 +59,7 @@ public class FilterFragment extends DialogFragment {
         void onMakeFilterApplied(String[] filterInput);
         void onDateFilterApplied(Date start, Date end);
         void onKeywordFilterApplied(String[] keywords);
-        void onTagFilterApplied(String[] tags);
+        void onTagFilterApplied(ArrayList<Tag> tags);
         void onClearFilterApplied();
     }
     public static FilterFragment newInstance(String filterOption,String userId) {
@@ -225,6 +225,20 @@ public class FilterFragment extends DialogFragment {
                                 tagCount.setText("TAGS: " + numTags);
                             }
                         }
+                }
+
+
+
+
+            });
+
+            doneButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (selectedTags.size() != 0) {
+                        listener.onTagFilterApplied(selectedTags);
+                        dismiss();
+                    }
                 }
             });
 

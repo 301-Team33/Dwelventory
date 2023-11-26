@@ -941,12 +941,11 @@ public class MainActivity extends AppCompatActivity
      *
      * NOT FINISHED YET. NOT PART OF HALFWAY CHECKPOINT.
      *
-     * @param tags
+     * @param filterTags
      */
     @Override
     public void onTagFilterApplied(ArrayList<Tag> filterTags) {
         dataList.clear();
-        CollectionReference itemsRef = db.collection("item");
         AtomicInteger pendingQueries = new AtomicInteger(filterTags.size());
 
         itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -979,7 +978,8 @@ public class MainActivity extends AppCompatActivity
                                         doc.getLong("estValue").intValue());
                                 item.setSerialNumber(doc.getLong("serialNumber").intValue());
                                 item.setItemRefID(UUID.fromString(doc.getId()));
-                                item.setTags();
+                                ArrayList<Tag> itemTags = makeTagList(docTags);
+                                item.setTags(itemTags);
                                 dataList.add(item);
                                 estTotalCost += doc.getLong("estValue").intValue();
                             }
@@ -1014,6 +1014,9 @@ public class MainActivity extends AppCompatActivity
                                 doc.getLong("estValue").intValue());
                         item.setSerialNumber(doc.getLong("serialNumber").intValue());
                         item.setItemRefID(UUID.fromString(doc.getId()));
+                        ArrayList<String> stringTags = (ArrayList<String>)doc.get("tags");
+                        ArrayList<Tag> itemTags = makeTagList(stringTags);
+                        item.setTags(itemTags);
                         dataList.add(item);
                         estTotalCost += doc.getLong("estValue").intValue();
                     }
