@@ -3,6 +3,7 @@ package com.example.dwelventory;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,7 +45,9 @@ public class PhotoFragment extends DialogFragment {
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // start camera activity
+                Intent intent = new Intent(getActivity(), CameraActivity.class);
+                startActivity(intent);
             }
         });
         return builder.create();
