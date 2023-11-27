@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity
     public int estTotalCost = 0;
     private ListView finalItemList;
     ArrayAdapter<Item> finalItemAdapter;
+    private TextView appTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +109,8 @@ public class MainActivity extends AppCompatActivity
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
         FirebaseUser user = mAuth.getCurrentUser();
+
+        appTitle = findViewById(R.id.app_title);
 
         if (user == null) {
             signOnAnonymously();
@@ -264,6 +267,7 @@ public class MainActivity extends AppCompatActivity
                 ImageButton tagButton = findViewById(R.id.multiple_set_tags_button);
                 CheckBox select_All = findViewById(R.id.selectAll_checkbox);
                 addButton.setVisibility(View.GONE);
+                appTitle.setVisibility(View.GONE);
 
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
@@ -283,6 +287,7 @@ public class MainActivity extends AppCompatActivity
                     public void onClick(View view) {
                         select_items.setVisibility(View.GONE);
                         addButton.setVisibility(View.VISIBLE);
+                        appTitle.setVisibility(View.VISIBLE);
 
                         for (int j = 0; j < itemAdapter.getCount(); j++) {
                             View view_temp = finalItemList.getChildAt(j);
