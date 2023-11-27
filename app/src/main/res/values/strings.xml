@@ -41,6 +41,7 @@
       <item>Description</item>
       <item>Make</item>
       <item>Estimated Value</item>
+      <item>Tags</item>
     </string-array>
 
     <string-array name="order_array">

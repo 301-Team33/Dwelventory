@@ -65,4 +65,24 @@ public class ItemSorter {
             Collections.sort(itemList, Comparator.comparing(Item::getEstValue));
         }
     }
+
+    /**
+     * This method will sort an ArrayList of Items in place by their first Tag.
+     * @param itemList
+     * @param reverseOrder
+     */
+    static void sortTag(ArrayList<Item> itemList, boolean reverseOrder){
+
+        Comparator<Item> tagComparator = (item1, item2) -> {
+            String tag1 = item1.getTags().isEmpty() ? "" : item1.getTags().get(0).getTagName();
+            String tag2 = item2.getTags().isEmpty() ? "" : item2.getTags().get(0).getTagName();
+            return tag1.compareTo(tag2);
+        };
+
+        if (reverseOrder) {
+            Collections.sort(itemList, tagComparator.reversed());
+        } else {
+            Collections.sort(itemList, tagComparator);
+        }
+    }
 }
