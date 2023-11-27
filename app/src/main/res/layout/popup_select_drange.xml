@@ -3,8 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#c38e67"
+    android:background="@color/beige"
     android:orientation="vertical">
+
 
     <TextView
         android:layout_width="match_parent"
@@ -14,7 +15,16 @@
         android:textSize="30dp"
         android:textColor="@color/white"
         android:paddingVertical="10dp"
+        android:textAllCaps="true"
+        android:textStyle="bold"
         android:background="#8e7a6b"></TextView>
+
+    <ImageView
+        android:id="@+id/calender_icon"
+        android:layout_width="100dp"
+        android:layout_gravity="center"
+        android:layout_height="92dp"
+        android:src="@drawable/calender_filter_icon"></ImageView>
 
     <EditText
         android:id="@+id/filter_date_cal1"
@@ -24,7 +34,7 @@
         android:paddingHorizontal="20dp"
         android:paddingVertical="10dp"
         android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="7dp"
         android:layout_marginBottom="20dp"
         android:background="@color/white"
         android:textSize="25dp"></EditText>
@@ -37,19 +47,21 @@
         android:paddingHorizontal="20dp"
         android:paddingVertical="10dp"
         android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="70dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="20dp"
         android:background="@color/white"
         android:textSize="25dp"></EditText>
 
-    <Button
+    <android.widget.Button
         android:id="@+id/filter_date_donebtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/done"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
         android:textSize="25dp"
-        android:backgroundTint="#2d814f"
-        android:layout_marginBottom="20dp"></Button>
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/tag_filter_apply"></android.widget.Button>
 
 </LinearLayout>

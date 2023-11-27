@@ -868,6 +868,7 @@ public class MainActivity extends AppCompatActivity
     public void onDateFilterApplied(Date start, Date end) {
         estTotalCost = 0;
         dataList.clear();
+        itemAdapter.notifyDataSetChanged();
 
         itemsRef.whereGreaterThanOrEqualTo("date", start)
                 .whereLessThanOrEqualTo("date", end)
@@ -893,6 +894,7 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
                 });
+        itemAdapter.notifyDataSetChanged();
     }
 
     /**
