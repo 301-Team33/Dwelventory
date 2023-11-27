@@ -379,7 +379,7 @@ public class MainActivity extends AppCompatActivity
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0 && !(initialSpinnerCheck)) {
                     String filter = parent.getItemAtPosition(position).toString();
-                    FilterFragment filterFrag = FilterFragment.newInstance(filter);
+                    FilterFragment filterFrag = FilterFragment.newInstance(filter,mAuth.getUid());
                     filterFrag.show(getSupportFragmentManager(), "FilterFragment");
                 } else if (initialSpinnerCheck) {
                     initialSpinnerCheck = false;
@@ -785,6 +785,8 @@ public class MainActivity extends AppCompatActivity
         TagListEditor checker = new TagListEditor();
         for (Item currentItem : dataList) {
             checker.checkDeletion(currentItem.getTags(), deletedTag);
+            currentItem.setTags(checker.checkDeletion(currentItem.getTags(), deletedTag));
+            itemsRef.document(String.valueOf(currentItem.getItemRefID())).set(currentItem.toMap());
         }
     }
 
@@ -939,31 +941,49 @@ public class MainActivity extends AppCompatActivity
      *
      * NOT FINISHED YET. NOT PART OF HALFWAY CHECKPOINT.
      *
-     * @param tags
+     * @param filterTags
      */
     @Override
-    public void onTagFilterApplied(String[] tags) {
-        dataList.clear();
-        CollectionReference itemsRef = db.collection("item");
-        AtomicInteger pendingQueries = new AtomicInteger(tags.length);
-        for (String tag : tags) {
-            itemsRef.whereEqualTo("tag", tag).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+    public void onTagFilterApplied(ArrayList<Tag> filterTags) {
+        AtomicInteger pendingQueries = new AtomicInteger(1);
+        estTotalCost = 0;
+        itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    dataList.clear();
+                    itemAdapter.notifyDataSetChanged();
                     pendingQueries.decrementAndGet();
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot doc : task.getResult()) {
+                            // get the documents tag list...
+                            ArrayList<String> docTags = (ArrayList<String>) doc.get("tags");
+                            boolean isMatch = true;
 
-                            Item item = new Item(
-                                    doc.getString("description"),
-                                    doc.getDate("date"),
-                                    doc.getString("make"),
-                                    doc.getString("model"),
-                                    doc.getLong("estValue").intValue());
-                            item.setSerialNumber(doc.getLong("serialNumber").intValue());
-                            item.setItemRefID(UUID.fromString(doc.getId()));
-                            dataList.add(item);
-                            estTotalCost += doc.getLong("estValue").intValue();
+                            // loop through all tag names and see if all are associated with the specified
+                            // Item...
+                            // Must use this inefficient querying due to the structure of firestore
+                            // list contains method in firestore doesnt check ALL...
+
+                            for (Tag tagCheck: filterTags){
+                                if (docTags.contains(tagCheck.getTagName()) == false){
+                                    isMatch = false;
+                                    break;
+                                }
+                            }
+                            if (isMatch) {
+                                Item item = new Item(
+                                        doc.getString("description"),
+                                        doc.getDate("date"),
+                                        doc.getString("make"),
+                                        doc.getString("model"),
+                                        doc.getLong("estValue").intValue());
+                                item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                item.setItemRefID(UUID.fromString(doc.getId()));
+                                ArrayList<Tag> itemTags = makeTagList(docTags);
+                                item.setTags(itemTags);
+                                dataList.add(item);
+                                estTotalCost += doc.getLong("estValue").intValue();
+                            }
                         }
                     }
                     if (pendingQueries.get() == 0) {
@@ -972,8 +992,8 @@ public class MainActivity extends AppCompatActivity
                         setTotal(dataList);
                     }
                 }
+
             });
-        }
     }
 
     /**
@@ -982,6 +1002,8 @@ public class MainActivity extends AppCompatActivity
      */
     public void onClearFilterApplied() {
         estTotalCost = 0;
+        dataList.clear();
+        itemAdapter.notifyDataSetChanged();
         itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -996,6 +1018,9 @@ public class MainActivity extends AppCompatActivity
                                 doc.getLong("estValue").intValue());
                         item.setSerialNumber(doc.getLong("serialNumber").intValue());
                         item.setItemRefID(UUID.fromString(doc.getId()));
+                        ArrayList<String> stringTags = (ArrayList<String>)doc.get("tags");
+                        ArrayList<Tag> itemTags = makeTagList(stringTags);
+                        item.setTags(itemTags);
                         dataList.add(item);
                         estTotalCost += doc.getLong("estValue").intValue();
                     }
