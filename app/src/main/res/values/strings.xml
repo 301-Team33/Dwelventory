@@ -19,7 +19,7 @@
     <string name="delete_tag_reject_button">Back</string>
 
     <string name="confirm">Confirm</string>
-
+    <string name="Date">Date</string>
     <string name="description">Description (Name)</string>
     <string name="date">Date (mm-dd-yyyy)</string>
     <string name="make">Make</string>
