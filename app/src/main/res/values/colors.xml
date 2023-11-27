@@ -3,14 +3,14 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="green">#2D814F</color>
+    <color name="green">#62B344</color>
     <color name="caramel">#C38E67</color>
     <color name="darkBrown">#8E7A6B</color>
     <color name="beige">#D8C9B7</color>
     <color name="transparent">#00D8C9B7</color>
 
     <color name = "gray">#E7E7E7</color>
-    <color name = "selected">#B8B8B8</color>
+    <color name = "selected">#8EC879</color>
 
     <color name="grey">#808080</color>
 

@@ -15,7 +15,7 @@
 
     <EditText
         android:id="@+id/item_name_button"
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="@string/description"
         android:background="@color/darkBrown"
@@ -29,11 +29,12 @@
         app:layout_constraintBottom_toTopOf="@id/date_button"
         android:layout_marginTop="50dp"
         app:cornerRadius="0dp"
-        android:backgroundTint="@color/darkBrown"/>
+        android:backgroundTint="@color/darkBrown"
+        android:layout_marginHorizontal="16dp"/>
 
     <EditText
         android:id="@+id/date_button"
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="@string/date"
         android:background="@color/darkBrown"
@@ -46,11 +47,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="15dp"
         app:cornerRadius="0dp"
-        android:backgroundTint="@color/darkBrown"/>
+        android:backgroundTint="@color/darkBrown"
+        android:layout_marginHorizontal="16dp"/>
 
     <EditText
         android:id="@+id/make_button"
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="@string/make"
         android:background="@color/darkBrown"
@@ -64,11 +66,12 @@
         app:layout_constraintBottom_toTopOf="@id/model_button"
         android:layout_marginTop="15dp"
         app:cornerRadius="0dp"
-        android:backgroundTint="@color/darkBrown"/>
+        android:backgroundTint="@color/darkBrown"
+        android:layout_marginHorizontal="16dp"/>
 
     <EditText
         android:id="@+id/model_button"
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="@string/model"
         android:background="@color/darkBrown"
@@ -82,11 +85,12 @@
         app:layout_constraintBottom_toTopOf="@id/serial_number_button"
         android:layout_marginTop="15dp"
         app:cornerRadius="0dp"
-        android:backgroundTint="@color/darkBrown"/>
+        android:backgroundTint="@color/darkBrown"
+        android:layout_marginHorizontal="16dp"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/serial_number_button"
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="15dp"
         android:backgroundTint="@color/darkBrown"
@@ -98,11 +102,12 @@
         app:layout_constraintBottom_toTopOf="@id/estimated_val_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/model_button" />
+        app:layout_constraintTop_toBottomOf="@id/model_button"
+        android:layout_marginHorizontal="16dp"/>
 
     <EditText
         android:id="@+id/estimated_val_button"
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="@string/estValue"
         android:background="@color/darkBrown"
@@ -116,11 +121,12 @@
         app:layout_constraintBottom_toTopOf="@id/comment_button"
         android:layout_marginTop="15dp"
         app:cornerRadius="0dp"
-        android:backgroundTint="@color/darkBrown"/>
+        android:backgroundTint="@color/darkBrown"
+        android:layout_marginHorizontal="16dp"/>
 
     <EditText
         android:id="@+id/comment_button"
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="@string/comment"
         android:background="@color/darkBrown"
@@ -134,11 +140,12 @@
         app:layout_constraintBottom_toTopOf="@id/photo_button"
         android:layout_marginTop="15dp"
         app:cornerRadius="0dp"
-        android:backgroundTint="@color/darkBrown"/>
+        android:backgroundTint="@color/darkBrown"
+        android:layout_marginHorizontal="16dp"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/photo_button"
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="@string/photos"
         android:textColorHint="@color/white"
@@ -147,7 +154,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="15dp"
         app:cornerRadius="0dp"
-        android:backgroundTint="@color/darkBrown"/>
+        android:backgroundTint="@color/darkBrown"
+        android:layout_marginHorizontal="16dp"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/confirm_button"
