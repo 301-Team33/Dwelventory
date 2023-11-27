@@ -3,22 +3,25 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:padding="10dp">
 
     <ImageView
         android:id="@+id/itemImage"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="108dp"
+        android:layout_height="108dp"
         android:layout_alignParentStart="true"
-        android:src="@drawable/goat"
-        android:contentDescription="@string/imageDescription" />
+        android:contentDescription="@string/imageDescription"
+        android:src="@drawable/goat" />
 
     <CheckBox
         android:id="@+id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignTop="@+id/itemImage"
+        android:layout_alignBottom="@id/description"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
         android:visibility="gone" />
 
     <TextView
@@ -26,17 +29,50 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/itemImage"
+        android:layout_toStartOf="@id/checkbox"
         android:layout_alignTop="@+id/itemImage"
         android:textSize="28sp"
-        android:text="@string/description" />
+        android:text="Name" />
+
+    <TextView
+        android:id="@+id/make_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/itemImage"
+        android:layout_below="@+id/description"
+        android:textAlignment="viewEnd"
+        android:textSize="26sp"
+        android:text="@string/make" />
+
+    <TextView
+        android:id="@+id/date_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/description"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/make_item"
+        android:text="@string/Date"
+        android:textAlignment="viewEnd"
+        android:textSize="26sp" />
+
+    <TextView
+        android:id="@+id/model_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/itemImage"
+        android:layout_below="@+id/make_item"
+        android:textSize="26sp"
+        android:text="@string/model" />
 
     <TextView
         android:id="@+id/estValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/itemImage"
-        android:layout_below="@+id/description"
-        android:textSize="28sp"
+        android:layout_toEndOf="@id/model_item"
+        android:layout_below="@+id/date_item"
+        android:layout_alignParentEnd="true"
+        android:textSize="26sp"
+        android:textAlignment="viewEnd"
         android:text="@string/estValue" />
 
 </RelativeLayout>

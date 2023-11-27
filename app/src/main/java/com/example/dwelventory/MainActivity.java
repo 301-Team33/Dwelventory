@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -91,7 +92,8 @@ public class MainActivity extends AppCompatActivity
     private int EDIT_ACTIVITY_CODE = 18;
     private int ADD_EDIT_CODE_OK = 818;
     private Spinner sortSpinner;
-    private FloatingActionButton addButton;
+//    private FloatingActionButton addButton;
+    private ImageButton addButton;
     private TextView totalCost;
     private boolean reverseOrder;
     public int estTotalCost = 0;
@@ -363,8 +365,8 @@ public class MainActivity extends AppCompatActivity
         itemList.setAdapter(itemAdapter);
         // itemAdapter.notifyDataSetChanged();
 
-        final FloatingActionButton addButton = findViewById(R.id.add_item_button);
-
+//        final FloatingActionButton addButton = findViewById(R.id.add_item_button);
+        final ImageButton addButton = findViewById(R.id.add_item_button);
         // *** ONE FILTER AT A TIME FOR NOW ***
         Spinner filterSpinner = findViewById(R.id.filter_spinner);
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(

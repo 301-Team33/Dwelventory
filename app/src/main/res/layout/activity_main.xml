@@ -164,9 +164,22 @@
             tools:ignore="RtlSymmetry">
         </TextView>
     </LinearLayout>
+    <ImageButton
+        android:id="@+id/add_item_button"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|end"
+        android:backgroundTint="@color/green"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/main_add_item"
+        android:contentDescription="@string/add_item"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_item_button"
+        android:visibility="gone"
+        android:id="@+id/TEMP_add_item_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
