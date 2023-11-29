@@ -821,6 +821,7 @@ public class MainActivity extends AppCompatActivity
     public void onMakeFilterApplied(String[] makeInput) {
         estTotalCost = 0;
         dataList.clear();
+        setTotal(dataList);
         // CollectionReference itemsRef = db.collection("items");
 
         AtomicInteger pendingQueries = new AtomicInteger(makeInput.length);
@@ -871,6 +872,7 @@ public class MainActivity extends AppCompatActivity
     public void onDateFilterApplied(Date start, Date end) {
         estTotalCost = 0;
         dataList.clear();
+        setTotal(dataList);
         itemAdapter.notifyDataSetChanged();
 
         itemsRef.whereGreaterThanOrEqualTo("date", start)
@@ -911,6 +913,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onKeywordFilterApplied(ArrayList<String> keywords) {
         dataList.clear();
+        setTotal(dataList);
         AtomicInteger pendingQueries = new AtomicInteger(keywords.size());
         estTotalCost = 0;
         for (String keyword : keywords) {
@@ -957,6 +960,7 @@ public class MainActivity extends AppCompatActivity
     public void onTagFilterApplied(ArrayList<Tag> filterTags) {
         AtomicInteger pendingQueries = new AtomicInteger(1);
         estTotalCost = 0;
+        setTotal(dataList);
         itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
