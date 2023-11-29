@@ -39,6 +39,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 
 import android.os.Bundle;
@@ -625,6 +626,9 @@ public class MainActivity extends AppCompatActivity
             String cost = getString(R.string.totalcost, estTotalCost);
             totalCost.setText(cost);
         }
+        if (dataList.size() == 0){
+            totalCost.setText("Total Cost: $0");
+        }
     }
 
     /**
@@ -832,7 +836,7 @@ public class MainActivity extends AppCompatActivity
      * @param makeInput This is the make types to filter by, specified by the user.
      */
     @Override
-    public void onMakeFilterApplied(String[] makeInput) {
+    public void onMakeFilterApplied(ArrayList<String> makeInput) {
         estTotalCost = 0;
         // Filer has already been applied so we do not need to query firebase and can work with the
         // data list itself.
@@ -846,8 +850,10 @@ public class MainActivity extends AppCompatActivity
             }
         }
         dataList.clear();
+        setTotal(dataList);
+        
 
-        AtomicInteger pendingQueries = new AtomicInteger(makeInput.length);
+        AtomicInteger pendingQueries = new AtomicInteger(makeInput.size());
         for (String make : makeInput) {
             itemsRef.whereEqualTo("make", make).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
@@ -897,6 +903,7 @@ public class MainActivity extends AppCompatActivity
     public void onDateFilterApplied(Date start, Date end) {
         estTotalCost = 0;
         dataList.clear();
+        setTotal(dataList);
         itemAdapter.notifyDataSetChanged();
 
         itemsRef.whereGreaterThanOrEqualTo("date", start)
@@ -938,9 +945,11 @@ public class MainActivity extends AppCompatActivity
      * @param keywords holds user input keywords to filter by
      */
     @Override
-    public void onKeywordFilterApplied(String[] keywords) {
+    public void onKeywordFilterApplied(ArrayList<String> keywords) {
         dataList.clear();
-        AtomicInteger pendingQueries = new AtomicInteger(keywords.length);
+        itemAdapter.notifyDataSetChanged();
+        setTotal(dataList);
+        AtomicInteger pendingQueries = new AtomicInteger(keywords.size());
         estTotalCost = 0;
         for (String keyword : keywords) {
             itemsRef.whereEqualTo("description", keyword).get()
@@ -989,6 +998,7 @@ public class MainActivity extends AppCompatActivity
     public void onTagFilterApplied(ArrayList<Tag> filterTags) {
         AtomicInteger pendingQueries = new AtomicInteger(1);
         estTotalCost = 0;
+        setTotal(dataList);
         itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
