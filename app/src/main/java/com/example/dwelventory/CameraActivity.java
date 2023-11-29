@@ -1,21 +1,23 @@
 package com.example.dwelventory;
 
-import static androidx.camera.camera2.internal.Camera2CaptureRequestBuilder.build;
-
 import android.content.ContentValues;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -24,7 +26,6 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.io.File;
 import java.util.concurrent.ExecutionException;
 
 public class CameraActivity extends AppCompatActivity {
@@ -61,15 +62,34 @@ public class CameraActivity extends AppCompatActivity {
             }
         }, ContextCompat.getMainExecutor(this));
 
+        /*LifecycleCameraController cameraController = new LifecycleCameraController((getBaseContext()));
+        cameraController.bindToLifecycle(this);
+        cameraController.setCameraSelector(CameraSelector.DEFAULT_BACK_CAMERA);
+        previewView.setController(cameraController);*/
+
         ContentValues contentVals = new ContentValues();
         contentVals.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
         captureBtn.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.P)
             @Override
             public void onClick(View v) {
                 capturedState();
                 // show captured image
                 // take picture
-                imageCapture.takePicture(getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentVals).build();
+                //imageCapture.takePicture(getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentVals).build();
+                imageCapture.takePicture(getMainExecutor(),
+                        new ImageCapture.OnImageSavedCallback() {
+                            @Override
+                            public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                                Toast.makeText(CameraActivity.this, "Saving...", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+
+                            @Override
+                            public void onError(@NonNull ImageCaptureException exception) {
+                                Toast.makeText(CameraActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
         });
 
@@ -77,6 +97,13 @@ public class CameraActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 uncapturedState();
+            }
+        });
+
+        confirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 
