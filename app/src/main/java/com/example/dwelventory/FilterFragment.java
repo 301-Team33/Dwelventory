@@ -151,7 +151,7 @@ public class FilterFragment extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     String keywordText = keywordInput.getText().toString();
-                    if (keywordText != null && !keywordText.isEmpty()) {
+                    if (keywordText != null && !keywordText.isBlank()) {
                         keywordList.add(keywordText);
                         keywordAdapter.notifyDataSetChanged();
                         keywordInput.setText(null);

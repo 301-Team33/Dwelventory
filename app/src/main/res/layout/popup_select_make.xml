@@ -37,6 +37,19 @@
         android:background="@color/white"
         android:textSize="25dp"></EditText>
 
+
+    <android.widget.Button
+        android:id="@+id/filter_make_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Add"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="25dp"
+        android:backgroundTint="@color/green"
+        android:layout_marginBottom="20dp"></android.widget.Button>
+
     <android.widget.Button
         android:id="@+id/filter_make_donebtn"
         android:layout_width="wrap_content"
