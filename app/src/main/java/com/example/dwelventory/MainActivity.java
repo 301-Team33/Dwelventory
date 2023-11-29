@@ -99,6 +99,9 @@ public class MainActivity extends AppCompatActivity
     public int estTotalCost = 0;
     private ListView finalItemList;
     ArrayAdapter<Item> finalItemAdapter;
+
+    private boolean filterApplied = false;
+
     private TextView appTitle;
 
     @Override
@@ -370,8 +373,14 @@ public class MainActivity extends AppCompatActivity
         itemList.setAdapter(itemAdapter);
         // itemAdapter.notifyDataSetChanged();
 
+
+        // final FloatingActionButton addButton = findViewById(R.id.add_item_button);
+
+        // Code fragment below is for filtering
+
 //        final FloatingActionButton addButton = findViewById(R.id.add_item_button);
         final ImageButton addButton = findViewById(R.id.add_item_button);
+
         // *** ONE FILTER AT A TIME FOR NOW ***
         Spinner filterSpinner = findViewById(R.id.filter_spinner);
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
@@ -423,6 +432,9 @@ public class MainActivity extends AppCompatActivity
                     case "Estimated Value":
                         ItemSorter.sortEstValue(dataList, reverseOrder);
                         break;
+                    case "Tags":
+                        ItemSorter.sortTag(dataList, reverseOrder);
+                        break;
                 }
                 itemAdapter.notifyDataSetChanged();
             }
@@ -465,6 +477,9 @@ public class MainActivity extends AppCompatActivity
                         break;
                     case "Estimated Value":
                         ItemSorter.sortEstValue(dataList, reverseOrder);
+                        break;
+                    case "Tags":
+                        ItemSorter.sortTag(dataList, reverseOrder);
                         break;
                 }
                 itemAdapter.notifyDataSetChanged();
@@ -819,8 +834,18 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMakeFilterApplied(String[] makeInput) {
         estTotalCost = 0;
+        // Filer has already been applied so we do not need to query firebase and can work with the
+        // data list itself.
+        if (filterApplied){
+            for (Item item : dataList) {
+                for(String make: makeInput){
+                    if(item.getMake() == make){
+
+                    }
+                }
+            }
+        }
         dataList.clear();
-        // CollectionReference itemsRef = db.collection("items");
 
         AtomicInteger pendingQueries = new AtomicInteger(makeInput.length);
         for (String make : makeInput) {
@@ -839,7 +864,9 @@ public class MainActivity extends AppCompatActivity
                                     doc.getString("model"),
                                     doc.getLong("estValue").intValue());
                             item.setSerialNumber(doc.getLong("serialNumber").intValue());
-
+                            ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
+                            ArrayList<Tag> realTags = makeTagList(tags);
+                            item.setTags(realTags);
                             item.setItemRefID(UUID.fromString(doc.getId()));
 
                             dataList.add(item);
@@ -887,6 +914,9 @@ public class MainActivity extends AppCompatActivity
                                         doc.getString("model"),
                                         doc.getLong("estValue").intValue());
                                 item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
+                                ArrayList<Tag> realTags = makeTagList(tags);
+                                item.setTags(realTags);
                                 item.setItemRefID(UUID.fromString(doc.getId()));
                                 dataList.add(item);
                                 estTotalCost += doc.getLong("estValue").intValue();
@@ -928,6 +958,9 @@ public class MainActivity extends AppCompatActivity
                                             doc.getString("model"),
                                             doc.getLong("estValue").intValue());
                                     item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                    ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
+                                    ArrayList<Tag> realTags = makeTagList(tags);
+                                    item.setTags(realTags);
                                     item.setItemRefID(UUID.fromString(doc.getId()));
                                     dataList.add(item);
                                     estTotalCost += doc.getLong("estValue").intValue();
