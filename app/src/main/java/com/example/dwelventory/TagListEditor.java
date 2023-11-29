@@ -33,14 +33,15 @@ public class TagListEditor {
      *      A Tag representing the Tag that needs to be deleted from the ArrayList of Tags for a specified
      *      Item if the Item contains the Tag.
      */
-    public void checkDeletion(ArrayList<Tag> currentTags, Tag tagToDelete) {
+    public ArrayList<Tag> checkDeletion(ArrayList<Tag> currentTags, Tag tagToDelete) {
         Iterator<Tag> tagIterator = currentTags.iterator();
         while (tagIterator.hasNext()){
             if (tagIterator.next().getTagName().equals(tagToDelete.getTagName())){
                 tagIterator.remove();
-                return;
             }
+
         }
+        return currentTags;
     }
 
     /***

@@ -12,7 +12,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
+
 /**
  * This sets up the item list adapter for the list view
  * @author Maggie Lacson
@@ -51,9 +55,19 @@ public class ItemList extends ArrayAdapter<Item> {
         Item item = items.get(position);
         TextView description = view.findViewById(R.id.description); // Updated ID here
         TextView estValue = view.findViewById(R.id.estValue); // Updated ID here
+        TextView date = view.findViewById(R.id.date_item);
+        TextView make = view.findViewById(R.id.make_item);
+        TextView model = view.findViewById(R.id.model_item);
 
         description.setText(item.getDescription());
-        estValue.setText(String.valueOf(item.getEstValue()));
+        estValue.setText("$"+ String.valueOf(item.getEstValue()));
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault());
+        // Format the Date object as a string
+        String strDate = dateFormat.format(item.getDate());
+        date.setText(strDate);
+        make.setText(item.getMake());
+        model.setText(item.getModel());
 
         ImageView image = view.findViewById(R.id.itemImage);
         image.setImageResource(R.drawable.goat);

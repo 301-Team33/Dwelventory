@@ -3,39 +3,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/caramel"
+    android:background="@color/beige"
     android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/selectMake"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+
         android:textAlignment="center"
         android:textSize="30dp"
         android:textColor="@color/white"
         android:paddingVertical="10dp"
         android:background="@color/darkBrown"></TextView>
 
+    <ImageView
+        android:layout_width="106dp"
+        android:layout_height="95dp"
+        android:src="@drawable/make_vector_image"
+        android:layout_gravity="center"></ImageView>
+
     <EditText
         android:id="@+id/filter_make_etext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Make"
+        android:hint="Make: Filter"
         android:paddingHorizontal="20dp"
         android:paddingVertical="10dp"
         android:layout_marginHorizontal="40dp"
-        android:layout_marginVertical="70dp"
+        android:layout_marginVertical="15dp"
         android:background="@color/white"
         android:textSize="25dp"></EditText>
 
-    <Button
+    <android.widget.Button
         android:id="@+id/filter_make_donebtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/done"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
         android:textSize="25dp"
         android:backgroundTint="@color/green"
-        android:layout_marginBottom="20dp"></Button>
+        android:layout_marginBottom="20dp"></android.widget.Button>
 
 </LinearLayout>

@@ -19,7 +19,7 @@
     <string name="delete_tag_reject_button">Back</string>
 
     <string name="confirm">Confirm</string>
-
+    <string name="Date">Date</string>
     <string name="description">Description (Name)</string>
     <string name="date">Date (mm-dd-yyyy)</string>
     <string name="make">Make</string>
@@ -30,10 +30,10 @@
     <string name="photos">Photos</string>
     <string name="imageDescription">Item Image</string>
     <string name="selectMake">Select Make</string>
-    <string name="selectTags">Select Tags</string>
+    <string name="selectTags">FILTER BY TAGS</string>
     <string name="selectDRange">Select Date Range</string>
     <string name="selectkWords">Select Keywords</string>
-    <string name="done">Done</string>
+    <string name="done">Apply</string>
     <string name="totalcost">Total Cost: $%d</string>
 
     <string-array name="sort_array">
