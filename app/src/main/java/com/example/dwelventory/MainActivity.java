@@ -39,6 +39,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 
 import android.os.Bundle;
@@ -908,9 +909,9 @@ public class MainActivity extends AppCompatActivity
      * @param keywords holds user input keywords to filter by
      */
     @Override
-    public void onKeywordFilterApplied(String[] keywords) {
+    public void onKeywordFilterApplied(ArrayList<String> keywords) {
         dataList.clear();
-        AtomicInteger pendingQueries = new AtomicInteger(keywords.length);
+        AtomicInteger pendingQueries = new AtomicInteger(keywords.size());
         estTotalCost = 0;
         for (String keyword : keywords) {
             itemsRef.whereEqualTo("description", keyword).get()
