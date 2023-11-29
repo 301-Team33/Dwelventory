@@ -49,6 +49,16 @@
         android:textSize="25dp"
         android:backgroundTint="@color/green"
         android:layout_marginBottom="20dp"></android.widget.Button>
+    <ListView
+        android:id="@+id/filter_make_lv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:dividerHeight="0dp"
+        android:drawSelectorOnTop="false"
+        android:cacheColorHint="@android:color/transparent"
+        android:listSelector="@android:color/transparent"
+        android:background="@color/gray"></ListView>
 
     <android.widget.Button
         android:id="@+id/filter_make_donebtn"

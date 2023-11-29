@@ -821,13 +821,13 @@ public class MainActivity extends AppCompatActivity
      * @param makeInput This is the make types to filter by, specified by the user.
      */
     @Override
-    public void onMakeFilterApplied(String[] makeInput) {
+    public void onMakeFilterApplied(ArrayList<String> makeInput) {
         estTotalCost = 0;
         dataList.clear();
         setTotal(dataList);
         // CollectionReference itemsRef = db.collection("items");
 
-        AtomicInteger pendingQueries = new AtomicInteger(makeInput.length);
+        AtomicInteger pendingQueries = new AtomicInteger(makeInput.size());
         for (String make : makeInput) {
             itemsRef.whereEqualTo("make", make).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
