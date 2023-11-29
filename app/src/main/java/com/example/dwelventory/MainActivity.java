@@ -611,6 +611,9 @@ public class MainActivity extends AppCompatActivity
             String cost = getString(R.string.totalcost, estTotalCost);
             totalCost.setText(cost);
         }
+        if (dataList.size() == 0){
+            totalCost.setText("Total Cost: $0");
+        }
     }
 
     /**
@@ -913,6 +916,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onKeywordFilterApplied(ArrayList<String> keywords) {
         dataList.clear();
+        itemAdapter.notifyDataSetChanged();
         setTotal(dataList);
         AtomicInteger pendingQueries = new AtomicInteger(keywords.size());
         estTotalCost = 0;
