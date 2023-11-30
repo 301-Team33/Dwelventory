@@ -1,6 +1,7 @@
 package com.example.dwelventory;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -49,6 +50,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
     private String make;
     private String model;
     private int estValue;
+    private ArrayList<Bitmap> photos;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -228,11 +230,20 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PhotoFragment photoFrag = PhotoFragment.newInstance(null);
+                // want to send Item's list of photos
+                // need to send all edittext content to save state
+                /*if (mode.equals("edit") && item.getPhotos() != null){
+                    photos = item.getPhotos();
+                } else {
+                    photos = new ArrayList<>();
+                    //item.setPhotos(photos);
+                }*/
+                PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid());
                 photoFrag.show(getSupportFragmentManager(), "PHOTO_FRAG");
             }
         });
     }
+
     /**
      * This checks all the required inputs are filled out properly
      * @return true or false whether or not inputs are valid

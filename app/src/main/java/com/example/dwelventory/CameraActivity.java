@@ -1,7 +1,8 @@
 package com.example.dwelventory;
 
-import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -12,7 +13,6 @@ import android.widget.CheckBox;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
@@ -26,13 +26,26 @@ import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class CameraActivity extends AppCompatActivity {
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private CollectionReference photosRef;
+    private String userId;
+
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
     private Button captureBtn;
@@ -48,15 +61,23 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.camera_layout);
 
         Intent intent = getIntent();
+        userId = intent.getStringExtra("userId");
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        Log.d("STORAGEREF", storageRef.getPath());
+        photosRef = db.collection("users").document(mAuth.getUid()).collection("photos");
 
+        // find frontend elements
         previewView = findViewById(R.id.preview_view);
         captureBtn = findViewById(R.id.capture_button);
         retakeBtn = findViewById(R.id.retake_button);
         confirmBtn = findViewById(R.id.confirm_button);
         displayMainCheck = findViewById(R.id.checkBox);
 
+        // initialize camera
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
-
         cameraProviderFuture.addListener(() -> {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
@@ -65,9 +86,6 @@ public class CameraActivity extends AppCompatActivity {
                 Log.d("CAMERA", "Unable to open camera");
             }
         }, ContextCompat.getMainExecutor(this));
-
-        ContentValues contentVals = new ContentValues();
-        contentVals.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
 
         captureBtn.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.P)
@@ -82,11 +100,30 @@ public class CameraActivity extends AppCompatActivity {
                             public void onCaptureSuccess(@NonNull ImageProxy image){
                                 Log.d("Camera", "Photo captured");
                                 confirmBtn.setOnClickListener(new View.OnClickListener() {
-                                    @Override
                                     public void onClick(View v) {
-                                        image.close();
-                                        // somehow save image
-                                        // send it back to fragment to display in list
+                                        StorageReference ref = storageRef.child("images/" +
+                                                UUID.randomUUID().toString());
+                                        Bitmap imageBitmap = image.toBitmap();
+                                        String path = MediaStore.Images.Media.insertImage(getBaseContext().getContentResolver(),
+                                                imageBitmap, "newpic", null);
+                                        ref.putFile(Uri.parse(path))
+                                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                        Toast.makeText(CameraActivity.this,
+                                                                "Upload successful",
+                                                                Toast.LENGTH_SHORT).show();
+                                                        photosRef.add(ref.getPath());
+                                                    }
+                                                })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                Toast.makeText(CameraActivity.this,
+                                                                        "Upload failed",
+                                                                        Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        });
                                         finish();
                                     }
                                 });
@@ -132,6 +169,7 @@ public class CameraActivity extends AppCompatActivity {
 
     /***
      * show confirm button
+     * show retake button
      * show option to display in list checkbox (default: unselected)
      */
     private void capturedState(){

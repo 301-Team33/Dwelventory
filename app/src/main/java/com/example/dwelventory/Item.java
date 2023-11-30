@@ -1,6 +1,7 @@
 package com.example.dwelventory;
 
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,14 +10,8 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import androidx.annotation.NonNull;
 /**
  * An object class that stores the user-defined information
  * of the household item
@@ -33,7 +28,7 @@ public class Item implements Parcelable {
     // comment optional ??? ask ta
     private String comment;
     // optional
-    private List photos;
+    private ArrayList<Bitmap> photos;
 
     private ArrayList<Tag> tags;
 
@@ -71,7 +66,7 @@ public class Item implements Parcelable {
      * @param photos (List) a list containing the photos associated with the item
      * */
     // full constructor
-    public Item(String description, Date date, String make, String model, int serialNumber, int estValue, String comment, List photos) {
+    public Item(String description, Date date, String make, String model, int serialNumber, int estValue, String comment, ArrayList<Bitmap> photos) {
         this.description = description;
         this.date = date;
         this.make = make;
@@ -211,14 +206,15 @@ public class Item implements Parcelable {
      * Gets the item's photos
      * @return photos (List) the list of photos associated with the item
      * */
-    public List getPhotos() {
+    public ArrayList<Bitmap> getPhotos() {
+        photos = new ArrayList<>();
         return photos;
     }
     /**
      * Sets the item's photos
      * @param photos (List) the list of photos associated with the item
      * */
-    public void setPhotos(List photos) {
+    public void setPhotos(ArrayList<Bitmap> photos) {
         this.photos = photos;
     }
     /**
