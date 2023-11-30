@@ -55,7 +55,7 @@ public class PhotoFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState){
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_photo,null);
         camera = view.findViewById(R.id.camera_button);
-        imageView = view.findViewById(R.id.imageView);
+        //imageView = view.findViewById(R.id.imageView);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(view);
 

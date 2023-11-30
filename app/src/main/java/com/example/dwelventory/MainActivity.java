@@ -1,7 +1,6 @@
 package com.example.dwelventory;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -173,7 +172,7 @@ public class MainActivity extends AppCompatActivity
 
         int serial = 12731;
         String comment = "so cute";
-        ArrayList<Bitmap> photos = null;
+        ArrayList<String> photos = null;
         Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings", serial, 200, comment, photos);
         Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
         ArrayList<Tag> testtag = new ArrayList<>();
@@ -560,7 +559,7 @@ public class MainActivity extends AppCompatActivity
         int itemSerial = item.getSerialNumber();
         int itemValue = item.getEstValue();
         String itemComment = item.getComment();
-        ArrayList<Bitmap> itemPhotos = item.getPhotos();
+        ArrayList<String> itemPhotos = item.getPhotos();
         Log.d("mainTag", "Date is" + itemDate);
         Log.d("mainTag", "Make is " + itemMake);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment,
@@ -637,7 +636,7 @@ public class MainActivity extends AppCompatActivity
 
     private void signOnAnonymously() {
         Log.d("NULL", "sign on");
-        Log.d("NULL1", String.valueOf(mAuth.signInAnonymously()));
+        //Log.d("NULL1", String.valueOf(mAuth.signInAnonymously()));
         mAuth.signInAnonymously().addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {

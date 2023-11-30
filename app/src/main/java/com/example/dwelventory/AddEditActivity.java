@@ -1,7 +1,6 @@
 package com.example.dwelventory;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -50,7 +49,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
     private String make;
     private String model;
     private int estValue;
-    private ArrayList<Bitmap> photos;
+    private ArrayList<String> photos;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -404,5 +403,10 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         // create a toast with the specified string resource on the appropiate action.
         Toast toast = Toast.makeText(this,stringResource,Toast.LENGTH_SHORT);
         toast.show();
+    }
+
+    public void addPhoto(String path){
+        PhotoFragment photoFragment = (PhotoFragment) getSupportFragmentManager().findFragmentByTag("PHOTO_FRAG");
+        photoFragment.dismiss();
     }
 }

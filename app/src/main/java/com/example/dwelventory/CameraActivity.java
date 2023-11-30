@@ -61,13 +61,12 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.camera_layout);
 
         Intent intent = getIntent();
-        userId = intent.getStringExtra("userId");
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        //userId = intent.getStringExtra("userId");
+        //mAuth = FirebaseAuth.getInstance();
+        //db = FirebaseFirestore.getInstance();
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         Log.d("STORAGEREF", storageRef.getPath());
-        photosRef = db.collection("users").document(mAuth.getUid()).collection("photos");
 
         // find frontend elements
         previewView = findViewById(R.id.preview_view);
@@ -98,7 +97,7 @@ public class CameraActivity extends AppCompatActivity {
                         new ImageCapture.OnImageCapturedCallback() {
                             @Override
                             public void onCaptureSuccess(@NonNull ImageProxy image){
-                                Log.d("Camera", "Photo captured");
+                                Log.d("CAMERA", "Photo captured");
                                 confirmBtn.setOnClickListener(new View.OnClickListener() {
                                     public void onClick(View v) {
                                         StorageReference ref = storageRef.child("images/" +
@@ -113,7 +112,7 @@ public class CameraActivity extends AppCompatActivity {
                                                         Toast.makeText(CameraActivity.this,
                                                                 "Upload successful",
                                                                 Toast.LENGTH_SHORT).show();
-                                                        photosRef.add(ref.getPath());
+                                                        Log.d("CAMERA", ref.getPath());
                                                     }
                                                 })
                                                         .addOnFailureListener(new OnFailureListener() {

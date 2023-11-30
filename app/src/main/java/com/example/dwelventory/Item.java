@@ -1,7 +1,6 @@
 package com.example.dwelventory;
 
 
-import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -28,7 +27,7 @@ public class Item implements Parcelable {
     // comment optional ??? ask ta
     private String comment;
     // optional
-    private ArrayList<Bitmap> photos;
+    private ArrayList<String> photos;
 
     private ArrayList<Tag> tags;
 
@@ -66,7 +65,7 @@ public class Item implements Parcelable {
      * @param photos (List) a list containing the photos associated with the item
      * */
     // full constructor
-    public Item(String description, Date date, String make, String model, int serialNumber, int estValue, String comment, ArrayList<Bitmap> photos) {
+    public Item(String description, Date date, String make, String model, int serialNumber, int estValue, String comment, ArrayList<String> photos) {
         this.description = description;
         this.date = date;
         this.make = make;
@@ -206,15 +205,12 @@ public class Item implements Parcelable {
      * Gets the item's photos
      * @return photos (List) the list of photos associated with the item
      * */
-    public ArrayList<Bitmap> getPhotos() {
-        photos = new ArrayList<>();
-        return photos;
-    }
+    public ArrayList<String> getPhotos() { return photos; }
     /**
      * Sets the item's photos
      * @param photos (List) the list of photos associated with the item
      * */
-    public void setPhotos(ArrayList<Bitmap> photos) {
+    public void setPhotos(ArrayList<String> photos) {
         this.photos = photos;
     }
     /**
