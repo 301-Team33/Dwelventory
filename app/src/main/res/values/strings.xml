@@ -4,14 +4,13 @@
     <string name="app_name">Dwelventory</string>
 
 
-
     <string name="tag_hint">New Tag Name</string>
     <string name="tag_confirm">Confirm</string>
     <string name="tag_remove_toast">Tag Deleted</string>
     <string name="tag_create_toast">Tag Created</string>
     <string name="invalid_tag_toast">Invalid Tag</string>
     <string name="tag_already_exists_toast">Tag Already Exists</string>
-  <string name="no_tags_selected">Please Select a Tag</string>
+    <string name="no_tags_selected">Please Select a Tag</string>
 
 
     <string name="delete_tag_message">Delete Tag: </string>
@@ -37,18 +36,18 @@
     <string name="totalcost">Total Cost: $%d</string>
 
     <string-array name="sort_array">
-      <item>Date</item>
-      <item>Description</item>
-      <item>Make</item>
-      <item>Estimated Value</item>
-      <item>Tags</item>
+        <item>Date</item>
+        <item>Description</item>
+        <item>Make</item>
+        <item>Estimated Value</item>
+        <item>Tags</item>
     </string-array>
 
     <string-array name="order_array">
-      <item>Ascending</item>
-      <item>Descending</item>
+        <item>Ascending</item>
+        <item>Descending</item>
     </string-array>
-  <string name="tags_title">TAGS</string>
+    <string name="tags_title">TAGS</string>
 
 
     <string name="delete">Delete</string>
@@ -57,8 +56,10 @@
     <string name="deleteSelectedItems">Delete selected items</string>
     <string name="separate">(separate input with spaces)</string>
     <string name="close_selection_mode">Close Selection Mode</string>
-  <string name="total_cost">Total Cost</string>
+    <string name="total_cost">Total Cost</string>
     <string name="add_item">Add Item</string>
+    <string name="snap">Snap</string>
+    <string name="scan">Scan</string>
 
 </resources>
 
