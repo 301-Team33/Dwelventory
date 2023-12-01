@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -54,13 +56,15 @@ public class TagFragment extends DialogFragment{
     private String userId;
 
     private OnFragmentInteractionListener listener;
-    private Button tagApplyButton;
-    private Button deleteCancelButton;
-    private Button deleteConfirmButton;
+    private MaterialButton tagApplyButton;
+//    private Button deleteCancelButton;
+    private MaterialButton deleteCancelButton;
+//    private Button deleteConfirmButton;
+    private MaterialButton deleteConfirmButton;
     private TextView deletePrompt;
     private LinearLayout deleteLayout;
-    private FloatingActionButton tagBackButton;
-    private FloatingActionButton tagCreateButton;
+    private ImageButton tagBackButton;
+    private ImageButton tagCreateButton;
     private EditText tagEditText;
     private ListView tagListView;
     private ArrayAdapter<Tag> tagArrayAdapter;

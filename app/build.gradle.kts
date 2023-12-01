@@ -43,5 +43,6 @@ dependencies {
     androidTestImplementation("org.mockito:mockito-android:5.7.0")
     androidTestImplementation("androidx.test:runner:1.4.0")
     androidTestImplementation("androidx.test:rules:1.4.0")
+    compileOnly(files("${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"))
 
 }

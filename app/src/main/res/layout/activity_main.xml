@@ -79,13 +79,27 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="110dp"
             android:background="?android:attr/selectableItemBackground"/>
-      
+
             android:layout_marginLeft="370dp"
             android:contentDescription="Close"
             android:src="@drawable/icons8_cancel" />
 
 
     </RelativeLayout>
+    <TextView
+        android:id="@+id/app_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textAllCaps="true"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="50dp"
+        android:background="@color/darkBrown"
+        android:layout_below="@+id/selectMultipleitems"
+        android:textAlignment="center">
+
+    </TextView>
     
     <LinearLayout
         android:id="@+id/spinner_layout"
@@ -93,7 +107,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="3"
-        android:layout_below="@id/selectMultipleitems">
+        android:layout_below="@id/app_title">
 
         <Spinner
             android:id="@+id/sort_spinner"
@@ -164,9 +178,22 @@
             tools:ignore="RtlSymmetry">
         </TextView>
     </LinearLayout>
+    <ImageButton
+        android:id="@+id/add_item_button"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|end"
+        android:backgroundTint="@color/green"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/main_add_item"
+        android:contentDescription="@string/add_item"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_item_button"
+        android:visibility="gone"
+        android:id="@+id/TEMP_add_item_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
