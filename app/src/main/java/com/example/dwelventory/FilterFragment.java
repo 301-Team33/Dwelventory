@@ -119,8 +119,8 @@ public class FilterFragment extends DialogFragment {
                         Date start;
                         Date end;
                         try {
-                            start =new SimpleDateFormat("dd/MM/yyyy").parse(dateStartText);
-                            end =new SimpleDateFormat("dd/MM/yyyy").parse(dateEndText);
+                            start =new SimpleDateFormat("MM/dd/yyyy").parse(dateStartText);
+                            end =new SimpleDateFormat("MM/dd/yyyy").parse(dateEndText);
                         } catch (ParseException e) {
                             throw new RuntimeException(e);
                         }
@@ -138,6 +138,27 @@ public class FilterFragment extends DialogFragment {
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.popup_select_keywords, null);
             EditText keywordInput = view.findViewById(R.id.filter_kwords_etext);
             Button doneButton = view.findViewById(R.id.filter_kwords_donebtn);
+
+            Button addButton = view.findViewById(R.id.add_keyword);
+            ListView keywordListView = view.findViewById(R.id.filter_keyword_lv);
+            ArrayAdapter<String> keywordAdapter;
+            ArrayList<String> keywordList;
+            keywordList = new ArrayList<>();
+            keywordAdapter = new ArrayAdapter<>(this.getContext(),R.layout.tag_content,R.id.tag_text,keywordList);
+            keywordListView.setAdapter(keywordAdapter);
+
+            addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String keywordText = keywordInput.getText().toString();
+                    if (keywordText != null && !keywordText.isBlank()) {
+                        keywordList.add(keywordText);
+                        keywordAdapter.notifyDataSetChanged();
+                        keywordInput.setText(null);
+                    }
+                    keywordInput.setText(null);
+                }
+            });
 
             doneButton.setOnClickListener(new View.OnClickListener() {
                 @Override
