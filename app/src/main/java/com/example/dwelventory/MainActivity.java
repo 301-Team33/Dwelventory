@@ -100,10 +100,13 @@ public class MainActivity extends AppCompatActivity
     public int estTotalCost = 0;
     private ListView finalItemList;
     ArrayAdapter<Item> finalItemAdapter;
-
-    private boolean filterApplied = false;
-
     private TextView appTitle;
+    // Store active filters in variables below to allow for multiple filtering
+    private ArrayList<String> keyword_input_saved;
+    private Date start_date_saved, end_date_saved;
+    private ArrayList<String> make_input_saved;
+    private ArrayList<Tag> tag_input_saved;
+    private boolean filterApplied = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -837,56 +840,44 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onMakeFilterApplied(ArrayList<String> makeInput) {
-        estTotalCost = 0;
-        // Filer has already been applied so we do not need to query firebase and can work with the
-        // data list itself.
-        if (filterApplied){
-            for (Item item : dataList) {
-                for(String make: makeInput){
-                    if(item.getMake() == make){
+//        dataList.clear();
 
-                    }
-                }
-            }
-        }
-        dataList.clear();
-        setTotal(dataList);
-        
-
-        AtomicInteger pendingQueries = new AtomicInteger(makeInput.size());
-        for (String make : makeInput) {
-            itemsRef.whereEqualTo("make", make).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                    pendingQueries.decrementAndGet();
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-
-                            Item item = new Item(
-                                    doc.getString("description"),
-                                    doc.getDate("date"),
-                                    doc.getString("make"),
-                                    doc.getString("model"),
-                                    doc.getLong("estValue").intValue());
-                            item.setSerialNumber(doc.getLong("serialNumber").intValue());
-                            ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
-                            ArrayList<Tag> realTags = makeTagList(tags);
-                            item.setTags(realTags);
-                            item.setItemRefID(UUID.fromString(doc.getId()));
-
-                            dataList.add(item);
-                            estTotalCost += doc.getLong("estValue").intValue();
-                        }
-                    }
-                    if (pendingQueries.get() == 0) {
-                        // Now that all asynchronous queries are done, notify the adapter
-                        itemAdapter.notifyDataSetChanged();
-                        setTotal(dataList);
-                    }
-                }
-            });
-        }
+        make_input_saved = makeInput;
+        applyActiveFilters();
+//        AtomicInteger pendingQueries = new AtomicInteger(makeInput.size());
+//        for (String make : makeInput) {
+//            itemsRef.whereEqualTo("make", make).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//
+//                    pendingQueries.decrementAndGet();
+//                    if (task.isSuccessful()) {
+//                        for (QueryDocumentSnapshot doc : task.getResult()) {
+//
+//                            Item item = new Item(
+//                                    doc.getString("description"),
+//                                    doc.getDate("date"),
+//                                    doc.getString("make"),
+//                                    doc.getString("model"),
+//                                    doc.getLong("estValue").intValue());
+//                            item.setSerialNumber(doc.getLong("serialNumber").intValue());
+//                            ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
+//                            ArrayList<Tag> realTags = makeTagList(tags);
+//                            item.setTags(realTags);
+//                            item.setItemRefID(UUID.fromString(doc.getId()));
+//
+//                            dataList.add(item);
+//                            estTotalCost += doc.getLong("estValue").intValue();
+//                        }
+//                    }
+//                    if (pendingQueries.get() == 0) {
+//                        // Now that all asynchronous queries are done, notify the adapter
+//                        itemAdapter.notifyDataSetChanged();
+//                        setTotal(dataList);
+//                    }
+//                }
+//            });
+//        }
 
     }
 
@@ -1082,5 +1073,97 @@ public class MainActivity extends AppCompatActivity
             }
         });
         itemAdapter.notifyDataSetChanged();
+    }
+
+    public void applyActiveFilters() {
+        estTotalCost = 0;
+        dataList.clear();
+
+        if(!(make_input_saved.isEmpty()) ){
+            AtomicInteger pendingQueriesMake = new AtomicInteger(make_input_saved.size());
+            if(!dataList.isEmpty()){
+                for (String make : make_input_saved) {
+                    itemsRef.whereEqualTo("make", make).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                            pendingQueriesMake.decrementAndGet();
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot doc : task.getResult()) {
+
+                                    Item item = new Item(
+                                            doc.getString("description"),
+                                            doc.getDate("date"),
+                                            doc.getString("make"),
+                                            doc.getString("model"),
+                                            doc.getLong("estValue").intValue());
+                                    item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                    ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
+                                    ArrayList<Tag> realTags = makeTagList(tags);
+                                    item.setTags(realTags);
+                                    item.setItemRefID(UUID.fromString(doc.getId()));
+
+                                    // Means filter has already been applied.
+
+                                    dataList.add(item);
+                                    estTotalCost += doc.getLong("estValue").intValue();
+                                }
+                            }
+                            if (pendingQueriesMake.get() == 0) {
+                                // Now that all asynchronous queries are done, notify the adapter
+                                itemAdapter.notifyDataSetChanged();
+                                setTotal(dataList);
+                            }
+                        }
+                    });
+                }
+            }
+            else{
+                for(String make : make_input_saved){
+                    for(Item item : dataList){
+                        if(!item.getMake().equals(make)){
+                            dataList.remove(item);
+                        }
+                    }
+                }
+            }
+
+        }
+        else if(!(make_input_saved.isEmpty()) ){
+            AtomicInteger pendingQueriesMake = new AtomicInteger(make_input_saved.size());
+            for (String make : make_input_saved) {
+                itemsRef.whereEqualTo("make", make).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                        pendingQueriesMake.decrementAndGet();
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot doc : task.getResult()) {
+
+                                Item item = new Item(
+                                        doc.getString("description"),
+                                        doc.getDate("date"),
+                                        doc.getString("make"),
+                                        doc.getString("model"),
+                                        doc.getLong("estValue").intValue());
+                                item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
+                                ArrayList<Tag> realTags = makeTagList(tags);
+                                item.setTags(realTags);
+                                item.setItemRefID(UUID.fromString(doc.getId()));
+
+                                dataList.add(item);
+                                estTotalCost += doc.getLong("estValue").intValue();
+                            }
+                        }
+                        if (pendingQueriesMake.get() == 0) {
+                            // Now that all asynchronous queries are done, notify the adapter
+                            itemAdapter.notifyDataSetChanged();
+                            setTotal(dataList);
+                        }
+                    }
+                });
+            }
+        }
     }
 }

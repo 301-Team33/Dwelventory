@@ -135,8 +135,8 @@ public class FilterFragment extends DialogFragment {
                         Date start;
                         Date end;
                         try {
-                            start =new SimpleDateFormat("dd/MM/yyyy").parse(dateStartText);
-                            end =new SimpleDateFormat("dd/MM/yyyy").parse(dateEndText);
+                            start =new SimpleDateFormat("MM/dd/yyyy").parse(dateStartText);
+                            end =new SimpleDateFormat("MM/dd/yyyy").parse(dateEndText);
                         } catch (ParseException e) {
                             throw new RuntimeException(e);
                         }
