@@ -11,7 +11,7 @@
         android:id="@+id/selectMultipleitems"
         android:layout_width="match_parent"
         android:layout_height="75dp"
-        android:background="@color/grey"
+        android:background="@color/selected"
         android:orientation="vertical"
         android:visibility="gone"
         tools:visibility="gone">
@@ -38,51 +38,54 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginTop="50dp"
-            android:layout_toEndOf="@id/selectAll" />
-
-
-        <ImageButton
-            android:id="@+id/deletebtn"
-            android:layout_width="54dp"
-            android:layout_height="54dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:background="?android:attr/selectableItemBackground"
-            android:backgroundTint="@color/grey"
-            android:contentDescription="@string/deleteSelectedItems"
-            android:src="@drawable/trash_blank_alt_svgrepo_com__1_" />
+            android:layout_marginStart="-1dp"
+            android:layout_marginBottom="-4dp"
+            android:layout_toEndOf="@id/selectAll"
+            android:gravity="center" />
 
         <ImageButton
             android:id="@+id/closebtn"
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:layout_alignParentTop="true"
-            android:contentDescription="@string/close_selection_mode"
-            android:src="@drawable/cancel_svgrepo_com__1_"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="18dp"
             android:background="?android:attr/selectableItemBackground"
             android:backgroundTint="@color/grey"
+            android:contentDescription="@string/close_selection_mode"
+            android:scaleType="fitCenter"
+            android:src="@drawable/exit_svgrepo_com" />
+
+        <ImageButton
+            android:id="@+id/deletebtn"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_toStartOf="@id/closebtn"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="50dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:backgroundTint="@color/grey"
+            android:contentDescription="@string/deleteSelectedItems"
+            android:src="@drawable/trash_svgrepo_com"
+            android:scaleType="fitCenter"
             android:layout_marginTop="20dp"
             />
 
         <ImageButton
+            android:id="@+id/multiple_set_tags_button"
             android:layout_width="54dp"
             android:layout_height="54dp"
-            android:src="@drawable/tag_svgrepo_com"
-            android:id="@+id/multiple_set_tags_button"
-            android:backgroundTint="@color/grey"
             android:layout_alignParentBottom="true"
-
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="110dp"
-            android:background="?android:attr/selectableItemBackground"/>
-
-            android:layout_marginLeft="370dp"
-            android:contentDescription="Close"
-            android:src="@drawable/icons8_cancel" />
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_toStartOf="@id/deletebtn"
+            android:adjustViewBounds="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:backgroundTint="@color/grey"
+            android:scaleType="fitCenter"
+            android:src="@drawable/tags_svgrepo" />
 
 
     </RelativeLayout>
