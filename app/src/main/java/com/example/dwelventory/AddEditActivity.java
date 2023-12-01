@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
@@ -224,6 +225,42 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 setResult(818, updatedIntent);
                 Log.d("aeTag", "finishing aeActivity...");
                 finish();
+            }
+        });
+
+        serialNumButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
+                serial_no_cam.setVisibility(View.VISIBLE);
+
+                serial_no_cam.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
+                        /*String name = nameButton.getText().toString();
+                        String date = dateButton.getText().toString();
+                        String make = makeButton.getText().toString();
+                        String model = modelButton.getText().toString();
+                        String val = estValButton.getText().toString();
+                        String comment = commentButton.getText().toString();*/
+                        intent.putExtra("item",item);
+                        intent.putExtra("mode",mode);
+                        intent.putExtra("position",position);
+                        intent.putExtra("requestCode",requestCode);
+                        intent.putExtra("itemRefID",itemRefID);
+
+                        startActivity(intent);
+
+
+                        /*int position = intent.getIntExtra("position", -1);
+                        int requestCode = intent.getIntExtra("requestCode", -1);
+                        String itemRefID = intent.getStringExtra("itemRefID");
+                        Log.d("itemTag", "RefID after opening activity: " + itemRefID);*/
+
+
+                    }
+                });
             }
         });
     }
