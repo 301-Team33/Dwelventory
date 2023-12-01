@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity
     private ListView finalItemList;
     ArrayAdapter<Item> finalItemAdapter;
     private TextView appTitle;
+    private ArrayList<String> photos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -469,6 +470,7 @@ public class MainActivity extends AppCompatActivity
                             ArrayList<String> stringTags = makeStringTagList(tags); // THIS IS FOR FIREBASE ONLY
                             item.setTags(tags); // set tags
                             Log.d("# result from ae", "after setting tags" + String.valueOf(item.getTags()));
+                            photos = get
                             if (requestCode == ADD_ACTIVITY_CODE) {
                                 // Handle the result for adding
                                 Log.d("resultTag", "i am about to add the item");
@@ -478,10 +480,15 @@ public class MainActivity extends AppCompatActivity
                                 estTotalCost += item.getEstValue();
                                 // set item in firebase
                                 itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
+
                                 // set STRING tags to items
                                 HashMap<String, Object> map = new HashMap<>();
                                 map.put("tags", stringTags);
                                 itemsRef.document(String.valueOf(item.getItemRefID())).update(map);
+
+                                // set photo remote cloud storage paths to items
+                                HashMap<String, Object> photoMap = new HashMap<>();
+                                photoMap.put("photos", )
                                 itemAdapter.notifyDataSetChanged();
                                 Log.d("tagtag", "onCreate: tags " + item.getTags());
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
@@ -500,7 +507,6 @@ public class MainActivity extends AppCompatActivity
                                 // set item in firebase
                                 itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
                                 // set STRING tags to items
-
                                 itemAdapter.notifyDataSetChanged();
                             }
                             String cost = getString(R.string.totalcost, estTotalCost);

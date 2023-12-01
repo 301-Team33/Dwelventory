@@ -28,7 +28,7 @@ import java.util.Locale;
  * @see MainActivity
  * @see TagFragment
  * */
-public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener{
+public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener, CameraActivity.CameraActivityListener{
     // All views
     EditText nameButton;
     EditText dateButton;
@@ -152,6 +152,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             commentButton.setText(item.getComment());
         }
 
+        // END IF EDIT //
+
         editTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -202,13 +204,19 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 };
                 item.setTags(tagsToApply);
 
-
                 // put it in intent
                 Intent updatedIntent = new Intent();
                 if(item.getTags() == null){
                   ArrayList<Tag>  emptyTagSet = new ArrayList<>();
                   item.setTags(emptyTagSet);
                 }
+
+                if (photos == null || item.getPhotos() == null){
+                    photos = new ArrayList<>();
+                    item.setPhotos(photos);
+                }
+
+
                 // go back to main activity
                 updatedIntent.putParcelableArrayListExtra("tags",tagsToApply);
                 Log.d("# tag TAg hitting confirm", String.valueOf(tagsToApply));
@@ -231,12 +239,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             public void onClick(View v) {
                 // want to send Item's list of photos
                 // need to send all edittext content to save state
-                /*if (mode.equals("edit") && item.getPhotos() != null){
-                    photos = item.getPhotos();
-                } else {
-                    photos = new ArrayList<>();
-                    //item.setPhotos(photos);
-                }*/
+
                 PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid());
                 photoFrag.show(getSupportFragmentManager(), "PHOTO_FRAG");
             }
@@ -408,5 +411,15 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
     public void addPhoto(String path){
         PhotoFragment photoFragment = (PhotoFragment) getSupportFragmentManager().findFragmentByTag("PHOTO_FRAG");
         photoFragment.dismiss();
+
+        Intent intent = getIntent();
+        String mode = intent.getStringExtra("mode");
+        photos = new ArrayList<>();
+        if (mode.equals("edit") && item.getPhotos() != null){ // if edited (ie. item exists) and it has an existing photo list
+            photos = item.getPhotos();
+        }
+
+        photos.add(path);
+        item.setPhotos(photos);
     }
 }

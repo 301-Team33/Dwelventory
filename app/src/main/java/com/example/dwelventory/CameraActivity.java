@@ -54,6 +54,13 @@ public class CameraActivity extends AppCompatActivity {
     private CheckBox displayMainCheck;
     private Camera camera;
     private ImageCapture imageCapture;
+    private static final int CAMERA_PERMISSION_CODE = 100;
+
+    private CameraActivityListener listener;
+
+    public interface CameraActivityListener{
+        void addPhoto(String path);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +74,15 @@ public class CameraActivity extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         Log.d("STORAGEREF", storageRef.getPath());
+
+        // get user device camera permissions
+        cameraPermissions();
+
+        if (CameraActivity.this instanceof CameraActivity.CameraActivityListener){
+            listener = (CameraActivity.CameraActivityListener) CameraActivity.this;
+        } else {
+            throw new RuntimeException();
+        }
 
         // find frontend elements
         previewView = findViewById(R.id.preview_view);
@@ -113,6 +129,7 @@ public class CameraActivity extends AppCompatActivity {
                                                                 "Upload successful",
                                                                 Toast.LENGTH_SHORT).show();
                                                         Log.d("CAMERA", ref.getPath());
+                                                        listener.addPhoto(ref.getPath());
                                                     }
                                                 })
                                                         .addOnFailureListener(new OnFailureListener() {
@@ -177,4 +194,13 @@ public class CameraActivity extends AppCompatActivity {
         retakeBtn.setVisibility(View.VISIBLE);
         captureBtn.setVisibility(View.GONE);
     }
+
+    private void cameraPermissions(){
+        /*if (ContextCompat.checkSelfPermission(CameraActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED){
+            ActivityCompat.requestPermissions(CameraActivity.this,
+                    new String[] {Manifest.permission.CAMERA},
+                    CAMERA_PERMISSION_CODE);
+        }*/
+    }
+
 }

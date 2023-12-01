@@ -28,9 +28,10 @@ public class PhotoFragment extends DialogFragment {
         super.onAttach(context);
     }
 
-    public interface PhotoFragmentListener {
+    /*public interface PhotoFragmentListener {
+        void addPhoto(String path);
         // functions executed when actions are taken on fragment in AddEditActivity
-    }
+    }*/
 
     static PhotoFragment newInstance(String userId, ArrayList<Bitmap> images){
         // load in the user ID to get the query path for storing and retrieving current user defined

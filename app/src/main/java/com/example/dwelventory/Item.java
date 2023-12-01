@@ -307,6 +307,7 @@ public class Item implements Parcelable {
         map.put("serialNumber", serialNumber);
         map.put("estValue", estValue);
         map.put("comment", comment);
+        map.put("photos", photos);
         map.put("tags", makeStringTagList(tags));
         return map;
     }
