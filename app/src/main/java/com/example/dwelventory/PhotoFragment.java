@@ -2,6 +2,8 @@ package com.example.dwelventory;
 
 import static android.app.Activity.RESULT_OK;
 
+import static androidx.camera.core.impl.utils.ContextUtil.getBaseContext;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +23,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class PhotoFragment extends DialogFragment {
     private FloatingActionButton camera;
@@ -32,6 +39,8 @@ public class PhotoFragment extends DialogFragment {
     private ActivityResultLauncher<Intent> photoFragmentResultLauncher;
     private Uri photoChosen;
     private ImageView selectedGalleryImage;
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
 
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -44,6 +53,14 @@ public class PhotoFragment extends DialogFragment {
                         photoChosen = result.getData().getData();
                         selectedGalleryImage.setImageURI(photoChosen);
                         Log.d("HERE WE GO", "onAttach: " + photoChosen.toString());
+                        try {
+
+                            Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), photoChosen);
+                            String path = MediaStore.Images.Media.insertImage(getActivity().getContentResolver(),imageBitmap, "newpic", null);
+                            StorageReference ref = storageRef.child("images/" + UUID.randomUUID().toString());
+                        }catch (Exception exception){
+                            Log.d("no file found exception", "onAttach: exception");
+                        }
                     }
 
                 });
@@ -81,6 +98,9 @@ public class PhotoFragment extends DialogFragment {
         camera = view.findViewById(R.id.camera_button);
         gallery = view.findViewById(R.id.gallery_button);
         selectedGalleryImage = view.findViewById(R.id.return_image);
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+
         //imageView = view.findViewById(R.id.imageView);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(view);
