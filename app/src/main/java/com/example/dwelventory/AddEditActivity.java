@@ -42,10 +42,11 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
     EditText commentButton;
     MaterialButton photoButton;
     MaterialButton confirmButton;
-    MaterialButton editTagButton;
+    ImageButton editTagButton;
     MaterialButton tagDisplay1Button;
     MaterialButton tagDisplay2Button;
     MaterialButton tagDisplay3Button;
+    ImageButton backButton;
     // Required inputs
     private String name;
     private Date date;
@@ -75,6 +76,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         tagDisplay1Button = findViewById(R.id.tag_display_1);
         tagDisplay2Button = findViewById(R.id.tag_display_2);
         tagDisplay3Button  =findViewById(R.id.tag_display_3);
+        backButton = findViewById(R.id.edit_activity_back);
 
         tagDisplay3Button.setVisibility(View.GONE);
         tagDisplay2Button.setVisibility(View.GONE);

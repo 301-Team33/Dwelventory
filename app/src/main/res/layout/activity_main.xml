@@ -11,7 +11,7 @@
         android:id="@+id/selectMultipleitems"
         android:layout_width="match_parent"
         android:layout_height="75dp"
-        android:background="@color/selected"
+        android:background="@color/darkBrown"
         android:orientation="vertical"
         android:visibility="gone"
         tools:visibility="gone">
@@ -47,16 +47,13 @@
             android:id="@+id/closebtn"
             android:layout_width="54dp"
             android:layout_height="54dp"
-            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginTop="0dp"
-            android:layout_marginBottom="18dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:backgroundTint="@color/grey"
             android:contentDescription="@string/close_selection_mode"
-            android:scaleType="fitCenter"
-            android:src="@drawable/exit_svgrepo_com" />
+            android:src="@drawable/tag_cancel_fragment"
+            android:backgroundTint="@color/green"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            app:tint="@color/white" />
 
         <ImageButton
             android:id="@+id/deletebtn"
@@ -74,12 +71,12 @@
 
         <ImageButton
             android:id="@+id/multiple_set_tags_button"
-            android:layout_width="54dp"
-            android:layout_height="54dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_alignParentBottom="true"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="1dp"
-            android:layout_marginBottom="1dp"
+            android:layout_marginBottom="-2dp"
             android:layout_toStartOf="@id/deletebtn"
             android:adjustViewBounds="true"
             android:background="?android:attr/selectableItemBackground"

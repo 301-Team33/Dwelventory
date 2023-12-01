@@ -193,55 +193,77 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <com.google.android.material.button.MaterialButton
+        <ImageButton
             android:id="@+id/edit_tag_button"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="15dp"
-            app:cornerRadius="0dp"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="@color/white"
-            android:text="Edit Tag"
-            android:textColor="@color/black" />
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_marginLeft="16dp"
+            android:src="@drawable/tags_svgrepo"
+            android:scaleType="fitCenter"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:background="?android:attr/selectableItemBackground"
+            />
 
         <com.google.android.material.button.MaterialButton
-            android:layout_width="80dp"
-            android:layout_height="48dp"
-            app:autoSizeTextType="uniform"
-            android:text="tag 1"
-            android:textSize="20sp"
-            app:cornerRadius="0dp"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/green"
             android:id="@+id/tag_display_1"
-            android:layout_marginStart="135dp"
-            android:layout_marginTop="15dp"/>
-
-        <com.google.android.material.button.MaterialButton
             android:layout_width="80dp"
             android:layout_height="48dp"
-            app:autoSizeTextType="uniform"
-            android:text="tag 3"
-            android:textSize="20sp"
-            app:cornerRadius="0dp"
-            android:textColor="@color/black"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toEndOf="@id/edit_tag_button"
             android:backgroundTint="@color/green"
+            android:text="tag 1"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:autoSizeTextType="uniform"
+            app:cornerRadius="0dp" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/tag_display_2"
-            android:layout_marginStart="225dp"
-            android:layout_marginTop="15dp"/>
-
-        <com.google.android.material.button.MaterialButton
             android:layout_width="80dp"
             android:layout_height="48dp"
-            app:autoSizeTextType="uniform"
-            android:text="tag 3"
-            android:textSize="20sp"
-            app:cornerRadius="0dp"
-            android:textColor="@color/black"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toEndOf="@id/tag_display_1"
             android:backgroundTint="@color/green"
+            android:text="tag 2"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:autoSizeTextType="uniform"
+            app:cornerRadius="0dp" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/tag_display_3"
-            android:layout_marginStart="315dp"
-            android:layout_marginTop="15dp"/>
+            android:layout_width="80dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toStartOf="@id/edit_activity_back"
+            android:layout_toEndOf="@id/tag_display_2"
+            android:backgroundTint="@color/green"
+            android:text="tag 3"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:autoSizeTextType="uniform"
+            app:cornerRadius="0dp" />
+
+        <ImageButton
+            android:id="@+id/edit_activity_back"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:src="@drawable/exit_svgrepo_com"
+            android:background="?android:attr/selectableItemBackground"
+            android:scaleType="fitCenter"
+            android:layout_alignParentEnd="true"
+            android:visibility="visible"/>
+
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
