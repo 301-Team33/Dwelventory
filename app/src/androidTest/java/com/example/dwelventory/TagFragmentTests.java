@@ -18,6 +18,9 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.google.firebase.auth.FirebaseAuth;
+
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +28,12 @@ import org.junit.runner.RunWith;
 
 
 public class TagFragmentTests {
+
+    @After
+    public void tearDown() {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth.signOut();
+    }
 
     @Test
     public void testTagFragmentNavigationOpen(){
