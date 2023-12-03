@@ -2,8 +2,6 @@ package com.example.dwelventory;
 
 import static android.app.Activity.RESULT_OK;
 
-import static androidx.camera.core.impl.utils.ContextUtil.getBaseContext;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -11,7 +9,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,7 +16,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -35,9 +31,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.checkerframework.checker.units.qual.A;
-
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -49,6 +42,7 @@ public class PhotoFragment extends DialogFragment {
     private ImageView imageView;
     private String userId;
     private ActivityResultLauncher<Intent> photoFragmentResultLauncher;
+    private ActivityResultLauncher<Intent> cameraFragmentResultLauncher;
     private ImageView selectedGalleryImage;
     private FirebaseStorage storage;
     private StorageReference storageRef;
@@ -78,7 +72,8 @@ public class PhotoFragment extends DialogFragment {
 
                                     // Save the photo to the specified firestore.
                                     StorageReference ref = storageRef.child("images/" + UUID.randomUUID().toString());
-                                    String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),imageBitmap,"newpic",null);
+                                    String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),imageBitmap,"gallery image",null);
+                                    //photoPaths.add(path);
                                     ref.putFile(Uri.parse(path))
                                             .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                                 @Override
@@ -93,7 +88,7 @@ public class PhotoFragment extends DialogFragment {
                                             });
 
                                 }catch(Exception exception){
-                                    Log.d("exception handelled...", "onAttach: Exception");
+                                    Log.d("exception handled...", "onAttach: Exception");
                                 }
                             }
                         }
@@ -102,31 +97,48 @@ public class PhotoFragment extends DialogFragment {
 
                 });
 
+        cameraFragmentResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK){
+                        Intent camIntent = result.getData();
+                        if (camIntent != null){
+                            Bitmap photo = (Bitmap) camIntent.getExtras().get("data");
+                            photos.add(photo);
+                            StorageReference ref = storageRef.child("images/" +
+                                    UUID.randomUUID().toString());
+                            String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),
+                                    photo, "camera image", null);
+                            //photoPaths.add(path);
+                            Log.d("CAMERA", "photo taken and working on saving");
+                            ref.putFile(Uri.parse(path)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    Toast.makeText(getActivity().getBaseContext(),
+                                            "Camera photo uploaded!", Toast.LENGTH_SHORT).show();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(getActivity().getBaseContext(),
+                                            "Camera photo upload failed", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                }
+        );
+
 
     }
 
-    /*public interface PhotoFragmentListener {
+    public interface PhotoFragmentListener {
         void addPhoto(String path);
         // functions executed when actions are taken on fragment in AddEditActivity
-    }*/
-
-    static PhotoFragment newInstance(String userId, ArrayList<Bitmap> images){
-        // load in the user ID to get the query path for storing and retrieving current user defined
-        Bundle args = new Bundle();
-        args.putString("user_id",userId);
-        args.putParcelableArrayList("images", images);
-
-        PhotoFragment photoFragment = new PhotoFragment();
-        photoFragment.setArguments(args);
-        return photoFragment;
     }
 
-    static PhotoFragment newInstance(String userId){
-        Bundle args = new Bundle();
-        args.putString("userId", userId);
-
+    static PhotoFragment newInstance(){
         PhotoFragment photoFrag = new PhotoFragment();
-        photoFrag.setArguments(args);
         return photoFrag;
     }
 
@@ -143,11 +155,8 @@ public class PhotoFragment extends DialogFragment {
         photoAdapter = new PhotoCustomList(this.getContext(), photos);
         photoListView.setAdapter(photoAdapter);
 
-        //imageView = view.findViewById(R.id.imageView);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(view);
-
-        Bundle bundle = getArguments();
 
         /*photos = bundle.getParcelableArrayList("images");
         if (photos.size() != 0 && photos != null){
@@ -158,8 +167,8 @@ public class PhotoFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 // start camera activity
-                Intent intent = new Intent(getActivity(), CameraActivity.class);
-                startActivity(intent);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                cameraFragmentResultLauncher.launch(intent);
             }
         });
 
