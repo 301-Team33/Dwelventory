@@ -486,20 +486,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         toast.show();
     }
 
-    public void addPhotos(ArrayList<String> paths){
-        PhotoFragment photoFragment = (PhotoFragment) getSupportFragmentManager().findFragmentByTag("PHOTO_FRAG");
-        photoFragment.dismiss();
-
-        Log.d("ADDPHOTO", "add photo interface method called");
-
-        Intent intent = getIntent();
-        String mode = intent.getStringExtra("mode");
-        photos = new ArrayList<>();
-        if (mode.equals("edit") && item.getPhotos() != null){ // if edited (ie. item exists) and it has an existing photo list
-            photos = item.getPhotos();
-        }
-
-        Toast.makeText(this, "Photos added don't keep this", Toast.LENGTH_SHORT).show();
-        item.setPhotos(photos);
+    @Override
+    public void onPhotoConfirmPressed(ArrayList<String> photoPaths){
+        photos = photoPaths;
     }
 }

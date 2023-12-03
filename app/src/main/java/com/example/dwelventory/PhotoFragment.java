@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -26,19 +25,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.firebase.storage.internal.StorageReferenceUri;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -60,10 +53,10 @@ public class PhotoFragment extends DialogFragment {
     private ArrayAdapter<Uri> photoAdapter;
     private Uri currentUri;
     private ListView photoListView;
-    private Button confirmButton;
+    private Button photoApply;
 
     public interface onPhotoFragmentInteractionListener{
-        void addPhotos(ArrayList<String> photosToAppend);
+        void onPhotoConfirmPressed(ArrayList<String> photosToAppend);
     }
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -93,7 +86,7 @@ public class PhotoFragment extends DialogFragment {
                                     String remotePath = "images/" + UUID.randomUUID().toString();
                                     StorageReference ref = storageRef.child(remotePath);
                                     String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),imageBitmap,"newpic",null);
-                                    Log.d("PHOTOPATH", String.valueOf(Uri.parse(remotePath)));
+                                    photoPaths.add(path);
                                     ref.putFile(Uri.parse(path))
                                             .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                                 @Override
@@ -125,12 +118,12 @@ public class PhotoFragment extends DialogFragment {
                         Intent camIntent = result.getData();
                         if (camIntent != null){
                             Bitmap photo = (Bitmap) camIntent.getExtras().get("data");
-                            //photos.add(photo);
-                            //photoAdapter.notifyDataSetChanged();
                             String remotePath = "images/" + UUID.randomUUID().toString();
                             StorageReference ref = storageRef.child(remotePath);
                             String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),
                                     photo, "camera image", null);
+                            photos.add(Uri.parse(path));
+                            photoAdapter.notifyDataSetChanged();
                             Log.d("CAMERA", "photo taken and working on saving");
                             Log.d("PHOTOPATH", path);
                             ref.putFile(Uri.parse(path)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -151,11 +144,6 @@ public class PhotoFragment extends DialogFragment {
                     }
                 }
         );
-    }
-
-    public interface PhotoFragmentListener {
-        void addPhotos(ArrayList<String> paths);
-        // functions executed when actions are taken on fragment in AddEditActivity
     }
 
     static PhotoFragment newInstance(String userId, ArrayList<String> images){
@@ -188,9 +176,7 @@ public class PhotoFragment extends DialogFragment {
         selectedImages = new ArrayList<>();
         photos = new ArrayList<>();
         photoListView = view.findViewById(R.id.photo_list_view);
-        confirmButton = view.findViewById(R.id.confirm_photos);
-
-        photoPaths = new ArrayList<>();
+        photoApply = view.findViewById(R.id.photo_apply_button);
 
         photoAdapter = new PhotoCustomList(this.getContext(), photos);
         photoListView.setAdapter(photoAdapter);
@@ -210,11 +196,6 @@ public class PhotoFragment extends DialogFragment {
         }
 
         loadPhotos(photoPaths);
-
-        /*photos = bundle.getParcelableArrayList("images");
-        if (photos.size() != 0 && photos != null){
-            imageView.setImageBitmap(photos.get(0));
-        }*/
 
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -244,10 +225,11 @@ public class PhotoFragment extends DialogFragment {
             }
         });
 
-        confirmButton.setOnClickListener(new View.OnClickListener() {
+        photoApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.addPhotos(photoPaths);
+                listener.onPhotoConfirmPressed(photoPaths);
+                dismiss();
             }
         });
 
