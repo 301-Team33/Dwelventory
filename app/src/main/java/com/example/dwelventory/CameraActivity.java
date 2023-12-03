@@ -1,5 +1,6 @@
 package com.example.dwelventory;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -40,7 +41,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
-public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends AppCompatActivity{
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private CollectionReference photosRef;
@@ -54,13 +55,7 @@ public class CameraActivity extends AppCompatActivity {
     private CheckBox displayMainCheck;
     private Camera camera;
     private ImageCapture imageCapture;
-    private static final int CAMERA_PERMISSION_CODE = 100;
-
-    private CameraActivityListener listener;
-
-    public interface CameraActivityListener{
-        void addPhoto(String path);
-    }
+    private static final int CAMERA_PERMISSION_CODE = 202;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,11 +73,11 @@ public class CameraActivity extends AppCompatActivity {
         // get user device camera permissions
         cameraPermissions();
 
-        if (CameraActivity.this instanceof CameraActivity.CameraActivityListener){
+        /*if (CameraActivity.this instanceof CameraActivity.CameraActivityListener){
             listener = (CameraActivity.CameraActivityListener) CameraActivity.this;
         } else {
             throw new RuntimeException();
-        }
+        }*/
 
         // find frontend elements
         previewView = findViewById(R.id.preview_view);
@@ -129,7 +124,11 @@ public class CameraActivity extends AppCompatActivity {
                                                                 "Upload successful",
                                                                 Toast.LENGTH_SHORT).show();
                                                         Log.d("CAMERA", ref.getPath());
-                                                        listener.addPhoto(ref.getPath());
+                                                        Intent newIntent = new Intent();
+                                                        newIntent.putExtra("imagePath", ref.getPath());
+                                                        setResult(Activity.RESULT_OK, newIntent);
+                                                        Log.d("ADDPHOTO", "data from camera intent: " + newIntent.getStringExtra("imagePath"));
+                                                        finish();
                                                     }
                                                 })
                                                         .addOnFailureListener(new OnFailureListener() {

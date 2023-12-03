@@ -28,7 +28,7 @@ import java.util.Locale;
  * @see MainActivity
  * @see TagFragment
  * */
-public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener, CameraActivity.CameraActivityListener{
+public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener, PhotoFragment.PhotoFragmentListener{
     // All views
     EditText nameButton;
     EditText dateButton;
@@ -220,6 +220,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 // go back to main activity
                 updatedIntent.putParcelableArrayListExtra("tags",tagsToApply);
                 Log.d("# tag TAg hitting confirm", String.valueOf(tagsToApply));
+                updatedIntent.putStringArrayListExtra("photos", photos);
                 updatedIntent.putExtra("item", item);
                 updatedIntent.putExtra("date", date);
                 updatedIntent.putExtra("mode", mode);
@@ -412,6 +413,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         PhotoFragment photoFragment = (PhotoFragment) getSupportFragmentManager().findFragmentByTag("PHOTO_FRAG");
         photoFragment.dismiss();
 
+        Log.d("ADDPHOTO", "add photo interface method called");
+
         Intent intent = getIntent();
         String mode = intent.getStringExtra("mode");
         photos = new ArrayList<>();
@@ -422,4 +425,5 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         photos.add(path);
         item.setPhotos(photos);
     }
+
 }
