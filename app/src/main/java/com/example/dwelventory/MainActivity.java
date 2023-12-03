@@ -514,12 +514,11 @@ public class MainActivity extends AppCompatActivity
                                 // set STRING tags to items
                                 HashMap<String, Object> map = new HashMap<>();
                                 map.put("tags", stringTags);
+                                itemsRef.document(String.valueOf(item.getItemRefID())).update(map);
 
                                 // set photo remote cloud storage paths to items
                                 HashMap<String, Object> photoMap = new HashMap<>();
                                 map.put("photos",photoPaths);
-                                itemsRef.document(String.valueOf(item.getItemRefID())).update(map);
-                                itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
                                 itemAdapter.notifyDataSetChanged();
                                 Log.d("tagtag", "onCreate: tags " + item.getTags());
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
