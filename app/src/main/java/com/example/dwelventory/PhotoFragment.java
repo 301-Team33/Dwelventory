@@ -38,6 +38,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.firebase.storage.internal.StorageReferenceUri;
 
 import org.checkerframework.checker.units.qual.A;
 
@@ -203,11 +204,13 @@ public class PhotoFragment extends DialogFragment {
     public void loadPhotos(ArrayList<String> stringQueries) {
 
         for (String currentSearch : stringQueries) {
-            storageRef.child(currentSearch).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            currentSearch = currentSearch + ".jpeg";
+            StorageReference searchRef = storageRef.child(currentSearch);
+            searchRef.child(currentSearch).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
                     try{
-                        Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+                        Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
                         photos.add(imageBitmap);
                         photoAdapter.notifyDataSetChanged();
                     }catch (Exception e){
