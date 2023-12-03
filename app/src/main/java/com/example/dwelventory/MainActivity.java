@@ -500,6 +500,7 @@ public class MainActivity extends AppCompatActivity
                             Log.d("ADDEDITPHOTOS9", "BACK TO MAIN HERES APPLIED PHOTOS" + photoPaths);
                             item.setTags(tags); // set tags
                             Log.d("# result from ae", "after setting tags" + String.valueOf(item.getTags()));
+                            Log.d("ADDEDITPHOTOS10", "BACK TO MAIN HERES APPLIED PHOTOS" + item.getPhotos());
                             if (requestCode == ADD_ACTIVITY_CODE) {
                                 // Handle the result for adding
                                 Log.d("resultTag", "i am about to add the item");
@@ -535,7 +536,12 @@ public class MainActivity extends AppCompatActivity
                                 Log.d("# item in handler", "position:" + position + " " + item.getItemRefID());
                                 Log.d("# handling edit result", "after setting tags" + String.valueOf(item.getTags()));
                                 // set item in firebase
+
+                                HashMap<String, Object> photoMap = new HashMap<>();
+                                photoMap.put("photos",photoPaths);
+                                itemsRef.document(String.valueOf(item.getItemRefID())).update(photoMap);
                                 itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
+
                                 // set STRING tags to items
                                 itemAdapter.notifyDataSetChanged();
                             }
