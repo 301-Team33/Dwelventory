@@ -498,7 +498,6 @@ public class MainActivity extends AppCompatActivity
                             ArrayList<String> stringTags = makeStringTagList(tags); // THIS IS FOR FIREBASE ONLY
                             ArrayList<String> photoPaths = data.getStringArrayListExtra("applied_photos");
                             Log.d("ADDEDITPHOTOS9", "BACK TO MAIN HERES APPLIED PHOTOS" + photoPaths);
-                            item.setPhotos(photoPaths);
                             item.setTags(tags); // set tags
                             Log.d("# result from ae", "after setting tags" + String.valueOf(item.getTags()));
                             if (requestCode == ADD_ACTIVITY_CODE) {
@@ -518,7 +517,7 @@ public class MainActivity extends AppCompatActivity
 
                                 // set photo remote cloud storage paths to items
                                 HashMap<String, Object> photoMap = new HashMap<>();
-                                map.put("photos",photoPaths);
+                                map.put("photos",item.getPhotos());
                                 itemAdapter.notifyDataSetChanged();
                                 Log.d("tagtag", "onCreate: tags " + item.getTags());
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
