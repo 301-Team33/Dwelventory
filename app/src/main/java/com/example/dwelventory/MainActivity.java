@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity
                         String model = doc.get("model", String.class);
                         int serial = doc.get("serialNumber", int.class);
                         int estValue = doc.get("estValue", int.class);
-                        ArrayList photos = doc.get("photos", ArrayList.class);
+                        ArrayList<String> photos = (ArrayList<String>)doc.get("photos");
                         String comment = doc.get("comment", String.class);
                         // get tags from fire base
                         ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
@@ -499,6 +499,7 @@ public class MainActivity extends AppCompatActivity
                             ArrayList<String> photoPaths = data.getStringArrayListExtra("applied_photos");
                             Log.d("ADDEDITPHOTOS9", "BACK TO MAIN HERES APPLIED PHOTOS" + photoPaths);
                             item.setTags(tags); // set tags
+                            item.setPhotos(photoPaths);
                             Log.d("# result from ae", "after setting tags" + String.valueOf(item.getTags()));
                             Log.d("ADDEDITPHOTOS10", "BACK TO MAIN HERES APPLIED PHOTOS" + item.getPhotos());
                             if (requestCode == ADD_ACTIVITY_CODE) {
@@ -538,8 +539,6 @@ public class MainActivity extends AppCompatActivity
                                 // set item in firebase
 
                                 HashMap<String, Object> photoMap = new HashMap<>();
-                                photoMap.put("photos",photoPaths);
-                                itemsRef.document(String.valueOf(item.getItemRefID())).update(photoMap);
                                 itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
 
                                 // set STRING tags to items
@@ -571,6 +570,7 @@ public class MainActivity extends AppCompatActivity
             String itemRefID = itemToCopy.getItemRefID().toString();
             Log.d("itemTag", "RefID going to edit activity: " + itemRefID);
             intent.putExtra("itemRefID", itemRefID);
+            intent.putExtra("send_photos",itemToCopy.getPhotos());
             addEditActivityResultLauncher.launch(intent);
 
         });
@@ -606,6 +606,7 @@ public class MainActivity extends AppCompatActivity
         Log.d("mainTag", "Make is " + itemMake);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment,
                 itemPhotos);
+
         return copyItem;
     }
 

@@ -156,6 +156,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             }
             Log.d("", "onCreate: SEE HERE " + tagsToApply);
             item.setTags(tagsToApply);
+            ArrayList<String> alreadyAddedPhotos = intent.getStringArrayListExtra("send_photos");
+            item.setPhotos(alreadyAddedPhotos);
 
             // Now display any tags that are already applied. Up to 3
             // Add the Tags indentifiers to the Top right corner of the screen setting up to 3 Tag Names.
