@@ -29,7 +29,7 @@ import java.util.Locale;
  * @see MainActivity
  * @see TagFragment
  * */
-public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener, CameraActivity.CameraActivityListener,PhotoFragment.onPhotoFragmentInteractionListener{
+public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener, PhotoFragment.onPhotoFragmentInteractionListener{
     // All views
     EditText nameButton;
     EditText dateButton;
@@ -284,8 +284,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                     photos = new ArrayList<>();
                     item.setPhotos(photos);
                 }
-
-
+                
                 // go back to main activity
                 updatedIntent.putStringArrayListExtra("applied_photos",item.getPhotos());
                 updatedIntent.putParcelableArrayListExtra("tags",tagsToApply);
@@ -308,8 +307,6 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // want to send Item's list of photos
-                // need to send all edittext content to save state
                 if (mode.equals("add")) {
                     PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid());
                     photoFrag.show(getSupportFragmentManager(),"PHOTO_FRAG");
@@ -483,23 +480,13 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         toast.show();
     }
 
-    public void addPhoto(String path){
-        PhotoFragment photoFragment = (PhotoFragment) getSupportFragmentManager().findFragmentByTag("PHOTO_FRAG");
-        photoFragment.dismiss();
-
-        Intent intent = getIntent();
-        String mode = intent.getStringExtra("mode");
-        photos = new ArrayList<>();
-        if (mode.equals("edit") && item.getPhotos() != null){ // if edited (ie. item exists) and it has an existing photo list
-            photos = item.getPhotos();
-        }
-
-        photos.add(path);
-        item.setPhotos(photos);
-    }
-
+    /***
+     * Updates the list of photos of the associated item
+     * @param photoPaths
+     *      ArrayList of paths of photos of associated item
+     */
     @Override
-    public void  onPhotoConfirmPressed(ArrayList<String> photoPaths) {
+    public void onPhotoConfirmPressed(ArrayList<String> photoPaths) {
         photos = photoPaths;// update the photos!
     }
 }

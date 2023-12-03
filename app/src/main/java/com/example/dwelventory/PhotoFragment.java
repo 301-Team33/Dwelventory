@@ -57,12 +57,25 @@ public class PhotoFragment extends DialogFragment {
     private Button confirmButton;
     private onPhotoFragmentInteractionListener listener;
 
+    /***
+     * Interface listener for PhotoFragment
+     * Implemented in AddEditActivity and initialized in PhotoFragment
+     */
     public interface onPhotoFragmentInteractionListener{
         void onPhotoConfirmPressed(ArrayList<String> photosToAppend);
     }
+
+    /***
+     * Overrides the default onAttach method to create onPhotoFragmentInteractionListener
+     * Defines result launchers for getting images from device gallery and camera
+     * @param context
+     *      Context to create a listener for
+     * @throws
+     *      RuntimeException when listener is not implemented
+     */
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof TagFragment.OnFragmentInteractionListener){
+        if (context instanceof PhotoFragment.onPhotoFragmentInteractionListener){
             listener = (PhotoFragment.onPhotoFragmentInteractionListener) context;
         }else{
             throw new RuntimeException();
@@ -154,6 +167,16 @@ public class PhotoFragment extends DialogFragment {
 
     }
 
+    /***
+     * Overloaded method that creates instance of PhotoFragment and allows for
+     * existing images to be displayed
+     * @param userId
+     *      ID of user to access information from Firebase
+     * @param images
+     *      Array of images of associated item (if applicable) to display on PhotoFragment
+     * @return
+     *      PhotoFragment to display
+     */
     static PhotoFragment newInstance(String userId, ArrayList<String> images){
         // load in the user ID to get the query path for storing and retrieving current user defined
         Bundle args = new Bundle();
@@ -166,6 +189,13 @@ public class PhotoFragment extends DialogFragment {
         return photoFragment;
     }
 
+    /***
+     * Overloaded method that creates instance of PhotoFragment
+     * @param userId
+     *      ID of user to access information from Firebase
+     * @return
+     *      PhotoFragment to display
+     */
     static PhotoFragment newInstance(String userId){
         Bundle args = new Bundle();
         args.putString("userId", userId);
@@ -175,6 +205,15 @@ public class PhotoFragment extends DialogFragment {
         return photoFrag;
     }
 
+    /***
+     * Creates new PhotoFragment to be displayed
+     * Makes UI that will allow for adding and deleting images
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return
+     *      AlertDialog.Builder for the built new PhotoFragment
+     */
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState){
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_photo,null);
         camera = view.findViewById(R.id.camera_button);
@@ -206,6 +245,7 @@ public class PhotoFragment extends DialogFragment {
 
         loadPhotos(photoPaths);
 
+        // deleting images
         photoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -237,7 +277,7 @@ public class PhotoFragment extends DialogFragment {
                 dismiss();
             }
         });
-        
+
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -268,11 +308,12 @@ public class PhotoFragment extends DialogFragment {
         return builder.create();
     }
 
-
-
+    /***
+     * Loads URIs of images from their paths in Firestore Cloud Storage and displays them in fragment
+     * @param stringQueries
+     *      List of paths to each image in Firestore Storage
+     */
     public void loadPhotos(ArrayList<String> stringQueries) {
-
-
         for (String currentSearch : stringQueries) {
             // https://firebase.google.com/docs/storage/android/list-files#java API research
             // Last updated 2023-11-22 UTC.
