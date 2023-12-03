@@ -135,8 +135,6 @@ public class TagFragment extends DialogFragment{
         deletePrompt.setVisibility(View.GONE);
 
 
-
-
         Bundle bundle = getArguments();
         userId = bundle.getString("user_id"); // Get the UserID to load the appropriate
         tagsCurrentApply = new ArrayList<>(); // Current Tags associated with an Item if the item is being editted
@@ -299,7 +297,6 @@ public class TagFragment extends DialogFragment{
                     tagArrayAdapter.notifyDataSetChanged();
                     produceTagToast(R.string.tag_create_toast);
                 }
-
             }
         });
 

@@ -28,7 +28,7 @@
             android:id="@+id/tag_back_button"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:backgroundTint="@color/green"
             android:src="@drawable/tag_cancel_fragment"
             app:tint="@color/white" />
@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|left"
             android:maxWidth="240dp"
-            android:maxLength="30"
+            android:maxLength="15"
             android:maxLines="1">
         </EditText>
 

@@ -265,6 +265,13 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 });
             }
         });
+
+        backButton.setOnClickListener(v -> {
+            // go back to main activity
+            finish();
+        });
+
+
     }
     /**
      * This checks all the required inputs are filled out properly
