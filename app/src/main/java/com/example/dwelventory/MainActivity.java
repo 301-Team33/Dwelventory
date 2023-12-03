@@ -111,8 +111,13 @@ public class MainActivity extends AppCompatActivity
             checkUsers(mAuth.getCurrentUser());
         }
 
-        assert user != null;
-        checkUsers(user);
+        while(mAuth.getCurrentUser() == null) {
+            try {
+                Thread.sleep(2000);
+            }
+            catch (InterruptedException e) {}
+        }
+        user = mAuth.getCurrentUser();
         Log.d("itemTag", "after user");
         String path = "/users/" + user.getUid() + "/items";
         // String path = "/users/rQ2PrfCOKsYkdi1bfzqvLJVZOqq1/items";

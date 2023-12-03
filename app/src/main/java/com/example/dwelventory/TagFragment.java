@@ -309,7 +309,6 @@ public class TagFragment extends DialogFragment{
             public void onClick(View v) {
                 if (tagsToApply.size() == 0){
                     produceTagToast(R.string.no_tags_selected);
-                    listener.onTagApplyAction(tagsToApply);
                 }else {
                     listener.onTagApplyAction(tagsToApply);
                 }
