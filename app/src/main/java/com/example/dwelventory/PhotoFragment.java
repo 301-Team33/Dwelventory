@@ -15,7 +15,9 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -25,6 +27,8 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -37,10 +41,13 @@ public class PhotoFragment extends DialogFragment {
     private ImageView imageView;
     private String userId;
     private ActivityResultLauncher<Intent> photoFragmentResultLauncher;
-    private Uri photoChosen;
     private ImageView selectedGalleryImage;
     private FirebaseStorage storage;
     private StorageReference storageRef;
+    private ArrayList<Uri> selectedImages;
+    private ArrayAdapter<Bitmap> photoAdapter;
+    private Uri currentUri;
+    private ListView photoListView;
 
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -50,17 +57,22 @@ public class PhotoFragment extends DialogFragment {
                 result -> {
 
                     if (result.getResultCode() == RESULT_OK){
-                        photoChosen = result.getData().getData();
-                        selectedGalleryImage.setImageURI(photoChosen);
-                        Log.d("HERE WE GO", "onAttach: " + photoChosen.toString());
-                        try {
-
-                            Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), photoChosen);
-                            String path = MediaStore.Images.Media.insertImage(getActivity().getContentResolver(),imageBitmap, "newpic", null);
-                            StorageReference ref = storageRef.child("images/" + UUID.randomUUID().toString());
-                        }catch (Exception exception){
-                            Log.d("no file found exception", "onAttach: exception");
+                        Intent intent = result.getData();
+                        if (intent.getClipData() != null) {
+                            for (int i = 0; i < intent.getClipData().getItemCount(); i++){
+                                currentUri = intent.getClipData().getItemAt(i).getUri();
+                                // Process the URI by adding it not only to the ListView but also the
+                                // Firestore.
+                                try {
+                                    Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), currentUri);
+                                    photos.add(imageBitmap);
+                                    photoAdapter.notifyDataSetChanged();
+                                }catch(Exception exception){
+                                    Log.d("exception handelled...", "onAttach: Exception");
+                                }
+                            }
                         }
+
                     }
 
                 });
@@ -97,9 +109,14 @@ public class PhotoFragment extends DialogFragment {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_photo,null);
         camera = view.findViewById(R.id.camera_button);
         gallery = view.findViewById(R.id.gallery_button);
-        selectedGalleryImage = view.findViewById(R.id.return_image);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
+        selectedImages = new ArrayList<>();
+        photos = new ArrayList<>();
+        photoListView = view.findViewById(R.id.photo_list_view);
+
+        photoAdapter = new PhotoCustomList(this.getContext(), photos);
+        photoListView.setAdapter(photoAdapter);
 
         //imageView = view.findViewById(R.id.imageView);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -127,8 +144,9 @@ public class PhotoFragment extends DialogFragment {
 
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
                 intent.setType("image/*");
-                photoFragmentResultLauncher.launch(intent);
+                photoFragmentResultLauncher.launch(Intent.createChooser(intent,"picture"));
             }
         });
 
