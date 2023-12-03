@@ -50,7 +50,7 @@ import java.util.UUID;
 public class PhotoFragment extends DialogFragment {
     private FloatingActionButton camera;
     private FloatingActionButton gallery;
-    private ArrayList<Bitmap> photos;
+    private ArrayList<Uri> photos;
     private ArrayList<String> photoPaths;
     private ImageView imageView;
     private String userId;
@@ -59,7 +59,7 @@ public class PhotoFragment extends DialogFragment {
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private ArrayList<Uri> selectedImages;
-    private ArrayAdapter<Bitmap> photoAdapter;
+    private ArrayAdapter<Uri> photoAdapter;
     private Uri currentUri;
     private ListView photoListView;
 
@@ -79,7 +79,7 @@ public class PhotoFragment extends DialogFragment {
                                 // Firestore.
                                 try {
                                     Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), currentUri);
-                                    photos.add(imageBitmap);
+                                    photos.add(currentUri);
                                     photoAdapter.notifyDataSetChanged();
 
                                     // Save the photo to the specified firestore.
@@ -185,6 +185,13 @@ public class PhotoFragment extends DialogFragment {
             }
         });
 
+
+        // SOURCE: https://www.geeksforgeeks.org/how-to-select-multiple-images-from-gallery-in-android/
+        // Utilized: "HOW TO SELECT MULTIPLE IMAGES FROM GALLERY IN ANDROID?" to select many images
+        // From the open gallery in Android Studio.
+        // Author: User: anniaanni
+        // Usage: Learned code snippets required to open the gallery and select images from the gallery.
+        // Adapted the Source code and tutorial to utilize the activity result launcher.
         gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -213,14 +220,29 @@ public class PhotoFragment extends DialogFragment {
             // file names since the queries were not returning anything with our path string.
             // Realization: gs://dwelventory etc is appended to the paths file...
             StorageReference listReference = storageRef.child("images/");
+
             listReference.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
                 @Override
                 public void onSuccess(ListResult listResult) {
-                    for (StorageReference prefix: listResult.getPrefixes()){
-                        Log.d("OUR TAG", "Here is the prefix... " + prefix.toString());
-                    }
                     for (StorageReference item: listResult.getItems()){
+                        String fullPath = "gs://dwelventory.appspot.com/" + currentSearch;
                         Log.d("OUR TAG", "This is the item..." + item.toString());
+                        if(fullPath.equals(item.toString())){
+
+                            item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    try {
+                                        Log.d("uritag", "onSuccess: uri:" + uri.toString());
+                                        photos.add(uri);
+                                        photoAdapter.notifyDataSetChanged();
+                                    }catch (Exception e){
+                                        Log.d("error tag", "Error occured fetching bitmap");
+                                    }
+                                }
+                            });
+
+                        }
                     }
                 }
             });

@@ -310,8 +310,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                     photoFrag.show(getSupportFragmentManager(),"PHOTO_FRAG");
                 }else{
                     ArrayList<String> myphotos = new ArrayList<>();
-                    myphotos.add("images/76fc087a-1c40-4758-8e89-f8635ef00541");
-                    myphotos.add("images/7669db27-ce92-48ee-af7c-fd9a48c3d903");
+                    myphotos.add("images/c0ef532b-dc59-4be4-abdd-0c20b32fe01f");
                     PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid(),myphotos);
                     photoFrag.show(getSupportFragmentManager(),"PHOTO_FRAG");
                 }
