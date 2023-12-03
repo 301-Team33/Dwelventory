@@ -119,7 +119,7 @@ public class PhotoFragment extends DialogFragment {
         return photoFragment;
     }
 
-    static PhotoFragment newInstance(String userId){
+    public PhotoFragment newInstance(String userId){
         Bundle args = new Bundle();
         args.putString("userId", userId);
 
