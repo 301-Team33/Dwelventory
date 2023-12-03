@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ public class PhotoFragment extends DialogFragment {
     private String userId;
     private ActivityResultLauncher<Intent> photoFragmentResultLauncher;
     private ActivityResultLauncher<Intent> cameraFragmentResultLauncher;
+    private PhotoFragmentListener listener;
     private ImageView selectedGalleryImage;
     private FirebaseStorage storage;
     private StorageReference storageRef;
@@ -50,6 +52,7 @@ public class PhotoFragment extends DialogFragment {
     private ArrayAdapter<Bitmap> photoAdapter;
     private Uri currentUri;
     private ListView photoListView;
+    private Button confirmButton;
 
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -71,14 +74,16 @@ public class PhotoFragment extends DialogFragment {
                                     photoAdapter.notifyDataSetChanged();
 
                                     // Save the photo to the specified firestore.
-                                    StorageReference ref = storageRef.child("images/" + UUID.randomUUID().toString());
-                                    String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),imageBitmap,"gallery image",null);
-                                    //photoPaths.add(path);
+                                    String remotePath = "images/" + UUID.randomUUID().toString();
+                                    StorageReference ref = storageRef.child(remotePath);
+                                    String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),imageBitmap,"newpic",null);
+                                    Log.d("PHOTOPATH", String.valueOf(Uri.parse(remotePath)));
                                     ref.putFile(Uri.parse(path))
                                             .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                                 @Override
                                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                                     Toast.makeText(getActivity().getBaseContext(),"Upload successful",Toast.LENGTH_SHORT);
+                                                    photoPaths.add(path);
                                                 }
                                             }).addOnFailureListener(new OnFailureListener() {
                                                 @Override
@@ -105,17 +110,19 @@ public class PhotoFragment extends DialogFragment {
                         if (camIntent != null){
                             Bitmap photo = (Bitmap) camIntent.getExtras().get("data");
                             photos.add(photo);
-                            StorageReference ref = storageRef.child("images/" +
-                                    UUID.randomUUID().toString());
+                            photoAdapter.notifyDataSetChanged();
+                            String remotePath = "images/" + UUID.randomUUID().toString();
+                            StorageReference ref = storageRef.child(remotePath);
                             String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),
                                     photo, "camera image", null);
-                            //photoPaths.add(path);
                             Log.d("CAMERA", "photo taken and working on saving");
+                            Log.d("PHOTOPATH", path);
                             ref.putFile(Uri.parse(path)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                     Toast.makeText(getActivity().getBaseContext(),
                                             "Camera photo uploaded!", Toast.LENGTH_SHORT).show();
+                                    photoPaths.add(remotePath);
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -129,11 +136,16 @@ public class PhotoFragment extends DialogFragment {
                 }
         );
 
+        if (context instanceof PhotoFragment.PhotoFragmentListener){
+            listener = (PhotoFragment.PhotoFragmentListener) context;
+        }else{
+            throw new RuntimeException();
+        }
 
     }
 
     public interface PhotoFragmentListener {
-        void addPhoto(String path);
+        void addPhotos(ArrayList<String> paths);
         // functions executed when actions are taken on fragment in AddEditActivity
     }
 
@@ -151,17 +163,15 @@ public class PhotoFragment extends DialogFragment {
         selectedImages = new ArrayList<>();
         photos = new ArrayList<>();
         photoListView = view.findViewById(R.id.photo_list_view);
+        confirmButton = view.findViewById(R.id.confirm_photos);
+
+        photoPaths = new ArrayList<>();
 
         photoAdapter = new PhotoCustomList(this.getContext(), photos);
         photoListView.setAdapter(photoAdapter);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(view);
-
-        /*photos = bundle.getParcelableArrayList("images");
-        if (photos.size() != 0 && photos != null){
-            imageView.setImageBitmap(photos.get(0));
-        }*/
 
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,6 +191,13 @@ public class PhotoFragment extends DialogFragment {
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
                 intent.setType("image/*");
                 photoFragmentResultLauncher.launch(Intent.createChooser(intent,"picture"));
+            }
+        });
+
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.addPhotos(photoPaths);
             }
         });
 

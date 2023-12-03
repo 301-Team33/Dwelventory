@@ -475,7 +475,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         toast.show();
     }
 
-    public void addPhoto(String path){
+    public void addPhotos(ArrayList<String> paths){
         PhotoFragment photoFragment = (PhotoFragment) getSupportFragmentManager().findFragmentByTag("PHOTO_FRAG");
         photoFragment.dismiss();
 
@@ -488,7 +488,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             photos = item.getPhotos();
         }
 
-        photos.add(path);
+        Toast.makeText(this, "Photos added don't keep this", Toast.LENGTH_SHORT).show();
         item.setPhotos(photos);
     }
 

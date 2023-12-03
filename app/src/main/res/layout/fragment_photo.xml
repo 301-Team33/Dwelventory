@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/beige">
 
     <TextView
         android:layout_width="match_parent"
@@ -60,5 +61,13 @@
             />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/confirm_photos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirm"
+        android:backgroundTint="@color/green"
+        android:layout_gravity="center"/>
 
 </LinearLayout>
