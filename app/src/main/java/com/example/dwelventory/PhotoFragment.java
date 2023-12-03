@@ -2,14 +2,11 @@ package com.example.dwelventory;
 
 import static android.app.Activity.RESULT_OK;
 
-import static androidx.camera.core.impl.utils.ContextUtil.getBaseContext;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -28,23 +25,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.firebase.storage.internal.StorageReferenceUri;
 
-import org.checkerframework.checker.units.qual.A;
-
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -56,6 +44,7 @@ public class PhotoFragment extends DialogFragment {
     private ImageView imageView;
     private String userId;
     private ActivityResultLauncher<Intent> photoFragmentResultLauncher;
+    private ActivityResultLauncher<Intent> cameraFragmentResultLauncher;
     private ImageView selectedGalleryImage;
     private FirebaseStorage storage;
     private StorageReference storageRef;
@@ -63,7 +52,7 @@ public class PhotoFragment extends DialogFragment {
     private ArrayAdapter<Uri> photoAdapter;
     private Uri currentUri;
     private ListView photoListView;
-    private Button photoApply;
+    private Button confirmButton;
     private onPhotoFragmentInteractionListener listener;
 
     public interface onPhotoFragmentInteractionListener{
@@ -126,13 +115,42 @@ public class PhotoFragment extends DialogFragment {
 
                 });
 
+        cameraFragmentResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK){
+                        Intent camIntent = result.getData();
+                        if (camIntent != null){
+                            Bitmap photo = (Bitmap) camIntent.getExtras().get("data");
+                            String remotePath = "images/" + UUID.randomUUID().toString();
+                            StorageReference ref = storageRef.child(remotePath);
+                            String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),
+                                    photo, "camera image", null);
+                            photos.add(Uri.parse(path));
+                            photoAdapter.notifyDataSetChanged();
+                            Log.d("CAMERA", "photo taken and working on saving");
+                            Log.d("PHOTOPATH", path);
+                            ref.putFile(Uri.parse(path)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    Toast.makeText(getActivity().getBaseContext(),
+                                            "Camera photo uploaded!", Toast.LENGTH_SHORT).show();
+                                    photoPaths.add(remotePath);
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(getActivity().getBaseContext(),
+                                            "Camera photo upload failed", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                }
+        );
+
 
     }
-
-    /*public interface PhotoFragmentListener {
-        void addPhoto(String path);
-        // functions executed when actions are taken on fragment in AddEditActivity
-    }*/
 
     static PhotoFragment newInstance(String userId, ArrayList<String> images){
         // load in the user ID to get the query path for storing and retrieving current user defined
@@ -164,13 +182,12 @@ public class PhotoFragment extends DialogFragment {
         selectedImages = new ArrayList<>();
         photos = new ArrayList<>();
         photoListView = view.findViewById(R.id.photo_list_view);
-        photoApply = view.findViewById(R.id.photo_apply_button);
+        confirmButton = view.findViewById(R.id.confirmButton);
 
 
         photoAdapter = new PhotoCustomList(this.getContext(), photos);
         photoListView.setAdapter(photoAdapter);
 
-        //imageView = view.findViewById(R.id.imageView);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(view);
 
@@ -187,12 +204,7 @@ public class PhotoFragment extends DialogFragment {
 
         loadPhotos(photoPaths);
 
-        /*photos = bundle.getParcelableArrayList("images");
-        if (photos.size() != 0 && photos != null){
-            imageView.setImageBitmap(photos.get(0));
-        }*/
-
-        photoApply.setOnClickListener(new View.OnClickListener() {
+        confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 listener.onPhotoConfirmPressed(photoPaths);
@@ -203,8 +215,8 @@ public class PhotoFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 // start camera activity
-                Intent intent = new Intent(getActivity(), CameraActivity.class);
-                startActivity(intent);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                cameraFragmentResultLauncher.launch(intent);
             }
         });
 

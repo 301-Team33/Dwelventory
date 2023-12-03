@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/beige">
 
     <TextView
         android:layout_width="match_parent"
@@ -48,18 +49,6 @@
                 android:clickable="true"
                 app:srcCompat="@drawable/gallery"
                 android:backgroundTint="@color/beige"/>
-
-            <android.widget.Button
-                android:id="@+id/photo_apply_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="63dp"
-                android:background="@drawable/tag_filter_apply"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:text="@string/done"
-                android:textSize="25dp"
-                android:layout_gravity="center"></android.widget.Button>
         </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -72,9 +61,14 @@
             android:backgroundTint="@color/beige"
             android:layout_marginRight="40dp"
             />
-
-
-
     </LinearLayout>
+
+    <Button
+        android:id="@+id/confirmButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirm"
+        android:backgroundTint="@color/green"
+        android:layout_gravity="center"/>
 
 </LinearLayout>
