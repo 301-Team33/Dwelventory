@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -31,6 +32,7 @@ public class PhotoFragment extends DialogFragment {
     private ActivityResultLauncher<Intent> cameraActivityResultLauncher;
     private String path;
     private PhotoFragment.PhotoFragmentListener listener;
+    private ListView photoList;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -70,7 +72,7 @@ public class PhotoFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState){
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_photo,null);
         camera = view.findViewById(R.id.camera_button);
-        //imageView = view.findViewById(R.id.imageView);
+        photoList = view.findViewById(R.id.photoList);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(view);
 
@@ -99,7 +101,7 @@ public class PhotoFragment extends DialogFragment {
                         Intent data = result.getData();
                         Log.d("ADDPHOTO", "data is " + data);
 
-                        if (data !=  null){
+                        if (data != null){
                             path = data.getStringExtra("imagePath");
                             listener.addPhoto(path);
                         }

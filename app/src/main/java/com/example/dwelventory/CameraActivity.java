@@ -1,6 +1,5 @@
 package com.example.dwelventory;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -55,17 +54,12 @@ public class CameraActivity extends AppCompatActivity{
     private CheckBox displayMainCheck;
     private Camera camera;
     private ImageCapture imageCapture;
-    private static final int CAMERA_PERMISSION_CODE = 202;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_layout);
 
-        Intent intent = getIntent();
-        //userId = intent.getStringExtra("userId");
-        //mAuth = FirebaseAuth.getInstance();
-        //db = FirebaseFirestore.getInstance();
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         Log.d("STORAGEREF", storageRef.getPath());
@@ -126,7 +120,8 @@ public class CameraActivity extends AppCompatActivity{
                                                         Log.d("CAMERA", ref.getPath());
                                                         Intent newIntent = new Intent();
                                                         newIntent.putExtra("imagePath", ref.getPath());
-                                                        setResult(Activity.RESULT_OK, newIntent);
+                                                        Log.d("ADDPHOTO", "supposed result code: " + RESULT_OK);
+                                                        setResult(RESULT_OK, newIntent);
                                                         Log.d("ADDPHOTO", "data from camera intent: " + newIntent.getStringExtra("imagePath"));
                                                         finish();
                                                     }
