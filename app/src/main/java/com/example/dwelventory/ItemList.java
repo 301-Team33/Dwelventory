@@ -81,6 +81,34 @@ public class ItemList extends ArrayAdapter<Item> {
 
         if (item.getPhotos() == null || item.getPhotos().size() == 0){
             image.setImageResource(R.drawable.goat);
+        }else{
+            String firstPhotoPath = item.getPhotos().get(0);
+
+            FirebaseStorage storage;
+            StorageReference storageRef;
+
+
+            storage = FirebaseStorage.getInstance();
+            storageRef = storage.getReference();
+            StorageReference listReference = storageRef.child("images/");
+
+            listReference.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                @Override
+                public void onSuccess(ListResult listResult) {
+                    for (StorageReference item:listResult.getItems()){
+                        String fullPath = "gs://dwelventory.appspot.com/" + firstPhotoPath;
+                        Log.d("OUR TAG", "This is the item..." + item.toString());
+                        if(fullPath.equals(item.toString())){
+                            item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    Glide.with(context).load(uri).into(image);
+                                }
+                            });
+                        }
+                    }
+                }
+            });
         }
 
         // Get the checkbox and set its state based on the item's selection status
