@@ -202,7 +202,20 @@ public class PhotoFragment extends DialogFragment {
 
     public void loadPhotos(ArrayList<String> stringQueries) {
 
-        StorageReference ref = storageRef.child("images/");
+        for (String currentSearch : stringQueries) {
+            storageRef.child(currentSearch).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    try{
+                        Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+                        photos.add(imageBitmap);
+                        photoAdapter.notifyDataSetChanged();
+                    }catch (Exception e){
+                        Log.d("INSERTION", "onSuccess: inserted");
+                    }
+                }
+            });
+        }
 
     }
 
