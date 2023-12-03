@@ -276,7 +276,9 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                   ArrayList<Tag>  emptyTagSet = new ArrayList<>();
                   item.setTags(emptyTagSet);
                 }
-
+                Log.d("ADDEDITPHOTOS2", "HERE ARE MOI PHOTOS" + item.getPhotos());
+                item.setPhotos(photos);
+                Log.d("ADDEDITPHOTOS4", "HERE ARE MOI PHOTOS" + item.getPhotos());
                 if (photos == null || item.getPhotos() == null){
                     photos = new ArrayList<>();
                     item.setPhotos(photos);
@@ -297,6 +299,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 Log.d("itemTag", "RefID coming out of edit activity: " + itemRefID);
                 setResult(818, updatedIntent);
                 Log.d("aeTag", "finishing aeActivity...");
+                Log.d("ADDEDITPHOTOS5", "HERE ARE MOI PHOTOS" + item.getPhotos());
+                updatedIntent.putStringArrayListExtra("applied_photos",item.getPhotos());
                 finish();
             }
         });
@@ -311,6 +315,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                     photoFrag.show(getSupportFragmentManager(),"PHOTO_FRAG");
                 }else{
                     PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid(),item.getPhotos());
+                    Log.d("ADDEDITPHOTOS3", "HERE ARE MOI PHOTOS" + item.getPhotos());
                     photoFrag.show(getSupportFragmentManager(),"PHOTO_FRAG");
                 }
             }
