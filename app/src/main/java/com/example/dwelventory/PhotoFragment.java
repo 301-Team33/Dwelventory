@@ -1,6 +1,5 @@
 package com.example.dwelventory;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -20,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 
@@ -27,27 +27,70 @@ public class PhotoFragment extends DialogFragment {
     private FloatingActionButton camera;
     private FloatingActionButton gallery;
     private ArrayList<Bitmap> photos;
+    private ArrayList<String> photoPaths;
     private ImageView imageView;
     private String userId;
-    private ActivityResultLauncher<Intent> cameraActivityResultLauncher;
-    private String path;
-    private PhotoFragment.PhotoFragmentListener listener;
-    private ListView photoList;
+    private ActivityResultLauncher<Intent> photoFragmentResultLauncher;
+    private ImageView selectedGalleryImage;
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private ArrayList<Uri> selectedImages;
+    private ArrayAdapter<Bitmap> photoAdapter;
+    private Uri currentUri;
+    private ListView photoListView;
 
-    @Override
-    public void onAttach(@NonNull Context context) {
+    public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof PhotoFragment.PhotoFragmentListener){
-            listener = (PhotoFragment.PhotoFragmentListener) context;
-        }else{
-            throw new RuntimeException();
-        }
+
+        photoFragmentResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+
+                    if (result.getResultCode() == RESULT_OK){
+                        Intent intent = result.getData();
+                        if (intent.getClipData() != null) {
+                            for (int i = 0; i < intent.getClipData().getItemCount(); i++){
+                                currentUri = intent.getClipData().getItemAt(i).getUri();
+                                // Process the URI by adding it not only to the ListView but also the
+                                // Firestore.
+                                try {
+                                    Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), currentUri);
+                                    photos.add(imageBitmap);
+                                    photoAdapter.notifyDataSetChanged();
+
+                                    // Save the photo to the specified firestore.
+                                    StorageReference ref = storageRef.child("images/" + UUID.randomUUID().toString());
+                                    String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),imageBitmap,"newpic",null);
+                                    ref.putFile(Uri.parse(path))
+                                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                @Override
+                                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                    Toast.makeText(getActivity().getBaseContext(),"Upload successful",Toast.LENGTH_SHORT);
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(getActivity().getBaseContext(),"Upload failed",Toast.LENGTH_SHORT);
+                                                }
+                                            });
+
+                                }catch(Exception exception){
+                                    Log.d("exception handelled...", "onAttach: Exception");
+                                }
+                            }
+                        }
+
+                    }
+
+                });
+
+
     }
 
-    public interface PhotoFragmentListener {
+    /*public interface PhotoFragmentListener {
         void addPhoto(String path);
         // functions executed when actions are taken on fragment in AddEditActivity
-    }
+    }*/
 
     static PhotoFragment newInstance(String userId, ArrayList<Bitmap> images){
         // load in the user ID to get the query path for storing and retrieving current user defined
@@ -72,7 +115,17 @@ public class PhotoFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState){
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_photo,null);
         camera = view.findViewById(R.id.camera_button);
-        photoList = view.findViewById(R.id.photoList);
+        gallery = view.findViewById(R.id.gallery_button);
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+        selectedImages = new ArrayList<>();
+        photos = new ArrayList<>();
+        photoListView = view.findViewById(R.id.photo_list_view);
+
+        photoAdapter = new PhotoCustomList(this.getContext(), photos);
+        photoListView.setAdapter(photoAdapter);
+
+        //imageView = view.findViewById(R.id.imageView);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(view);
 
@@ -87,28 +140,22 @@ public class PhotoFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 // start camera activity
-                Intent camIntent = new Intent(getContext(), CameraActivity.class);
-                cameraActivityResultLauncher.launch(camIntent);
+                Intent intent = new Intent(getActivity(), CameraActivity.class);
+                startActivity(intent);
             }
         });
 
-        cameraActivityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    Log.d("ADDPHOTO", "result code: " + result.getResultCode());
-                    // result code not setting properly
-                    if (result.getResultCode() == Activity.RESULT_OK){
-                        Intent data = result.getData();
-                        Log.d("ADDPHOTO", "data is " + data);
+        gallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-                        if (data != null){
-                            path = data.getStringExtra("imagePath");
-                            listener.addPhoto(path);
-                        }
-
-                    }
-
-                });
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
+                intent.setType("image/*");
+                photoFragmentResultLauncher.launch(Intent.createChooser(intent,"picture"));
+            }
+        });
 
         return builder.create();
     }
