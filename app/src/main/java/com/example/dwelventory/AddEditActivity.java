@@ -500,7 +500,6 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
 
     @Override
     public void  onPhotoConfirmPressed(ArrayList<String> photoPaths) {
-        photos = photoPaths;
-        item.setPhotos(photos); // update the photos!
+        photos = photoPaths;// update the photos!
     }
 }
