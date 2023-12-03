@@ -206,7 +206,24 @@ public class PhotoFragment extends DialogFragment {
 
 
         for (String currentSearch : stringQueries) {
-            
+            // https://firebase.google.com/docs/storage/android/list-files#java API research
+            // Last updated 2023-11-22 UTC.
+            // Title: List files with Cloud Storage on Android
+            // API REFERENCE: learning how to query the files in the database storage and checking the
+            // file names since the queries were not returning anything with our path string.
+            // Realization: gs://dwelventory etc is appended to the paths file...
+            StorageReference listReference = storageRef.child("images/");
+            listReference.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                @Override
+                public void onSuccess(ListResult listResult) {
+                    for (StorageReference prefix: listResult.getPrefixes()){
+                        Log.d("OUR TAG", "Here is the prefix... " + prefix.toString());
+                    }
+                    for (StorageReference item: listResult.getItems()){
+                        Log.d("OUR TAG", "This is the item..." + item.toString());
+                    }
+                }
+            });
         }
 
     }
