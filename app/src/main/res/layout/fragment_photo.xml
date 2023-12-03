@@ -10,8 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Photos"
+        android:textColor="@color/white"
+        android:textAllCaps="true"
+        android:textStyle="bold"
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textSize="35sp"
         android:paddingVertical="20dp"
         android:background="@color/beige">
 
@@ -45,8 +48,19 @@
                 android:clickable="true"
                 app:srcCompat="@drawable/gallery"
                 android:backgroundTint="@color/beige"/>
-        </LinearLayout>
 
+            <android.widget.Button
+                android:id="@+id/photo_apply_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="63dp"
+                android:background="@drawable/tag_filter_apply"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:text="@string/done"
+                android:textSize="25dp"
+                android:layout_gravity="center"></android.widget.Button>
+        </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/camera_button"
@@ -58,6 +72,8 @@
             android:backgroundTint="@color/beige"
             android:layout_marginRight="40dp"
             />
+
+
 
     </LinearLayout>
 

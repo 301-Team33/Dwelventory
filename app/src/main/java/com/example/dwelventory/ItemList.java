@@ -1,6 +1,8 @@
 package com.example.dwelventory;
 
 import android.content.Context;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -70,7 +78,38 @@ public class ItemList extends ArrayAdapter<Item> {
         model.setText(item.getModel());
 
         ImageView image = view.findViewById(R.id.itemImage);
-        image.setImageResource(R.drawable.goat);
+
+        if (item.getPhotos() == null || item.getPhotos().size() == 0){
+            image.setImageResource(R.drawable.goat);
+        }else{
+            String firstPhotoPath = item.getPhotos().get(0);
+
+            FirebaseStorage storage;
+            StorageReference storageRef;
+
+
+            storage = FirebaseStorage.getInstance();
+            storageRef = storage.getReference();
+            StorageReference listReference = storageRef.child("images/");
+
+            listReference.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                @Override
+                public void onSuccess(ListResult listResult) {
+                    for (StorageReference item:listResult.getItems()){
+                        String fullPath = "gs://dwelventory.appspot.com/" + firstPhotoPath;
+                        Log.d("OUR TAG", "This is the item..." + item.toString());
+                        if(fullPath.equals(item.toString())){
+                            item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    Glide.with(context).load(uri).into(image);
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        }
 
         // Get the checkbox and set its state based on the item's selection status
         CheckBox checkBox = view.findViewById(R.id.checkbox);

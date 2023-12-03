@@ -496,7 +496,9 @@ public class MainActivity extends AppCompatActivity
                             // Get tags and set them to the item
                             ArrayList<Tag> tags = data.getParcelableArrayListExtra("tags");
                             ArrayList<String> stringTags = makeStringTagList(tags); // THIS IS FOR FIREBASE ONLY
+                            ArrayList<String> retrievedPhotos = data.getStringArrayListExtra("photos");
                             item.setTags(tags); // set tags
+                            item.setPhotos(retrievedPhotos);
                             Log.d("# result from ae", "after setting tags" + String.valueOf(item.getTags()));
                             if (requestCode == ADD_ACTIVITY_CODE) {
                                 // Handle the result for adding

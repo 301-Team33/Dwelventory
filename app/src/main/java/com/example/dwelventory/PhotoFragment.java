@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -62,9 +63,19 @@ public class PhotoFragment extends DialogFragment {
     private ArrayAdapter<Uri> photoAdapter;
     private Uri currentUri;
     private ListView photoListView;
+    private Button photoApply;
+    private onPhotoFragmentInteractionListener listener;
 
+    public interface onPhotoFragmentInteractionListener{
+        void onPhotoConfirmPressed(ArrayList<String> photosToAppend);
+    }
     public void onAttach(Context context) {
         super.onAttach(context);
+        if (context instanceof TagFragment.OnFragmentInteractionListener){
+            listener = (PhotoFragment.onPhotoFragmentInteractionListener) context;
+        }else{
+            throw new RuntimeException();
+        }
 
         photoFragmentResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -86,7 +97,6 @@ public class PhotoFragment extends DialogFragment {
                                     String path = "images/" + UUID.randomUUID().toString();
                                     StorageReference ref = storageRef.child(path);
                                     String path2 = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),imageBitmap,"newpic",null);
-                                    Log.d("HEY", "PHOTO PATH" + path);
                                     photoPaths.add(path);
                                     ref.putFile(Uri.parse(path2))
                                             .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -149,6 +159,7 @@ public class PhotoFragment extends DialogFragment {
         selectedImages = new ArrayList<>();
         photos = new ArrayList<>();
         photoListView = view.findViewById(R.id.photo_list_view);
+        photoApply = view.findViewById(R.id.photo_apply_button);
 
 
         photoAdapter = new PhotoCustomList(this.getContext(), photos);
@@ -176,6 +187,13 @@ public class PhotoFragment extends DialogFragment {
             imageView.setImageBitmap(photos.get(0));
         }*/
 
+        photoApply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onPhotoConfirmPressed(photoPaths);
+                dismiss();
+            }
+        });
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

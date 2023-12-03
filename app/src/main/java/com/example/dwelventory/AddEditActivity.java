@@ -29,7 +29,7 @@ import java.util.Locale;
  * @see MainActivity
  * @see TagFragment
  * */
-public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener, CameraActivity.CameraActivityListener{
+public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener, CameraActivity.CameraActivityListener,PhotoFragment.onPhotoFragmentInteractionListener{
     // All views
     EditText nameButton;
     EditText dateButton;
@@ -284,6 +284,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
 
 
                 // go back to main activity
+                updatedIntent.putStringArrayListExtra("photos",photos);
                 updatedIntent.putParcelableArrayListExtra("tags",tagsToApply);
                 Log.d("# tag TAg hitting confirm", String.valueOf(tagsToApply));
                 updatedIntent.putExtra("item", item);
@@ -309,9 +310,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                     PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid());
                     photoFrag.show(getSupportFragmentManager(),"PHOTO_FRAG");
                 }else{
-                    ArrayList<String> myphotos = new ArrayList<>();
-                    myphotos.add("images/c0ef532b-dc59-4be4-abdd-0c20b32fe01f");
-                    PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid(),myphotos);
+                    PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid(),item.getPhotos());
                     photoFrag.show(getSupportFragmentManager(),"PHOTO_FRAG");
                 }
             }
@@ -493,5 +492,11 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
 
         photos.add(path);
         item.setPhotos(photos);
+    }
+
+    @Override
+    public void  onPhotoConfirmPressed(ArrayList<String> photoPaths) {
+        photos = photoPaths;
+        item.setPhotos(photos); // update the photos!
     }
 }
