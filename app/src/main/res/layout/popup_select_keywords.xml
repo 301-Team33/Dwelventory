@@ -37,15 +37,27 @@
         android:background="@color/white"
         android:textSize="25dp"></EditText>
 
-    <TextView
-        android:layout_width="match_parent"
+    <android.widget.Button
+        android:id="@+id/add_keyword"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/separate"
-        android:textSize="20dp"
+        android:layout_gravity="center"
+        android:text="Add"
+        android:textAllCaps="false"
         android:textColor="@color/white"
-        android:textAlignment="center"
-        android:layout_marginBottom="33dp">
-    </TextView>
+        android:textSize="25dp"
+        android:backgroundTint="@color/green"
+        android:layout_marginBottom="20dp"></android.widget.Button>
+    <ListView
+        android:id="@+id/filter_keyword_lv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:dividerHeight="0dp"
+        android:drawSelectorOnTop="false"
+        android:cacheColorHint="@android:color/transparent"
+        android:listSelector="@android:color/transparent"
+        android:background="@color/gray"></ListView>
 
     <android.widget.Button
         android:id="@+id/filter_kwords_donebtn"

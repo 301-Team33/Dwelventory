@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -99,6 +100,45 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         String itemRefID = intent.getStringExtra("itemRefID");
         Log.d("itemTag", "RefID after opening activity: " + itemRefID);
 
+        try{
+            String serial = intent.getStringExtra("serialNo");
+            serialNumButton.setText(serial);
+        }catch(Exception e){
+            Log.d("D","Serial Number unable to be set when returning from scan activity.");
+        }
+
+        if(mode.equals("add")){
+            serialNumButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
+                    serial_no_cam.setVisibility(View.VISIBLE);
+
+                    serial_no_cam.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent scan_intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
+                            scan_intent.putExtra("name",nameButton.getText());
+                            scan_intent.putExtra("date",dateButton.getText());
+                            Log.d("Date Test",date.toString());
+                            scan_intent.putExtra("mode", mode);
+                            scan_intent.putExtra("position", position );
+                            scan_intent.putExtra("requestCode", requestCode);
+                            //scan_intent.putExtra("previous name", prevName);
+                            scan_intent.putExtra("itemRefID", itemRefID);
+                            scan_intent.putExtra("tags",tagsToApply);
+                            startActivity(scan_intent);
+                        }
+                    });
+                }
+            });
+
+            nameButton.setText(intent.getStringExtra("name"));
+            makeButton.setText(intent.getStringExtra("make"));
+
+
+        }
+
         if (mode.equals("edit")){
             item = (Item) intent.getParcelableExtra("item");
 
@@ -150,6 +190,32 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             serialNumButton.setText(String.valueOf(item.getSerialNumber()));
             estValButton.setText(String.valueOf(item.getEstValue()));
             commentButton.setText(item.getComment());
+
+            serialNumButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
+                    serial_no_cam.setVisibility(View.VISIBLE);
+
+                    serial_no_cam.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent scan_intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
+                            scan_intent.putExtra("item",item);
+                            scan_intent.putExtra("date",date);
+                            Log.d("Date Test",date.toString());
+                            scan_intent.putExtra("mode", mode);
+                            scan_intent.putExtra("position", position );
+                            scan_intent.putExtra("requestCode", requestCode);
+                            scan_intent.putExtra("previous name", prevName);
+                            scan_intent.putExtra("itemRefID", itemRefID);
+                            scan_intent.putExtra("tags",tagsToApply);
+
+                            startActivity(scan_intent);
+                        }
+                    });
+                }
+            });
         }
 
         // END IF EDIT //
