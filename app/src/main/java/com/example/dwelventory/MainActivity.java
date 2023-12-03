@@ -233,10 +233,15 @@ public class MainActivity extends AppCompatActivity
         itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             /**
              * Get the number of items that are selected by checking whether checkbox is checked.
+             * @author Abhi
+             * @author Maggie
              * @param selected_count
              *      TextView to have it's text updated to the number of items that have been selected
-             */
-            public void getSelectedCount(TextView selected_count) {
+             * @return count
+             *      int of the selected count items, if count == 0, the tag and delete btn
+             *      will not be displayed
+             **/
+            public int getSelectedCount(TextView selected_count) {
                 int count = 0;
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
@@ -248,6 +253,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
                 selected_count.setText("Selected Items : " + count);
+                return count;
             }
 
             @Override
@@ -283,7 +289,15 @@ public class MainActivity extends AppCompatActivity
                         checkBox.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                getSelectedCount(selected_count);
+                                int count = getSelectedCount(selected_count);
+                                if (count == 0){
+                                    deletebtn.setVisibility(View.GONE);
+                                }
+                                else{
+                                    deletebtn.setVisibility(View.VISIBLE);
+                                    tagButton.setVisibility(View.VISIBLE);
+                                }
+
                             }
                         });
                     }
@@ -342,6 +356,8 @@ public class MainActivity extends AppCompatActivity
                                 View view1 = finalItemList.getChildAt(j);
                                 CheckBox checkBox = view1.findViewById(R.id.checkbox);
                                 checkBox.setChecked(true);
+                                deletebtn.setVisibility(View.VISIBLE);
+                                tagButton.setVisibility(View.VISIBLE);
                                 getSelectedCount(selected_count);
                             }
                         }
@@ -350,6 +366,8 @@ public class MainActivity extends AppCompatActivity
                                 View view1 = finalItemList.getChildAt(j);
                                 CheckBox checkBox = view1.findViewById(R.id.checkbox);
                                 checkBox.setChecked(false);
+                                deletebtn.setVisibility(View.GONE);
+//                                tagButton.setVisibility(View.INVISIBLE);
                                 getSelectedCount(selected_count);
                             }
                         }

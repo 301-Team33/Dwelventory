@@ -185,6 +185,7 @@ public class TagFragment extends DialogFragment{
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 itemIndex = position; // get the index of the item we want to delete
+                view.setBackgroundColor(getResources().getColor(R.color.selected,null));
                 deletePrompt.setText("Delete: " + tagDataList.get(position).getTagName() + "?" );
                 // if the bundle contains the deletion mode, then we will allow the deletion UI
                 // to be visible, allowing for possible deletion.
@@ -211,9 +212,9 @@ public class TagFragment extends DialogFragment{
                     // deselect it, removing it from the set of tags that need to be applied!
                     view.setBackgroundColor(getResources().getColor(R.color.gray,null));
                     tagsToApply.remove(tagDataList.get(position));
-//                    if ( intagsToApply.size().equals(0) ){
-//                        tagApplyButton.setBackgroundColor(getResources().getColor(R.color.selected, null));
-//                    }
+                    if ( tagsToApply.isEmpty()  ){
+                        tagApplyButton.setBackgroundColor(getResources().getColor(R.color.selected, null));
+                    }
                 }
             }
         });
