@@ -101,6 +101,45 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         String itemRefID = intent.getStringExtra("itemRefID");
         Log.d("itemTag", "RefID after opening activity: " + itemRefID);
 
+        try{
+            String serial = intent.getStringExtra("serialNo");
+            serialNumButton.setText(serial);
+        }catch(Exception e){
+            Log.d("D","Serial Number unable to be set when returning from scan activity.");
+        }
+
+        if(mode.equals("add")){
+            serialNumButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
+                    serial_no_cam.setVisibility(View.VISIBLE);
+
+                    serial_no_cam.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent scan_intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
+                            scan_intent.putExtra("name",nameButton.getText());
+                            scan_intent.putExtra("date",dateButton.getText());
+                            Log.d("Date Test",date.toString());
+                            scan_intent.putExtra("mode", mode);
+                            scan_intent.putExtra("position", position );
+                            scan_intent.putExtra("requestCode", requestCode);
+                            //scan_intent.putExtra("previous name", prevName);
+                            scan_intent.putExtra("itemRefID", itemRefID);
+                            scan_intent.putExtra("tags",tagsToApply);
+                            startActivity(scan_intent);
+                        }
+                    });
+                }
+            });
+
+            nameButton.setText(intent.getStringExtra("name"));
+            makeButton.setText(intent.getStringExtra("make"));
+
+
+        }
+
         if (mode.equals("edit")){
             item = (Item) intent.getParcelableExtra("item");
 
@@ -152,6 +191,32 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             serialNumButton.setText(String.valueOf(item.getSerialNumber()));
             estValButton.setText(String.valueOf(item.getEstValue()));
             commentButton.setText(item.getComment());
+
+            serialNumButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
+                    serial_no_cam.setVisibility(View.VISIBLE);
+
+                    serial_no_cam.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent scan_intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
+                            scan_intent.putExtra("item",item);
+                            scan_intent.putExtra("date",date);
+                            Log.d("Date Test",date.toString());
+                            scan_intent.putExtra("mode", mode);
+                            scan_intent.putExtra("position", position );
+                            scan_intent.putExtra("requestCode", requestCode);
+                            scan_intent.putExtra("previous name", prevName);
+                            scan_intent.putExtra("itemRefID", itemRefID);
+                            scan_intent.putExtra("tags",tagsToApply);
+
+                            startActivity(scan_intent);
+                        }
+                    });
+                }
+            });
         }
 
         editTagButton.setOnClickListener(new View.OnClickListener() {
@@ -225,42 +290,6 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 setResult(818, updatedIntent);
                 Log.d("aeTag", "finishing aeActivity...");
                 finish();
-            }
-        });
-
-        serialNumButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
-                serial_no_cam.setVisibility(View.VISIBLE);
-
-                serial_no_cam.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
-                        /*String name = nameButton.getText().toString();
-                        String date = dateButton.getText().toString();
-                        String make = makeButton.getText().toString();
-                        String model = modelButton.getText().toString();
-                        String val = estValButton.getText().toString();
-                        String comment = commentButton.getText().toString();*/
-                        intent.putExtra("item",item);
-                        intent.putExtra("mode",mode);
-                        intent.putExtra("position",position);
-                        intent.putExtra("requestCode",requestCode);
-                        intent.putExtra("itemRefID",itemRefID);
-
-                        startActivity(intent);
-
-
-                        /*int position = intent.getIntExtra("position", -1);
-                        int requestCode = intent.getIntExtra("requestCode", -1);
-                        String itemRefID = intent.getStringExtra("itemRefID");
-                        Log.d("itemTag", "RefID after opening activity: " + itemRefID);*/
-
-
-                    }
-                });
             }
         });
     }
