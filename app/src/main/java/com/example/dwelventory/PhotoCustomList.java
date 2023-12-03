@@ -20,6 +20,15 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
+/***
+ * A custom list adapter for displaying images from the firestore database, a users camera, or a gallery.
+ * The class makes use of the Glide module library to display images on the web which otherwise
+ * would not be able to be displayed
+ * @Author
+ *      Ethan Keys
+ * @See
+ *      Uri
+ */
 public class PhotoCustomList extends ArrayAdapter<Uri> {
     private ArrayList<Uri> photos;
     private Context context;
@@ -30,7 +39,13 @@ public class PhotoCustomList extends ArrayAdapter<Uri> {
         this.photos = photos;
         this.context = context;
     }
-
+    /**
+     * This sets up the list view and displays the photo
+     * @param position (int) the position inside the list
+     * @param convertView (View) the view in which the photo information is being displayed
+     * @param parent (ViewGroup) the view parent in which this view sits
+     * @return view (View) the view after being populated with the photo
+     * */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -52,7 +67,7 @@ public class PhotoCustomList extends ArrayAdapter<Uri> {
         // Author: Future Studio , November 3, 2017
         // Code from the YouTube Author Future Studio was adapted to fit the needs of the assignment
         // Basically the adaptation was used to store photos from the online Firebase
-        if (photos.get(position).toString().startsWith("https")){
+        if (photos.get(position).toString().startsWith("https")){ // check if the photo is coming from the firebase or not.
             Uri photo = photos.get(position);
             ImageView photoView = view.findViewById(R.id.indiv_image);
             Glide.with(context).load(photo).into(photoView);
