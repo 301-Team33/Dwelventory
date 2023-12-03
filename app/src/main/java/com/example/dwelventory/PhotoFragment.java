@@ -9,6 +9,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -26,9 +27,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -75,9 +81,12 @@ public class PhotoFragment extends DialogFragment {
                                     photoAdapter.notifyDataSetChanged();
 
                                     // Save the photo to the specified firestore.
-                                    StorageReference ref = storageRef.child("images/" + UUID.randomUUID().toString());
-                                    String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),imageBitmap,"newpic",null);
-                                    ref.putFile(Uri.parse(path))
+                                    String path = "images/" + UUID.randomUUID().toString();
+                                    StorageReference ref = storageRef.child(path);
+                                    String path2 = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),imageBitmap,"newpic",null);
+                                    Log.d("HEY", "PHOTO PATH" + path);
+                                    photoPaths.add(path);
+                                    ref.putFile(Uri.parse(path2))
                                             .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                                 @Override
                                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -108,10 +117,11 @@ public class PhotoFragment extends DialogFragment {
         // functions executed when actions are taken on fragment in AddEditActivity
     }*/
 
-    public PhotoFragment newInstance(String userId, ArrayList<String> images){
+    static PhotoFragment newInstance(String userId, ArrayList<String> images){
         // load in the user ID to get the query path for storing and retrieving current user defined
         Bundle args = new Bundle();
         args.putString("user_id",userId);
+
         args.putStringArrayList("images",images);
 
         PhotoFragment photoFragment = new PhotoFragment();
@@ -119,7 +129,7 @@ public class PhotoFragment extends DialogFragment {
         return photoFragment;
     }
 
-    public PhotoFragment newInstance(String userId){
+    static PhotoFragment newInstance(String userId){
         Bundle args = new Bundle();
         args.putString("userId", userId);
 
@@ -148,14 +158,16 @@ public class PhotoFragment extends DialogFragment {
 
         Bundle bundle = getArguments();
 
-        if (bundle.containsKey("item")){
-            photoPaths = bundle.getStringArrayList("item");
+        if (bundle.containsKey("images")){
+            photoPaths = bundle.getStringArrayList("images");
             if(photoPaths == null){ // photos first added when editing it, not on create.
                 photoPaths = new ArrayList<>();
             }
         }else{ // Item isn't created yet so the photo paths cant be set yet.
             photoPaths = new ArrayList<>();
         }
+
+        loadPhotos(photoPaths);
 
         /*photos = bundle.getParcelableArrayList("images");
         if (photos.size() != 0 && photos != null){
@@ -185,4 +197,15 @@ public class PhotoFragment extends DialogFragment {
 
         return builder.create();
     }
+
+
+
+    public void loadPhotos(ArrayList<String> stringQueries) {
+
+        StorageReference ref = storageRef.child("images/");
+
+    }
+
 }
+
+

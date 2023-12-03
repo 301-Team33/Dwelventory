@@ -306,12 +306,11 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 // want to send Item's list of photos
                 // need to send all edittext content to save state
                 if (mode.equals("add")) {
-                    PhotoFragment photoFrag = new PhotoFragment();
-                    photoFrag.newInstance(mAuth.getUid());
-                    photoFrag.show(getSupportFragmentManager(), "PHOTO_FRAG");
+                    PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid());
+                    photoFrag.show(getSupportFragmentManager(),"PHOTO_FRAG");
                 }else{
-                    PhotoFragment photoFrag = new PhotoFragment();
-                    photoFrag.newInstance(mAuth.getUid(),item.getPhotos());
+                    PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid(),item.getPhotos());
+                    photoFrag.show(getSupportFragmentManager(),"PHOTO_FRAG");
                 }
             }
         });

@@ -856,6 +856,7 @@ public class MainActivity extends AppCompatActivity
                                     doc.getDate("date"),
                                     doc.getString("make"),
                                     doc.getString("model"),
+
                                     doc.getLong("estValue").intValue());
                             item.setSerialNumber(doc.getLong("serialNumber").intValue());
                             ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
