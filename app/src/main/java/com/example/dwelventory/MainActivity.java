@@ -31,6 +31,19 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.lang.reflect.Array;
+import java.util.HashMap;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -71,6 +84,9 @@ public class MainActivity extends AppCompatActivity
     public int estTotalCost = 0;
     private ListView finalItemList;
     ArrayAdapter<Item> finalItemAdapter;
+
+    private boolean filterApplied = false;
+
     private TextView appTitle;
     private ArrayList<String> mainPhotos;
 
@@ -343,8 +359,14 @@ public class MainActivity extends AppCompatActivity
         itemList.setAdapter(itemAdapter);
         // itemAdapter.notifyDataSetChanged();
 
+
+        // final FloatingActionButton addButton = findViewById(R.id.add_item_button);
+
+        // Code fragment below is for filtering
+
 //        final FloatingActionButton addButton = findViewById(R.id.add_item_button);
         final ImageButton addButton = findViewById(R.id.add_item_button);
+
         // *** ONE FILTER AT A TIME FOR NOW ***
         Spinner filterSpinner = findViewById(R.id.filter_spinner);
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
@@ -396,6 +418,9 @@ public class MainActivity extends AppCompatActivity
                     case "Estimated Value":
                         ItemSorter.sortEstValue(dataList, reverseOrder);
                         break;
+                    case "Tags":
+                        ItemSorter.sortTag(dataList, reverseOrder);
+                        break;
                 }
                 itemAdapter.notifyDataSetChanged();
             }
@@ -438,6 +463,9 @@ public class MainActivity extends AppCompatActivity
                         break;
                     case "Estimated Value":
                         ItemSorter.sortEstValue(dataList, reverseOrder);
+                        break;
+                    case "Tags":
+                        ItemSorter.sortTag(dataList, reverseOrder);
                         break;
                 }
                 itemAdapter.notifyDataSetChanged();
@@ -587,6 +615,9 @@ public class MainActivity extends AppCompatActivity
             estTotalCost += val;
             String cost = getString(R.string.totalcost, estTotalCost);
             totalCost.setText(cost);
+        }
+        if (dataList.size() == 0){
+            totalCost.setText("Total Cost: $0");
         }
     }
 
@@ -795,12 +826,24 @@ public class MainActivity extends AppCompatActivity
      * @param makeInput This is the make types to filter by, specified by the user.
      */
     @Override
-    public void onMakeFilterApplied(String[] makeInput) {
+    public void onMakeFilterApplied(ArrayList<String> makeInput) {
         estTotalCost = 0;
-        dataList.clear();
-        // CollectionReference itemsRef = db.collection("items");
+        // Filer has already been applied so we do not need to query firebase and can work with the
+        // data list itself.
+        if (filterApplied){
+            for (Item item : dataList) {
+                for(String make: makeInput){
+                    if(item.getMake() == make){
 
-        AtomicInteger pendingQueries = new AtomicInteger(makeInput.length);
+                    }
+                }
+            }
+        }
+        dataList.clear();
+        setTotal(dataList);
+        
+
+        AtomicInteger pendingQueries = new AtomicInteger(makeInput.size());
         for (String make : makeInput) {
             itemsRef.whereEqualTo("make", make).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
@@ -817,7 +860,9 @@ public class MainActivity extends AppCompatActivity
                                     doc.getString("model"),
                                     doc.getLong("estValue").intValue());
                             item.setSerialNumber(doc.getLong("serialNumber").intValue());
-
+                            ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
+                            ArrayList<Tag> realTags = makeTagList(tags);
+                            item.setTags(realTags);
                             item.setItemRefID(UUID.fromString(doc.getId()));
 
                             dataList.add(item);
@@ -848,6 +893,7 @@ public class MainActivity extends AppCompatActivity
     public void onDateFilterApplied(Date start, Date end) {
         estTotalCost = 0;
         dataList.clear();
+        setTotal(dataList);
         itemAdapter.notifyDataSetChanged();
 
         itemsRef.whereGreaterThanOrEqualTo("date", start)
@@ -865,6 +911,9 @@ public class MainActivity extends AppCompatActivity
                                         doc.getString("model"),
                                         doc.getLong("estValue").intValue());
                                 item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
+                                ArrayList<Tag> realTags = makeTagList(tags);
+                                item.setTags(realTags);
                                 item.setItemRefID(UUID.fromString(doc.getId()));
                                 dataList.add(item);
                                 estTotalCost += doc.getLong("estValue").intValue();
@@ -886,9 +935,11 @@ public class MainActivity extends AppCompatActivity
      * @param keywords holds user input keywords to filter by
      */
     @Override
-    public void onKeywordFilterApplied(String[] keywords) {
+    public void onKeywordFilterApplied(ArrayList<String> keywords) {
         dataList.clear();
-        AtomicInteger pendingQueries = new AtomicInteger(keywords.length);
+        itemAdapter.notifyDataSetChanged();
+        setTotal(dataList);
+        AtomicInteger pendingQueries = new AtomicInteger(keywords.size());
         estTotalCost = 0;
         for (String keyword : keywords) {
             itemsRef.whereEqualTo("description", keyword).get()
@@ -906,6 +957,9 @@ public class MainActivity extends AppCompatActivity
                                             doc.getString("model"),
                                             doc.getLong("estValue").intValue());
                                     item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                    ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
+                                    ArrayList<Tag> realTags = makeTagList(tags);
+                                    item.setTags(realTags);
                                     item.setItemRefID(UUID.fromString(doc.getId()));
                                     dataList.add(item);
                                     estTotalCost += doc.getLong("estValue").intValue();
@@ -934,6 +988,7 @@ public class MainActivity extends AppCompatActivity
     public void onTagFilterApplied(ArrayList<Tag> filterTags) {
         AtomicInteger pendingQueries = new AtomicInteger(1);
         estTotalCost = 0;
+        setTotal(dataList);
         itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {

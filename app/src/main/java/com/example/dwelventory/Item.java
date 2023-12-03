@@ -88,6 +88,7 @@ public class Item implements Parcelable {
         serialNumber = in.readInt();
         estValue = in.readInt();
         comment = in.readString();
+        selected = in.readByte() != 0;
     }
     /**
      * The interface that generates the items from the parcel
@@ -277,7 +278,7 @@ public class Item implements Parcelable {
         dest.writeInt(serialNumber);
         dest.writeInt(estValue);
         dest.writeString(comment);
-        dest.writeString(String.valueOf(selected));
+        dest.writeByte((byte) (selected ? 1 : 0));
     }
     /**
      * Checks whether the item is selected

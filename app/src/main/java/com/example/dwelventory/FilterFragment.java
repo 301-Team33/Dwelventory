@@ -56,9 +56,9 @@ public class FilterFragment extends DialogFragment {
      * from the filter fragment to the MainActivity.
      */
     public interface FilterFragmentListener {
-        void onMakeFilterApplied(String[] filterInput);
+        void onMakeFilterApplied(ArrayList<String> filterInput);
         void onDateFilterApplied(Date start, Date end);
-        void onKeywordFilterApplied(String[] keywords);
+        void onKeywordFilterApplied(ArrayList<String> keywords);
         void onTagFilterApplied(ArrayList<Tag> tags);
         void onClearFilterApplied();
     }
@@ -88,14 +88,30 @@ public class FilterFragment extends DialogFragment {
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.popup_select_make, null);
             EditText makeInput = view.findViewById(R.id.filter_make_etext);
             Button doneButton = view.findViewById(R.id.filter_make_donebtn);
+            ListView makeListView = view.findViewById(R.id.filter_make_lv);
+            Button addButton = view.findViewById(R.id.filter_make_add);
+            ArrayList<String> makeWords = new ArrayList<>();
+            ArrayAdapter<String> makeAdapter = new ArrayAdapter<>(this.getContext(),R.layout.tag_content,R.id.tag_text, makeWords);
+            makeListView.setAdapter(makeAdapter);
+
+            addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String keywordText = makeInput.getText().toString();
+                    if (keywordText != null && !keywordText.isBlank()) {
+                        makeWords.add(keywordText);
+                        makeAdapter.notifyDataSetChanged();
+                        makeInput.setText(null);
+                    }
+                    makeInput.setText(null);
+                }
+            });
 
             doneButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v){
-                    String makeText = makeInput.getText().toString();
-                    filterInput = makeText.split(" ");
                     if (listener != null) {
-                        listener.onMakeFilterApplied(filterInput);
+                        listener.onMakeFilterApplied(makeWords);
                     }
 
                     dismiss();
@@ -138,14 +154,33 @@ public class FilterFragment extends DialogFragment {
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.popup_select_keywords, null);
             EditText keywordInput = view.findViewById(R.id.filter_kwords_etext);
             Button doneButton = view.findViewById(R.id.filter_kwords_donebtn);
+            Button addButton = view.findViewById(R.id.add_keyword);
+            ListView keywordListView = view.findViewById(R.id.filter_keyword_lv);
+            ArrayAdapter<String> keywordAdapter;
+            ArrayList<String> keywordList;
+
+            keywordList = new ArrayList<>();
+            keywordAdapter = new ArrayAdapter<>(this.getContext(),R.layout.tag_content,R.id.tag_text,keywordList);
+            keywordListView.setAdapter(keywordAdapter);
+
+            addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String keywordText = keywordInput.getText().toString();
+                    if (keywordText != null && !keywordText.isBlank()) {
+                        keywordList.add(keywordText);
+                        keywordAdapter.notifyDataSetChanged();
+                        keywordInput.setText(null);
+                    }
+                    keywordInput.setText(null);
+                }
+            });
 
             doneButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v){
-                    String keywordText = keywordInput.getText().toString();
-                    filterInput = keywordText.split(" ");
                     if (listener != null) {
-                        listener.onKeywordFilterApplied(filterInput);
+                        listener.onKeywordFilterApplied(keywordList);
                     }
 
                     dismiss();
