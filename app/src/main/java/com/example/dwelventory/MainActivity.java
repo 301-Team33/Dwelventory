@@ -496,6 +496,9 @@ public class MainActivity extends AppCompatActivity
                             // Get tags and set them to the item
                             ArrayList<Tag> tags = data.getParcelableArrayListExtra("tags");
                             ArrayList<String> stringTags = makeStringTagList(tags); // THIS IS FOR FIREBASE ONLY
+                            ArrayList<String> photoPaths = data.getStringArrayListExtra("applied_photos");
+                            Log.d("ADDEDITPHOTOS9", "BACK TO MAIN HERES APPLIED PHOTOS" + photoPaths);
+                            item.setPhotos(photoPaths);
                             item.setTags(tags); // set tags
                             Log.d("# result from ae", "after setting tags" + String.valueOf(item.getTags()));
                             mainPhotos = data.getStringArrayListExtra("photos");
@@ -512,14 +515,17 @@ public class MainActivity extends AppCompatActivity
                                 // set STRING tags to items
                                 HashMap<String, Object> map = new HashMap<>();
                                 map.put("tags", stringTags);
-                                itemsRef.document(String.valueOf(item.getItemRefID())).update(map);
 
                                 // set photo remote cloud storage paths to items
                                 HashMap<String, Object> photoMap = new HashMap<>();
                                 photoMap.put("photos", mainPhotos);
+                                map.put("photos",photoPaths);
+                                itemsRef.document(String.valueOf(item.getItemRefID())).update(map);
+                                itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
                                 itemAdapter.notifyDataSetChanged();
                                 Log.d("tagtag", "onCreate: tags " + item.getTags());
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
+                                Log.d("photome", "I am getting the correct photos..." + item.getPhotos());
                                 // Handle the result for editing
                                 Log.d("resultTag", "i am about to edit the item");
                                 int position = data.getIntExtra("position", -1);
@@ -858,6 +864,7 @@ public class MainActivity extends AppCompatActivity
                                     doc.getDate("date"),
                                     doc.getString("make"),
                                     doc.getString("model"),
+
                                     doc.getLong("estValue").intValue());
                             item.setSerialNumber(doc.getLong("serialNumber").intValue());
                             ArrayList<String> tags = (ArrayList<String>) doc.get("tags");

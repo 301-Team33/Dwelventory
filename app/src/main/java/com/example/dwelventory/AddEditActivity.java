@@ -29,7 +29,8 @@ import java.util.Locale;
  * @see MainActivity
  * @see TagFragment
  * */
-public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener, PhotoFragment.PhotoFragmentListener{
+
+public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener, PhotoFragment.onPhotoFragmentInteractionListener{
     // All views
     EditText nameButton;
     EditText dateButton;
@@ -276,7 +277,9 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                   ArrayList<Tag>  emptyTagSet = new ArrayList<>();
                   item.setTags(emptyTagSet);
                 }
-
+                Log.d("ADDEDITPHOTOS2", "HERE ARE MOI PHOTOS" + item.getPhotos());
+                item.setPhotos(photos);
+                Log.d("ADDEDITPHOTOS4", "HERE ARE MOI PHOTOS" + item.getPhotos());
                 if (photos == null || item.getPhotos() == null){
                     photos = new ArrayList<>();
                     item.setPhotos(photos);
@@ -284,6 +287,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
 
 
                 // go back to main activity
+                updatedIntent.putStringArrayListExtra("photos",photos);
                 updatedIntent.putParcelableArrayListExtra("tags",tagsToApply);
                 Log.d("# tag TAg hitting confirm", String.valueOf(tagsToApply));
                 updatedIntent.putStringArrayListExtra("photos", photos);
@@ -297,6 +301,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 Log.d("itemTag", "RefID coming out of edit activity: " + itemRefID);
                 setResult(818, updatedIntent);
                 Log.d("aeTag", "finishing aeActivity...");
+                Log.d("ADDEDITPHOTOS5", "HERE ARE MOI PHOTOS" + item.getPhotos());
+                updatedIntent.putStringArrayListExtra("applied_photos",item.getPhotos());
                 finish();
             }
         });
@@ -307,8 +313,14 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 // want to send Item's list of photos
                 // need to send all edittext content to save state
 
-                PhotoFragment photoFrag = PhotoFragment.newInstance();
-                photoFrag.show(getSupportFragmentManager(), "PHOTO_FRAG");
+                if (mode.equals("add")) {
+                    PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid());
+                    photoFrag.show(getSupportFragmentManager(),"PHOTO_FRAG");
+                }else{
+                    PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid(),item.getPhotos());
+                    Log.d("ADDEDITPHOTOS3", "HERE ARE MOI PHOTOS" + item.getPhotos());
+                    photoFrag.show(getSupportFragmentManager(),"PHOTO_FRAG");
+                }
             }
         });
     }
@@ -491,5 +503,4 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         Toast.makeText(this, "Photos added don't keep this", Toast.LENGTH_SHORT).show();
         item.setPhotos(photos);
     }
-
 }
