@@ -5,6 +5,7 @@ import static android.app.Activity.RESULT_OK;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -204,6 +206,30 @@ public class PhotoFragment extends DialogFragment {
 
         loadPhotos(photoPaths);
 
+        photoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                AlertDialog.Builder askDelete = new AlertDialog.Builder(getActivity());
+                askDelete.setMessage("Delete this image?");
+                askDelete.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        photos.remove(position);
+                        photoPaths.remove(position);
+                        photoAdapter.notifyDataSetChanged();
+                    }
+                });
+                askDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dismiss();
+                    }
+                });
+                AlertDialog popup = askDelete.create();
+                popup.show();
+            }
+        });
+
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -211,6 +237,7 @@ public class PhotoFragment extends DialogFragment {
                 dismiss();
             }
         });
+        
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -219,7 +246,6 @@ public class PhotoFragment extends DialogFragment {
                 cameraFragmentResultLauncher.launch(intent);
             }
         });
-
 
         // SOURCE: https://www.geeksforgeeks.org/how-to-select-multiple-images-from-gallery-in-android/
         // Utilized: "HOW TO SELECT MULTIPLE IMAGES FROM GALLERY IN ANDROID?" to select many images
