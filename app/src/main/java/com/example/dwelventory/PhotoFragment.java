@@ -108,11 +108,11 @@ public class PhotoFragment extends DialogFragment {
         // functions executed when actions are taken on fragment in AddEditActivity
     }*/
 
-    static PhotoFragment newInstance(String userId, ArrayList<Bitmap> images){
+    public PhotoFragment newInstance(String userId, ArrayList<String> images){
         // load in the user ID to get the query path for storing and retrieving current user defined
         Bundle args = new Bundle();
         args.putString("user_id",userId);
-        args.putParcelableArrayList("images", images);
+        args.putStringArrayList("images",images);
 
         PhotoFragment photoFragment = new PhotoFragment();
         photoFragment.setArguments(args);
@@ -138,6 +138,7 @@ public class PhotoFragment extends DialogFragment {
         photos = new ArrayList<>();
         photoListView = view.findViewById(R.id.photo_list_view);
 
+
         photoAdapter = new PhotoCustomList(this.getContext(), photos);
         photoListView.setAdapter(photoAdapter);
 
@@ -146,6 +147,15 @@ public class PhotoFragment extends DialogFragment {
         builder.setView(view);
 
         Bundle bundle = getArguments();
+
+        if (bundle.containsKey("item")){
+            photoPaths = bundle.getStringArrayList("item");
+            if(photoPaths == null){ // photos first added when editing it, not on create.
+                photoPaths = new ArrayList<>();
+            }
+        }else{ // Item isn't created yet so the photo paths cant be set yet.
+            photoPaths = new ArrayList<>();
+        }
 
         /*photos = bundle.getParcelableArrayList("images");
         if (photos.size() != 0 && photos != null){
