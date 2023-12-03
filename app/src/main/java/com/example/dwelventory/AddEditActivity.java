@@ -284,7 +284,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                     photos = new ArrayList<>();
                     item.setPhotos(photos);
                 }
-                
+
                 // go back to main activity
                 updatedIntent.putStringArrayListExtra("applied_photos",item.getPhotos());
                 updatedIntent.putParcelableArrayListExtra("tags",tagsToApply);

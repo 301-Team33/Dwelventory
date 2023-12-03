@@ -79,7 +79,7 @@ public class ItemList extends ArrayAdapter<Item> {
         ImageView image = view.findViewById(R.id.itemImage);
 
         if (item.getPhotos() == null || item.getPhotos().size() == 0){
-            image.setImageResource(R.drawable.goat);
+            image.setImageResource(R.drawable.noimage);
         }else{
             String firstPhotoPath = item.getPhotos().get(0);
 
