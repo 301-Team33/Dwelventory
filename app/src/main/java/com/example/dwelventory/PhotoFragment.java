@@ -69,7 +69,12 @@ public class PhotoFragment extends DialogFragment {
         photoFragmentResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-
+                    // SOURCE: https://www.geeksforgeeks.org/how-to-select-multiple-images-from-gallery-in-android/
+                    // Utilized: "HOW TO SELECT MULTIPLE IMAGES FROM GALLERY IN ANDROID?" to select many images
+                    // From the open gallery in Android Studio.
+                    // Author: User: anniaanni
+                    // Usage: Learned code snippets required to open the gallery and select images from the gallery.
+                    // Adapted the Source code and tutorial to utilize the activity result launcher.
                     if (result.getResultCode() == RESULT_OK){
                         Intent intent = result.getData();
                         if (intent.getClipData() != null) {
