@@ -18,15 +18,20 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.checkerframework.checker.units.qual.A;
 
@@ -38,6 +43,7 @@ public class PhotoFragment extends DialogFragment {
     private FloatingActionButton camera;
     private FloatingActionButton gallery;
     private ArrayList<Bitmap> photos;
+    private ArrayList<String> photoPaths;
     private ImageView imageView;
     private String userId;
     private ActivityResultLauncher<Intent> photoFragmentResultLauncher;
@@ -67,6 +73,23 @@ public class PhotoFragment extends DialogFragment {
                                     Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), currentUri);
                                     photos.add(imageBitmap);
                                     photoAdapter.notifyDataSetChanged();
+
+                                    // Save the photo to the specified firestore.
+                                    StorageReference ref = storageRef.child("images/" + UUID.randomUUID().toString());
+                                    String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(),imageBitmap,"newpic",null);
+                                    ref.putFile(Uri.parse(path))
+                                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                @Override
+                                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                    Toast.makeText(getActivity().getBaseContext(),"Upload successful",Toast.LENGTH_SHORT);
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(getActivity().getBaseContext(),"Upload failed",Toast.LENGTH_SHORT);
+                                                }
+                                            });
+
                                 }catch(Exception exception){
                                     Log.d("exception handelled...", "onAttach: Exception");
                                 }
