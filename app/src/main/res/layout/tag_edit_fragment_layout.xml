@@ -77,7 +77,7 @@
         android:id="@+id/tag_apply_button"
         android:layout_gravity="center"
         app:cornerRadius="0dp"
-        android:backgroundTint="@color/green"/>
+        android:backgroundTint="@color/selected"/>
     <Button
         android:visibility="gone"
         android:layout_width="wrap_content"

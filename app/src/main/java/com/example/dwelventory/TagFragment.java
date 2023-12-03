@@ -203,6 +203,7 @@ public class TagFragment extends DialogFragment{
                 if(tagsToApply == null || tagsToApply.contains(tagDataList.get(position)) == false){
                     // This is the case where the tag was not already selected so we add it to the
                     // Potential selected tags.
+                    tagApplyButton.setBackgroundColor(getResources().getColor(R.color.green, null));
                     view.setBackgroundColor(getResources().getColor(R.color.selected,null));
                     tagsToApply.add(tagDataList.get(position));
                 }else{
@@ -210,6 +211,9 @@ public class TagFragment extends DialogFragment{
                     // deselect it, removing it from the set of tags that need to be applied!
                     view.setBackgroundColor(getResources().getColor(R.color.gray,null));
                     tagsToApply.remove(tagDataList.get(position));
+//                    if ( intagsToApply.size().equals(0) ){
+//                        tagApplyButton.setBackgroundColor(getResources().getColor(R.color.selected, null));
+//                    }
                 }
             }
         });
