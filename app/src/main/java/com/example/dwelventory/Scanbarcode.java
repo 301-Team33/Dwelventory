@@ -72,7 +72,6 @@ public class Scanbarcode extends AppCompatActivity {
 
         imageView = findViewById(R.id.captured_img);
         Snapbtn = findViewById(R.id.snap_photo_btn);
-        Scanbtn = findViewById(R.id.scan_txt_btn);
         Usebtn = findViewById(R.id.use_serial_no);
         Backbtn = findViewById(R.id.back_btn);
         barcode_description = findViewById(R.id.barcode_description);
