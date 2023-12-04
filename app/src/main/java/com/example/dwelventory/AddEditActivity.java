@@ -1,8 +1,5 @@
 package com.example.dwelventory;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +7,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.UUID;
 /**
  * This is the activity that allows the user to input the item's information
  * for the creation of a new item, allows the user to view the item's information,
@@ -31,7 +29,7 @@ import java.util.UUID;
  * @see MainActivity
  * @see TagFragment
  * */
-public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener{
+public class AddEditActivity extends AppCompatActivity implements TagFragment.OnFragmentInteractionListener, PhotoFragment.onPhotoFragmentInteractionListener{
     // All views
     EditText nameButton;
     EditText dateButton;
@@ -42,16 +40,18 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
     EditText commentButton;
     MaterialButton photoButton;
     MaterialButton confirmButton;
-    MaterialButton editTagButton;
+    ImageButton editTagButton;
     MaterialButton tagDisplay1Button;
     MaterialButton tagDisplay2Button;
     MaterialButton tagDisplay3Button;
+    ImageButton backButton;
     // Required inputs
     private String name;
     private Date date;
     private String make;
     private String model;
     private int estValue;
+    private ArrayList<String> photos;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -75,6 +75,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         tagDisplay1Button = findViewById(R.id.tag_display_1);
         tagDisplay2Button = findViewById(R.id.tag_display_2);
         tagDisplay3Button  =findViewById(R.id.tag_display_3);
+        backButton = findViewById(R.id.edit_activity_back);
 
         tagDisplay3Button.setVisibility(View.GONE);
         tagDisplay2Button.setVisibility(View.GONE);
@@ -101,6 +102,45 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         String itemRefID = intent.getStringExtra("itemRefID");
         Log.d("itemTag", "RefID after opening activity: " + itemRefID);
 
+        try{
+            String serial = intent.getStringExtra("serialNo");
+            serialNumButton.setText(serial);
+        }catch(Exception e){
+            Log.d("D","Serial Number unable to be set when returning from scan activity.");
+        }
+
+        if(mode.equals("add")){
+            serialNumButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
+                    serial_no_cam.setVisibility(View.VISIBLE);
+
+                    serial_no_cam.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent scan_intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
+                            scan_intent.putExtra("name",nameButton.getText());
+                            scan_intent.putExtra("date",dateButton.getText());
+                            Log.d("Date Test",date.toString());
+                            scan_intent.putExtra("mode", mode);
+                            scan_intent.putExtra("position", position );
+                            scan_intent.putExtra("requestCode", requestCode);
+                            //scan_intent.putExtra("previous name", prevName);
+                            scan_intent.putExtra("itemRefID", itemRefID);
+                            scan_intent.putExtra("tags",tagsToApply);
+                            startActivity(scan_intent);
+                        }
+                    });
+                }
+            });
+
+            nameButton.setText(intent.getStringExtra("name"));
+            makeButton.setText(intent.getStringExtra("make"));
+
+
+        }
+
         if (mode.equals("edit")){
             item = (Item) intent.getParcelableExtra("item");
 
@@ -117,6 +157,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             }
             Log.d("", "onCreate: SEE HERE " + tagsToApply);
             item.setTags(tagsToApply);
+            ArrayList<String> alreadyAddedPhotos = intent.getStringArrayListExtra("send_photos");
+            item.setPhotos(alreadyAddedPhotos);
 
             // Now display any tags that are already applied. Up to 3
             // Add the Tags indentifiers to the Top right corner of the screen setting up to 3 Tag Names.
@@ -152,7 +194,35 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             serialNumButton.setText(String.valueOf(item.getSerialNumber()));
             estValButton.setText(String.valueOf(item.getEstValue()));
             commentButton.setText(item.getComment());
+
+            serialNumButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
+                    serial_no_cam.setVisibility(View.VISIBLE);
+
+                    serial_no_cam.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent scan_intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
+                            scan_intent.putExtra("item",item);
+                            scan_intent.putExtra("date",date);
+                            Log.d("Date Test",date.toString());
+                            scan_intent.putExtra("mode", mode);
+                            scan_intent.putExtra("position", position );
+                            scan_intent.putExtra("requestCode", requestCode);
+                            scan_intent.putExtra("previous name", prevName);
+                            scan_intent.putExtra("itemRefID", itemRefID);
+                            scan_intent.putExtra("tags",tagsToApply);
+
+                            startActivity(scan_intent);
+                        }
+                    });
+                }
+            });
         }
+
+        // END IF EDIT //
 
         editTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,15 +265,20 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         confirmButton.setOnClickListener(v -> {
             // check for valid inputs
             if (reqInputsValid()){
+                ArrayList<String> unedittedPhotos = new ArrayList<>();
                 // take info and make item object
                 Log.d("editTag", "before making the new item, date is " + date);
-                
+                if (mode.equals("edit")) {
+                    unedittedPhotos = item.getPhotos();
+                }
                 Item item = new Item(name, date, make, model, estValue);
                 if ( tagsToApply == null){
                     tagsToApply = new ArrayList<>();
                 };
-                item.setTags(tagsToApply);
+                Intent intent1 = new Intent();
 
+                item.setTags(tagsToApply);
+                item.setPhotos(photos);
 
                 // put it in intent
                 Intent updatedIntent = new Intent();
@@ -211,7 +286,21 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                   ArrayList<Tag>  emptyTagSet = new ArrayList<>();
                   item.setTags(emptyTagSet);
                 }
+
+                if (photos == null || item.getPhotos() == null){
+                    photos = new ArrayList<>();
+                    item.setPhotos(photos);
+                    Log.d("statement", "ENTERED IF STATEMENT" + item.getPhotos());
+                    item.setPhotos(unedittedPhotos);
+                    Log.d("statement", "ENTERED IF STATEMENT2" + item.getPhotos());
+                }
+                if (photos.size() == 0 && unedittedPhotos != null){
+                    item.setPhotos(unedittedPhotos);
+                    Log.d("statement", "ENTERED IF STATEMENT" + item.getPhotos());
+                }
+
                 // go back to main activity
+                updatedIntent.putStringArrayListExtra("applied_photos",item.getPhotos());
                 updatedIntent.putParcelableArrayListExtra("tags",tagsToApply);
                 Log.d("# tag TAg hitting confirm", String.valueOf(tagsToApply));
                 updatedIntent.putExtra("item", item);
@@ -224,46 +313,32 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 Log.d("itemTag", "RefID coming out of edit activity: " + itemRefID);
                 setResult(818, updatedIntent);
                 Log.d("aeTag", "finishing aeActivity...");
+
                 finish();
             }
         });
 
-        serialNumButton.setOnClickListener(new View.OnClickListener() {
+        photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
-                serial_no_cam.setVisibility(View.VISIBLE);
-
-                serial_no_cam.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
-                        /*String name = nameButton.getText().toString();
-                        String date = dateButton.getText().toString();
-                        String make = makeButton.getText().toString();
-                        String model = modelButton.getText().toString();
-                        String val = estValButton.getText().toString();
-                        String comment = commentButton.getText().toString();*/
-                        intent.putExtra("item",item);
-                        intent.putExtra("mode",mode);
-                        intent.putExtra("position",position);
-                        intent.putExtra("requestCode",requestCode);
-                        intent.putExtra("itemRefID",itemRefID);
-
-                        startActivity(intent);
-
-
-                        /*int position = intent.getIntExtra("position", -1);
-                        int requestCode = intent.getIntExtra("requestCode", -1);
-                        String itemRefID = intent.getStringExtra("itemRefID");
-                        Log.d("itemTag", "RefID after opening activity: " + itemRefID);*/
-
-
-                    }
-                });
+            public void onClick(View v) {
+                if (mode.equals("add")) {
+                    PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid());
+                    photoFrag.show(getSupportFragmentManager(),"PHOTO_FRAG");
+                }else{
+                    PhotoFragment photoFrag = PhotoFragment.newInstance(mAuth.getUid(),item.getPhotos());
+                    photoFrag.show(getSupportFragmentManager(),"PHOTO_FRAG");
+                }
             }
         });
+
+        backButton.setOnClickListener(v -> {
+            // go back to main activity
+            finish();
+        });
+
+
     }
+
     /**
      * This checks all the required inputs are filled out properly
      * @return true or false whether or not inputs are valid
@@ -424,5 +499,15 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         // create a toast with the specified string resource on the appropiate action.
         Toast toast = Toast.makeText(this,stringResource,Toast.LENGTH_SHORT);
         toast.show();
+    }
+
+    /***
+     * Updates the list of photos of the associated item
+     * @param photoPaths
+     *      ArrayList of paths of photos of associated item
+     */
+    @Override
+    public void onPhotoConfirmPressed(ArrayList<String> photoPaths) {
+        photos = photoPaths;// update the photos!
     }
 }

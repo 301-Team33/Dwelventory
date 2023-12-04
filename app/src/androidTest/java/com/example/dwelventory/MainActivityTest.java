@@ -26,23 +26,30 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import com.example.dwelventory.R;
 import com.example.dwelventory.MainActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
+
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
-
 @RunWith(AndroidJUnit4.class)
-@LargeTest
 public class MainActivityTest {
     @Rule
     public ActivityScenarioRule<MainActivity> mainScenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
+    @After
+    public void tearDown() {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth.signOut();
+    }
 
     @Test
     public void testAddItem() {
         // add two items
-        onView(withText(containsString("Total Cost"))).check(matches(isDisplayed()));
+
+        onView(withText("Total Cost: $0")).check(matches(isDisplayed()));
 
         // Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black
         // Markings",serial,200, comment, photos);
@@ -56,12 +63,13 @@ public class MainActivityTest {
         Espresso.pressBack();
         onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("200"));
         Espresso.pressBack();
-        onView(withText("Confirm")).check(matches(isDisplayed()));
-        onView(withText("Confirm")).perform(click());
+        onView(withId(R.id.confirm_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.confirm_button)).perform(click());
         onView(withText("Total Cost"));
         // asserts that item was added
         onView(withText("Jacob")).check(matches(isDisplayed()));
         //
+        onView(withId(R.id.add_item_button)).check(matches(isDisplayed()));
         onView(withId(R.id.add_item_button)).perform(click());
         onView(withId(R.id.item_name_button)).perform(ViewActions.typeText("Billy"));
         onView(withId(R.id.date_button)).perform(ViewActions.typeText("10-21-9876"));
@@ -71,7 +79,7 @@ public class MainActivityTest {
         Espresso.pressBack();
         onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("200"));
         Espresso.pressBack();
-        onView(withText("Confirm")).perform(click());
+        onView(withId(R.id.confirm_button)).perform(click());
     }
     @Test
     public void testEditItem(){
@@ -153,6 +161,7 @@ public class MainActivityTest {
         Espresso.pressBack();
         onView(withId(R.id.estimated_val_button)).perform(ViewActions.typeText("35"));
         Espresso.pressBack();
+
 
         onView(withText("Confirm")).perform(click());
         onView(withText("Total Cost")).check(matches(isDisplayed()));
@@ -286,6 +295,7 @@ public class MainActivityTest {
     @Rule
     public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
 
+
     @Test
     public void testSelectionMode() {
         onData(anything())
@@ -306,4 +316,5 @@ public class MainActivityTest {
         onView(withId(R.id.closebtn)).perform(click());
 
     }
+
 }

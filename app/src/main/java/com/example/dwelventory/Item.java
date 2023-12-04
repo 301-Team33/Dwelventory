@@ -9,14 +9,8 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import androidx.annotation.NonNull;
 /**
  * An object class that stores the user-defined information
  * of the household item
@@ -33,7 +27,7 @@ public class Item implements Parcelable {
     // comment optional ??? ask ta
     private String comment;
     // optional
-    private List photos;
+    private ArrayList<String> photos;
 
     private ArrayList<Tag> tags;
 
@@ -71,7 +65,7 @@ public class Item implements Parcelable {
      * @param photos (List) a list containing the photos associated with the item
      * */
     // full constructor
-    public Item(String description, Date date, String make, String model, int serialNumber, int estValue, String comment, List photos) {
+    public Item(String description, Date date, String make, String model, int serialNumber, int estValue, String comment, ArrayList<String> photos) {
         this.description = description;
         this.date = date;
         this.make = make;
@@ -94,6 +88,7 @@ public class Item implements Parcelable {
         serialNumber = in.readInt();
         estValue = in.readInt();
         comment = in.readString();
+        selected = in.readByte() != 0;
     }
     /**
      * The interface that generates the items from the parcel
@@ -211,14 +206,12 @@ public class Item implements Parcelable {
      * Gets the item's photos
      * @return photos (List) the list of photos associated with the item
      * */
-    public List getPhotos() {
-        return photos;
-    }
+    public ArrayList<String> getPhotos() { return photos; }
     /**
      * Sets the item's photos
      * @param photos (List) the list of photos associated with the item
      * */
-    public void setPhotos(List photos) {
+    public void setPhotos(ArrayList<String> photos) {
         this.photos = photos;
     }
     /**
@@ -285,7 +278,7 @@ public class Item implements Parcelable {
         dest.writeInt(serialNumber);
         dest.writeInt(estValue);
         dest.writeString(comment);
-        dest.writeString(String.valueOf(selected));
+        dest.writeByte((byte) (selected ? 1 : 0));
     }
     /**
      * Checks whether the item is selected
@@ -315,6 +308,7 @@ public class Item implements Parcelable {
         map.put("serialNumber", serialNumber);
         map.put("estValue", estValue);
         map.put("comment", comment);
+        map.put("photos", photos);
         map.put("tags", makeStringTagList(tags));
         return map;
     }
