@@ -391,8 +391,6 @@ public class MainActivity extends AppCompatActivity
                             }
 
                             clearCheckboxes();
-                        }
-
 
                         }
                         select_All.setChecked(false);
