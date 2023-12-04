@@ -56,19 +56,10 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/scan"
-            android:id="@+id/scan_txt_btn"
-            android:layout_toRightOf="@+id/snap_photo_btn"
-            android:backgroundTint="@color/green"
-            />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="Use"
             android:id="@+id/use_serial_no"
             android:backgroundTint="@color/green"
-            android:layout_toRightOf="@+id/scan_txt_btn"
+            android:layout_toRightOf="@+id/snap_photo_btn"
             android:layout_marginLeft="20dp"/>
 
     </RelativeLayout>

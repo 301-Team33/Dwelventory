@@ -254,6 +254,8 @@ public class PhotoFragment extends DialogFragment {
                 askDelete.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        StorageReference toDelete = storageRef.child(photoPaths.get(position));
+                        toDelete.delete();
                         photos.remove(position);
                         photoPaths.remove(position);
                         photoAdapter.notifyDataSetChanged();

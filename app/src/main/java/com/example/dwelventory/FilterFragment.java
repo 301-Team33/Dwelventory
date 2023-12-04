@@ -1,6 +1,7 @@
 package com.example.dwelventory;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,11 +30,16 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.w3c.dom.Text;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 public class FilterFragment extends DialogFragment {
     private String[] filterInput;
@@ -98,7 +105,7 @@ public class FilterFragment extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     String keywordText = makeInput.getText().toString();
-                    if (keywordText != null && !keywordText.isBlank()) {
+                    if (keywordText != null && !keywordText.isEmpty()) {
                         makeWords.add(keywordText);
                         makeAdapter.notifyDataSetChanged();
                         makeInput.setText(null);
@@ -122,30 +129,35 @@ public class FilterFragment extends DialogFragment {
         }
         else if("Date".equals(filterOption)){   // For date filter
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.popup_select_drange, null);
-            EditText dateStart = view.findViewById(R.id.filter_date_cal1);
-            EditText dateEnd = view.findViewById(R.id.filter_date_cal2);
+            TextView dateStart = view.findViewById(R.id.filter_date_cal1);
+            TextView dateEnd = view.findViewById(R.id.filter_date_cal2);
             Button doneButton = view.findViewById(R.id.filter_date_donebtn);
 
-            doneButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v){
-                    String dateStartText = dateStart.getText().toString();
-                    String dateEndText = dateEnd.getText().toString();
-                    if (listener != null) {
-                        Date start;
-                        Date end;
-                        try {
-                            start =new SimpleDateFormat("dd/MM/yyyy").parse(dateStartText);
-                            end =new SimpleDateFormat("dd/MM/yyyy").parse(dateEndText);
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
+            final Calendar myCalendar = Calendar.getInstance();
 
+            dateStart.setOnClickListener(v -> {
+                showDatePickerDialog(dateStart);
+            });
+
+            dateEnd.setOnClickListener(v -> {
+                showDatePickerDialog(dateEnd);
+            });
+
+            doneButton.setOnClickListener(v -> {
+                String dateStartText = dateStart.getText().toString();
+                String dateEndText = dateEnd.getText().toString();
+                if (listener != null) {
+                    Date start;
+                    Date end;
+                    try {
+                        start = new SimpleDateFormat("MM-dd-yyyy", Locale.US).parse(dateStartText);
+                        end = new SimpleDateFormat("MM-dd-yyyy", Locale.US).parse(dateEndText);
                         listener.onDateFilterApplied(start, end);
+                    } catch (ParseException e) {
+                        e.printStackTrace(); // Handle parse exception appropriately
                     }
-
-                    dismiss();
                 }
+                dismiss();
             });
             builder.setView(view);
             return builder.create();
@@ -293,6 +305,28 @@ public class FilterFragment extends DialogFragment {
                     .setPositiveButton("OK", null);
             return builder.create();
         }
+    }
+    private void showDatePickerDialog(TextView dateTextView) {
+        final View dialogView = View.inflate(getActivity(), R.layout.date_picker, null);
+        final DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.datePicker);
+
+
+        new AlertDialog.Builder(getActivity())
+                .setView(dialogView)
+                .setPositiveButton("OK", (dialog, id) -> {
+                    Calendar calendar = new GregorianCalendar(datePicker.getYear(),
+                            datePicker.getMonth(),
+                            datePicker.getDayOfMonth());
+                    updateLabel(dateTextView, calendar);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void updateLabel(TextView editText, Calendar myCalendar) {
+        String myFormat = "MM-dd-yyyy"; // Desired date format
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+        editText.setText(sdf.format(myCalendar.getTime()));
     }
 
     public void setFilterListener(FilterFragmentListener listener) {
