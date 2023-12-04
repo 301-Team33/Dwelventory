@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/darkBrown">
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:id="@+id/captured_img"
+        android:background="@color/caramel"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp" />
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/captured_img"
+        android:scrollbars="vertical"
+        android:scrollbarSize="10dp"
+        android:fadeScrollbars="false">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:textColor="@color/black"
+            android:id="@+id/scanned_edit_txt"
+            android:hint="Scanned text goes here!"
+            />
+    </ScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/barcode_description"
+        android:hint="0000000"
+        android:layout_centerHorizontal="true"
+        android:textSize="35sp"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/snap_scan_use_btns"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="650dp">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/snap"
+            android:id="@+id/snap_photo_btn"
+            android:layout_marginRight="20dp"
+            android:backgroundTint="@color/green"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/scan"
+            android:id="@+id/scan_txt_btn"
+            android:layout_toRightOf="@+id/snap_photo_btn"
+            android:backgroundTint="@color/green"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Use"
+            android:id="@+id/use_serial_no"
+            android:backgroundTint="@color/green"
+            android:layout_toRightOf="@+id/scan_txt_btn"
+            android:layout_marginLeft="20dp"/>
+
+    </RelativeLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/back_comback_hom_svgrepo_com"
+        android:contentDescription="Close"
+        android:id="@+id/back_btn"/>
+
+</RelativeLayout>
