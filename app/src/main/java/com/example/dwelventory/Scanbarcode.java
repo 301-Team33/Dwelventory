@@ -58,11 +58,7 @@ import java.util.List;
  */
 public class Scanbarcode extends AppCompatActivity {
     private FirebaseFirestore db;
-    private CollectionReference barcodes;
-
-    static final int REQUEST_IMAGE_CAPTURE = 1;
     private Button Snapbtn;
-    private Button Scanbtn;
     private Button Usebtn;
     private FloatingActionButton Backbtn;
     private ImageView imageView;
@@ -96,6 +92,7 @@ public class Scanbarcode extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d("permissions", "before request");
                 // requestCameraPermission();
+
                 dispatchTakePictureIntent();
                 Log.d("permissions", "after request");
             }

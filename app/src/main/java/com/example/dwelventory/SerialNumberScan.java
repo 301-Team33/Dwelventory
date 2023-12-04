@@ -36,7 +36,7 @@ import java.util.List;
  * @see AddEditActivity
  */
 public class SerialNumberScan extends AppCompatActivity {
-    // ... (other variables)
+
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private Button Snapbtn;
     private Button Scanbtn;
