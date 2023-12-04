@@ -194,7 +194,11 @@ public class Scanbarcode extends AppCompatActivity {
                 }
             }
     );
-
+    /**
+     * This processes the picture from the activity and finds teh barcode
+     *
+     * @throws IOException
+     */
     private void processCapturedImage() throws IOException {
         if (imageUri != null) {
             InputImage image = InputImage.fromFilePath(this, imageUri);
@@ -207,7 +211,6 @@ public class Scanbarcode extends AppCompatActivity {
                         for (Barcode barcode : barcodes) {
                             String barcodeData = barcode.getRawValue();
                             setName(barcodeData);
-
                         }
                     })
                     .addOnFailureListener(e -> {
@@ -217,12 +220,16 @@ public class Scanbarcode extends AppCompatActivity {
             Toast.makeText(Scanbarcode.this, "No image captured", Toast.LENGTH_SHORT).show();
         }
     }
-
+    /**
+     * This sets the name from the associated barcode if it exists.Otherwise notifies the user
+     * that the barcode is not in the database
+     *
+     * @param barcodeData (String) barcode number to be used in the firbase query
+     * @see FirebaseFirestore
+     */
     private void setName(String barcodeData) {
         db = FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("barcodes").document(barcodeData); // Replace with actual ID
-
-
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -235,7 +242,6 @@ public class Scanbarcode extends AppCompatActivity {
                         detected_text = itemName;
                         extracted_barcode_title.setText(detected_text);
                         Toast.makeText(Scanbarcode.this, "Description Found!", Toast.LENGTH_SHORT).show();
-
                     } else {
                         Toast.makeText(Scanbarcode.this, "The Barcode you gave does not exist in our database! \n Sorry about that!", Toast.LENGTH_SHORT).show();
                     }
