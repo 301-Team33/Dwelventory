@@ -154,26 +154,17 @@ public class AddEditActivity extends AppCompatActivity
                     }
                 });
 
-        serialNumButton.setOnClickListener(new View.OnClickListener() {
+        serial_no_cam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
-                serial_no_cam.setVisibility(View.VISIBLE);
-
-                serial_no_cam.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent scan_intent = new Intent(AddEditActivity.this, SerialNumberScan.class);
-                        if (mode.equals("edit")) {
-                            scan_intent.putExtra("mode", "edit");
-                            scan_intent.putExtra("serialNo", serialNumButton.getText().toString());
-                        }
-                        scanActivityResultLauncher.launch(scan_intent); // <--- MAGGIE
-                    }
-                });
+                Intent scan_intent = new Intent(AddEditActivity.this, SerialNumberScan.class);
+                if (mode.equals("edit")) {
+                    scan_intent.putExtra("mode", "edit");
+                    scan_intent.putExtra("serialNo", serialNumButton.getText().toString());
+                }
+                scanActivityResultLauncher.launch(scan_intent); // <--- MAGGIE
             }
         });
-
         scanActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     Log.d("AE ScanTag EDIT MODE", "scan activity opened");
