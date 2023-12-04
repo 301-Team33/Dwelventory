@@ -265,9 +265,12 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         confirmButton.setOnClickListener(v -> {
             // check for valid inputs
             if (reqInputsValid()){
+                ArrayList<String> unedittedPhotos = new ArrayList<>();
                 // take info and make item object
                 Log.d("editTag", "before making the new item, date is " + date);
-                ArrayList<String> unedittedPhotos = item.getPhotos();
+                if (mode.equals("edit")) {
+                    unedittedPhotos = item.getPhotos();
+                }
                 Item item = new Item(name, date, make, model, estValue);
                 if ( tagsToApply == null){
                     tagsToApply = new ArrayList<>();
