@@ -254,7 +254,6 @@ public class AddEditActivity extends AppCompatActivity
                 }
             });
         }
-
         // END IF EDIT //
 
         editTagButton.setOnClickListener(new View.OnClickListener() {
