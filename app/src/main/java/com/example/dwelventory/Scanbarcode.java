@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -50,11 +51,14 @@ public class Scanbarcode extends AppCompatActivity {
     private Button Snapbtn;
     private Button Scanbtn;
     private Button Usebtn;
+    private FloatingActionButton Backbtn;
     private ImageView imageView;
     private EditText extracted_barcode_title;
     private TextView barcode_description;
     private Uri imageUri;
     private String detected_text;
+    private int BARCODE_OK = 25;
+    private int BACK_CODE = 11;
 
     private static final int REQUEST_CAMERA_PERMISSION = 123;
 
@@ -68,6 +72,7 @@ public class Scanbarcode extends AppCompatActivity {
         Snapbtn = findViewById(R.id.snap_photo_btn);
         Scanbtn = findViewById(R.id.scan_txt_btn);
         Usebtn = findViewById(R.id.use_serial_no);
+        Backbtn = findViewById(R.id.back_btn);
         barcode_description = findViewById(R.id.barcode_description);
         extracted_barcode_title = findViewById(R.id.scanned_edit_txt);
 
@@ -104,6 +109,18 @@ public class Scanbarcode extends AppCompatActivity {
                 // Set your desired TextView with the detected text
                 barcode_description.setText(detected_text);
                 Toast.makeText(Scanbarcode.this, "Description has been set!", Toast.LENGTH_SHORT).show();
+                Intent intent_new = new Intent(Scanbarcode.this,AddEditActivity.class);
+                setResult(BARCODE_OK, intent_new);
+                finish();
+            }
+        });
+
+        Backbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent_new = new Intent(Scanbarcode.this,AddEditActivity.class);
+                setResult(BACK_CODE, intent_new);
+                finish();
             }
         });
     }

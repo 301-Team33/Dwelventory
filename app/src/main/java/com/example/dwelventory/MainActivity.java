@@ -60,8 +60,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /***
  * The startup activity for Dwelventory
+ * 
  * @Author
- *      CMPUT 301 FALL 2023 TEAM33
+ *         CMPUT 301 FALL 2023 TEAM33
  */
 public class MainActivity extends AppCompatActivity
         implements TagFragment.OnFragmentInteractionListener, FilterFragment.FilterFragmentListener {
@@ -76,8 +77,10 @@ public class MainActivity extends AppCompatActivity
     private int ADD_ACTIVITY_CODE = 8;
     private int EDIT_ACTIVITY_CODE = 18;
     private int ADD_EDIT_CODE_OK = 818;
+    private int EXIST_CODE = 33;
+    private int DOES_NOT_EXIST_CODE = 363;
     private Spinner sortSpinner;
-//    private FloatingActionButton addButton;
+    // private FloatingActionButton addButton;
     private ImageButton addButton;
     private TextView totalCost;
     private boolean reverseOrder;
@@ -109,11 +112,11 @@ public class MainActivity extends AppCompatActivity
             checkUsers(mAuth.getCurrentUser());
         }
 
-        while(mAuth.getCurrentUser() == null) {
+        while (mAuth.getCurrentUser() == null) {
             try {
                 Thread.sleep(2000);
+            } catch (InterruptedException e) {
             }
-            catch (InterruptedException e) {}
         }
         user = mAuth.getCurrentUser();
         Log.d("itemTag", "after user");
@@ -145,7 +148,7 @@ public class MainActivity extends AppCompatActivity
                         String model = doc.get("model", String.class);
                         int serial = doc.get("serialNumber", int.class);
                         int estValue = doc.get("estValue", int.class);
-                        ArrayList<String> photos = (ArrayList<String>)doc.get("photos");
+                        ArrayList<String> photos = (ArrayList<String>) doc.get("photos");
                         String comment = doc.get("comment", String.class);
                         // get tags from fire base
                         ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
@@ -190,20 +193,6 @@ public class MainActivity extends AppCompatActivity
             throw new RuntimeException(e);
         }
 
-        int serial = 12731;
-        String comment = "so cute";
-        ArrayList<String> photos = null;
-        Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings", serial, 200, comment, photos);
-        Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
-        ArrayList<Tag> testtag = new ArrayList<>();
-        ArrayList<Tag> practiceTags = new ArrayList<>();
-        practiceTags.add(new Tag("Tag1"));
-        practiceTags.add(new Tag("Tag2"));
-        item1.setTags(practiceTags);
-        item2.setTags(testtag);
-        dataList.add(item1);
-        dataList.add(item2);
-
         itemAdapter = new ItemList(this, dataList);
         ListView itemList = findViewById(R.id.item_list);
         itemList.setAdapter(itemAdapter);
@@ -220,14 +209,18 @@ public class MainActivity extends AppCompatActivity
 
         itemList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             /**
-             * Get the number of items that are selected by checking whether checkbox is checked.
+             * Get the number of items that are selected by checking whether checkbox is
+             * checked.
+             * 
              * @author Abhi
              * @author Maggie
              * @param selected_count
-             *      TextView to have it's text updated to the number of items that have been selected
+             *                       TextView to have it's text updated to the number of
+             *                       items that have been selected
              * @return count
-             *      int of the selected count items, if count == 0, the tag and delete btn
-             *      will not be displayed
+             *         int of the selected count items, if count == 0, the tag and delete
+             *         btn
+             *         will not be displayed
              **/
             public int getSelectedCount(TextView selected_count) {
                 int count = 0;
@@ -278,10 +271,9 @@ public class MainActivity extends AppCompatActivity
                             @Override
                             public void onClick(View view) {
                                 int count = getSelectedCount(selected_count);
-                                if (count == 0){
+                                if (count == 0) {
                                     deletebtn.setVisibility(View.GONE);
-                                }
-                                else{
+                                } else {
                                     deletebtn.setVisibility(View.VISIBLE);
                                     tagButton.setVisibility(View.VISIBLE);
                                 }
@@ -355,7 +347,7 @@ public class MainActivity extends AppCompatActivity
                                 CheckBox checkBox = view1.findViewById(R.id.checkbox);
                                 checkBox.setChecked(false);
                                 deletebtn.setVisibility(View.GONE);
-//                                tagButton.setVisibility(View.INVISIBLE);
+                                // tagButton.setVisibility(View.INVISIBLE);
                                 getSelectedCount(selected_count);
                             }
                         }
@@ -380,12 +372,11 @@ public class MainActivity extends AppCompatActivity
         itemList.setAdapter(itemAdapter);
         // itemAdapter.notifyDataSetChanged();
 
-
         // final FloatingActionButton addButton = findViewById(R.id.add_item_button);
 
         // Code fragment below is for filtering
 
-//        final FloatingActionButton addButton = findViewById(R.id.add_item_button);
+        // final FloatingActionButton addButton = findViewById(R.id.add_item_button);
         final ImageButton addButton = findViewById(R.id.add_item_button);
 
         // *** ONE FILTER AT A TIME FOR NOW ***
@@ -402,7 +393,7 @@ public class MainActivity extends AppCompatActivity
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0 && !(initialSpinnerCheck)) {
                     String filter = parent.getItemAtPosition(position).toString();
-                    FilterFragment filterFrag = FilterFragment.newInstance(filter,mAuth.getUid());
+                    FilterFragment filterFrag = FilterFragment.newInstance(filter, mAuth.getUid());
                     filterFrag.show(getSupportFragmentManager(), "FilterFragment");
                 } else if (initialSpinnerCheck) {
                     initialSpinnerCheck = false;
@@ -511,6 +502,15 @@ public class MainActivity extends AppCompatActivity
                             // Get and set date bc its weird
                             Date date = (Date) data.getSerializableExtra("date");
                             item.setDate(date);
+                            // Get and set optional parameters
+                            int serialCode = data.getIntExtra("serialCode", -1);
+                            if (serialCode == EXIST_CODE) {
+                                int serial = Integer.parseInt(data.getStringExtra("serialNo"));
+                                item.setSerialNumber(serial);
+                            } else if (serialCode == DOES_NOT_EXIST_CODE) {
+                                Log.d("please king julien", "no serial code attached to item");
+                                Log.d("please king julien", String.valueOf(item.getSerialNumber()));
+                            }
                             // Request code for handling
                             int requestCode = data.getIntExtra("requestCode", -1);
                             Log.d("resultTag", "request code: " + requestCode);
@@ -540,7 +540,7 @@ public class MainActivity extends AppCompatActivity
 
                                 // set photo remote cloud storage paths to items
                                 HashMap<String, Object> photoMap = new HashMap<>();
-                                map.put("photos",item.getPhotos());
+                                map.put("photos", item.getPhotos());
                                 itemAdapter.notifyDataSetChanged();
                                 Log.d("tagtag", "onCreate: tags " + item.getTags());
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
@@ -558,6 +558,9 @@ public class MainActivity extends AppCompatActivity
                                 Log.d("# item in handler", "position:" + position + " " + item.getItemRefID());
                                 Log.d("# handling edit result", "after setting tags" + String.valueOf(item.getTags()));
                                 // set item in firebase
+                                Log.d("please king julien", String.valueOf(item.getSerialNumber()));
+                                itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
+                                // set STRING tags to items
 
                                 HashMap<String, Object> photoMap = new HashMap<>();
                                 itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
@@ -591,7 +594,7 @@ public class MainActivity extends AppCompatActivity
             String itemRefID = itemToCopy.getItemRefID().toString();
             Log.d("itemTag", "RefID going to edit activity: " + itemRefID);
             intent.putExtra("itemRefID", itemRefID);
-            intent.putExtra("send_photos",itemToCopy.getPhotos());
+            intent.putExtra("send_photos", itemToCopy.getPhotos());
             addEditActivityResultLauncher.launch(intent);
 
         });
@@ -625,6 +628,7 @@ public class MainActivity extends AppCompatActivity
         ArrayList<String> itemPhotos = item.getPhotos();
         Log.d("mainTag", "Date is" + itemDate);
         Log.d("mainTag", "Make is " + itemMake);
+        // Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemValue);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment,
                 itemPhotos);
 
@@ -646,7 +650,7 @@ public class MainActivity extends AppCompatActivity
             String cost = getString(R.string.totalcost, estTotalCost);
             totalCost.setText(cost);
         }
-        if (dataList.size() == 0){
+        if (dataList.size() == 0) {
             totalCost.setText("Total Cost: $0");
         }
     }
@@ -703,7 +707,7 @@ public class MainActivity extends AppCompatActivity
 
     private void signOnAnonymously() {
         Log.d("NULL", "sign on");
-        //Log.d("NULL1", String.valueOf(mAuth.signInAnonymously()));
+        // Log.d("NULL1", String.valueOf(mAuth.signInAnonymously()));
         mAuth.signInAnonymously().addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -772,10 +776,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     /***
-     * This method applies a set of Tags to 1 or more items. Any Tags that are currently not associated
+     * This method applies a set of Tags to 1 or more items. Any Tags that are
+     * currently not associated
      * with an Item will not be readded allowing for unique Tag classifiers
+     * 
      * @param applyTags
-     *      An ArrayList of Tags representing the set of Tags we want associated to all 1 or more Item.
+     *                  An ArrayList of Tags representing the set of Tags we want
+     *                  associated to all 1 or more Item.
      */
     @Override
     public void onTagApplyAction(ArrayList<Tag> applyTags) {
@@ -818,10 +825,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     /***
-     * This method deletes a Tag from all Items in the Item dataList if the Tag is deleted from the
+     * This method deletes a Tag from all Items in the Item dataList if the Tag is
+     * deleted from the
      * database itself. This not leaving any dangling Tag references.
+     * 
      * @param deletedTag
-     *      A Tag object depicting the Tag we want to delete from the set of all Items.
+     *                   A Tag object depicting the Tag we want to delete from the
+     *                   set of all Items.
      */
     @Override
     public void onTagDeletion(Tag deletedTag) {
@@ -858,12 +868,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMakeFilterApplied(ArrayList<String> makeInput) {
         estTotalCost = 0;
-        // Filer has already been applied so we do not need to query firebase and can work with the
+        // Filer has already been applied so we do not need to query firebase and can
+        // work with the
         // data list itself.
-        if (filterApplied){
+        if (filterApplied) {
             for (Item item : dataList) {
-                for(String make: makeInput){
-                    if(item.getMake() == make){
+                for (String make : makeInput) {
+                    if (item.getMake() == make) {
 
                     }
                 }
@@ -871,7 +882,6 @@ public class MainActivity extends AppCompatActivity
         }
         dataList.clear();
         setTotal(dataList);
-        
 
         AtomicInteger pendingQueries = new AtomicInteger(makeInput.size());
         for (String make : makeInput) {
@@ -1008,8 +1018,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * This method queries the database to find items containing specified tags. Once
-     * retrieved from database, it updates dataList and notifies the adapter about changes.
+     * This method queries the database to find items containing specified tags.
+     * Once
+     * retrieved from database, it updates dataList and notifies the adapter about
+     * changes.
      *
      * NOT FINISHED YET. NOT PART OF HALFWAY CHECKPOINT.
      *
@@ -1021,56 +1033,57 @@ public class MainActivity extends AppCompatActivity
         estTotalCost = 0;
         setTotal(dataList);
         itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    dataList.clear();
-                    itemAdapter.notifyDataSetChanged();
-                    pendingQueries.decrementAndGet();
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            // get the documents tag list...
-                            ArrayList<String> docTags = (ArrayList<String>) doc.get("tags");
-                            boolean isMatch = true;
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                dataList.clear();
+                itemAdapter.notifyDataSetChanged();
+                pendingQueries.decrementAndGet();
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot doc : task.getResult()) {
+                        // get the documents tag list...
+                        ArrayList<String> docTags = (ArrayList<String>) doc.get("tags");
+                        boolean isMatch = true;
 
-                            // loop through all tag names and see if all are associated with the specified
-                            // Item...
-                            // Must use this inefficient querying due to the structure of firestore
-                            // list contains method in firestore doesnt check ALL...
+                        // loop through all tag names and see if all are associated with the specified
+                        // Item...
+                        // Must use this inefficient querying due to the structure of firestore
+                        // list contains method in firestore doesnt check ALL...
 
-                            for (Tag tagCheck: filterTags){
-                                if (docTags.contains(tagCheck.getTagName()) == false){
-                                    isMatch = false;
-                                    break;
-                                }
-                            }
-                            if (isMatch) {
-                                Item item = new Item(
-                                        doc.getString("description"),
-                                        doc.getDate("date"),
-                                        doc.getString("make"),
-                                        doc.getString("model"),
-                                        doc.getLong("estValue").intValue());
-                                item.setSerialNumber(doc.getLong("serialNumber").intValue());
-                                item.setItemRefID(UUID.fromString(doc.getId()));
-                                ArrayList<Tag> itemTags = makeTagList(docTags);
-                                item.setTags(itemTags);
-                                dataList.add(item);
-                                estTotalCost += doc.getLong("estValue").intValue();
+                        for (Tag tagCheck : filterTags) {
+                            if (docTags.contains(tagCheck.getTagName()) == false) {
+                                isMatch = false;
+                                break;
                             }
                         }
-                    }
-                    if (pendingQueries.get() == 0) {
-                        // Now that all asynchronous queries are done, notify the adapter
-                        itemAdapter.notifyDataSetChanged();
-                        setTotal(dataList);
+                        if (isMatch) {
+                            Item item = new Item(
+                                    doc.getString("description"),
+                                    doc.getDate("date"),
+                                    doc.getString("make"),
+                                    doc.getString("model"),
+                                    doc.getLong("estValue").intValue());
+                            item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                            item.setItemRefID(UUID.fromString(doc.getId()));
+                            ArrayList<Tag> itemTags = makeTagList(docTags);
+                            item.setTags(itemTags);
+                            dataList.add(item);
+                            estTotalCost += doc.getLong("estValue").intValue();
+                        }
                     }
                 }
+                if (pendingQueries.get() == 0) {
+                    // Now that all asynchronous queries are done, notify the adapter
+                    itemAdapter.notifyDataSetChanged();
+                    setTotal(dataList);
+                }
+            }
 
-            });
+        });
     }
 
     /**
-     * This function is run when the use clicks on the "Clear Filter" option. It retrieves all
+     * This function is run when the use clicks on the "Clear Filter" option. It
+     * retrieves all
      * items from firebase and restores them in the data list to display on screen.
      */
     public void onClearFilterApplied() {
@@ -1091,7 +1104,7 @@ public class MainActivity extends AppCompatActivity
                                 doc.getLong("estValue").intValue());
                         item.setSerialNumber(doc.getLong("serialNumber").intValue());
                         item.setItemRefID(UUID.fromString(doc.getId()));
-                        ArrayList<String> stringTags = (ArrayList<String>)doc.get("tags");
+                        ArrayList<String> stringTags = (ArrayList<String>) doc.get("tags");
                         ArrayList<Tag> itemTags = makeTagList(stringTags);
                         item.setTags(itemTags);
                         dataList.add(item);
