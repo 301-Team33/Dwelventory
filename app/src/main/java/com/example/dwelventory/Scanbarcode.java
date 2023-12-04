@@ -44,8 +44,19 @@ import com.google.mlkit.vision.common.InputImage;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * This is the activity that allows the user to take a picture and scan the
+ * image for
+ * a barcode or can also take in the manual input of the barcode number. The
+ * activity
+ * searches the database and finds an associated item name if the barcode
+ * exists.
+ *
+ * @author Abhishek Kumar and Maggie Lacson
+ * @see AddEditActivity
+ * @see FirebaseFirestore
+ */
 public class Scanbarcode extends AppCompatActivity {
-
     private FirebaseFirestore db;
     private CollectionReference barcodes;
 
@@ -64,6 +75,9 @@ public class Scanbarcode extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA_PERMISSION = 123;
 
+    /**
+     * This sets up the blank scanning activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -77,34 +91,30 @@ public class Scanbarcode extends AppCompatActivity {
         barcode_description = findViewById(R.id.barcode_description);
         extracted_barcode_title = findViewById(R.id.scanned_edit_txt);
 
-
-
         Snapbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("permissions", "before request");
-//                requestCameraPermission();
+                // requestCameraPermission();
                 dispatchTakePictureIntent();
                 Log.d("permissions", "after request");
             }
         });
 
-        BarcodeScannerOptions options =
-                new BarcodeScannerOptions.Builder()
-                        .setBarcodeFormats(
-                                Barcode.FORMAT_UPC_A,
-                                Barcode.FORMAT_UPC_E,
-                                Barcode.FORMAT_EAN_13,
-                                Barcode.FORMAT_EAN_8,
-                                Barcode.FORMAT_CODE_39,
-                                Barcode.FORMAT_CODE_128,
-                                Barcode.FORMAT_QR_CODE,
-                                Barcode.FORMAT_AZTEC,
-                                Barcode.FORMAT_DATA_MATRIX,
-                                Barcode.FORMAT_PDF417)
-                        .enableAllPotentialBarcodes()
-                        .build();
-
+        BarcodeScannerOptions options = new BarcodeScannerOptions.Builder()
+                .setBarcodeFormats(
+                        Barcode.FORMAT_UPC_A,
+                        Barcode.FORMAT_UPC_E,
+                        Barcode.FORMAT_EAN_13,
+                        Barcode.FORMAT_EAN_8,
+                        Barcode.FORMAT_CODE_39,
+                        Barcode.FORMAT_CODE_128,
+                        Barcode.FORMAT_QR_CODE,
+                        Barcode.FORMAT_AZTEC,
+                        Barcode.FORMAT_DATA_MATRIX,
+                        Barcode.FORMAT_PDF417)
+                .enableAllPotentialBarcodes()
+                .build();
 
         Usebtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,7 +122,7 @@ public class Scanbarcode extends AppCompatActivity {
                 // Set your desired TextView with the detected text
                 barcode_description.setText(detected_text);
                 Toast.makeText(Scanbarcode.this, "Description has been set!", Toast.LENGTH_SHORT).show();
-                Intent intent_new = new Intent(Scanbarcode.this,AddEditActivity.class);
+                Intent intent_new = new Intent(Scanbarcode.this, AddEditActivity.class);
                 intent_new.putExtra("barcode name", detected_text);
                 setResult(BARCODE_OK, intent_new);
                 finish();
@@ -122,20 +132,22 @@ public class Scanbarcode extends AppCompatActivity {
         Backbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent_new = new Intent(Scanbarcode.this,AddEditActivity.class);
+                Intent intent_new = new Intent(Scanbarcode.this, AddEditActivity.class);
                 setResult(BACK_CODE, intent_new);
                 finish();
             }
         });
     }
 
+    /**
+     * This notifies the user and requests for camera permission
+     */
     private void requestCameraPermission() {
         Log.d("permissions", "in request");
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             Log.d("permissions", "calling for request");
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA},
+                    new String[] { Manifest.permission.CAMERA },
                     REQUEST_CAMERA_PERMISSION);
         } else {
             Log.d("permissions", "in else request");
@@ -143,10 +155,15 @@ public class Scanbarcode extends AppCompatActivity {
         }
     }
 
+    /**
+     * This handles the camera permissions of the user. Takes a picture if allowed,
+     * otherwise
+     * notifies the user they do not have access
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
             Log.d("permissions", "request code is request_permission");
@@ -157,6 +174,10 @@ public class Scanbarcode extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     * This launches the camera activity
+     */
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         ContentValues values = new ContentValues();
@@ -164,12 +185,16 @@ public class Scanbarcode extends AppCompatActivity {
         values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera");
         imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        try{
+        try {
             takePictureLauncher.launch(takePictureIntent);
-        } catch (Exception e){
-            Toast.makeText(this, "Failed: "+e.getMessage(), Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
+
+    /**
+     * This handles the result from the camera activity
+     */
     private final ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -181,9 +206,13 @@ public class Scanbarcode extends AppCompatActivity {
                         throw new RuntimeException(e);
                     }
                 }
-            }
-    );
+            });
 
+    /**
+     * This processes the picture from the activity and finds teh barcode
+     *
+     * @throws IOException
+     */
     private void processCapturedImage() throws IOException {
         if (imageUri != null) {
             InputImage image = InputImage.fromFilePath(this, imageUri);
@@ -196,22 +225,28 @@ public class Scanbarcode extends AppCompatActivity {
                         for (Barcode barcode : barcodes) {
                             String barcodeData = barcode.getRawValue();
                             setName(barcodeData);
-
                         }
                     })
                     .addOnFailureListener(e -> {
-                        Toast.makeText(Scanbarcode.this, "Detection Failed! : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Scanbarcode.this, "Detection Failed! : " + e.getMessage(), Toast.LENGTH_SHORT)
+                                .show();
                     });
         } else {
             Toast.makeText(Scanbarcode.this, "No image captured", Toast.LENGTH_SHORT).show();
         }
     }
 
+    /**
+     * This sets the name from the associated barcode if it exists.Otherwise
+     * notifies the user
+     * that the barcode is not in the database
+     *
+     * @param barcodeData (String) barcode number to be used in the firbase query
+     * @see FirebaseFirestore
+     */
     private void setName(String barcodeData) {
         db = FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("barcodes").document(barcodeData); // Replace with actual ID
-
-
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -220,21 +255,23 @@ public class Scanbarcode extends AppCompatActivity {
                     if (document.exists()) {
                         // Retrieve data from the document
                         String itemName = document.getString("item name");
-                        Log.d("item name",itemName);
+                        Log.d("item name", itemName);
                         detected_text = itemName;
                         extracted_barcode_title.setText(detected_text);
                         Toast.makeText(Scanbarcode.this, "Description Found!", Toast.LENGTH_SHORT).show();
-
                     } else {
-                        Toast.makeText(Scanbarcode.this, "The Barcode you gave does not exist in our database! \n Sorry about that!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Scanbarcode.this,
+                                "The Barcode you gave does not exist in our database! \n Sorry about that!",
+                                Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Log.e("FirestoreError", "Error retrieving information, try snapping another photo!", task.getException());
-                    Toast.makeText(Scanbarcode.this, "Error retrieving information, try snapping another photo!", Toast.LENGTH_SHORT).show();
+                    Log.e("FirestoreError", "Error retrieving information, try snapping another photo!",
+                            task.getException());
+                    Toast.makeText(Scanbarcode.this, "Error retrieving information, try snapping another photo!",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
 
     }
 }

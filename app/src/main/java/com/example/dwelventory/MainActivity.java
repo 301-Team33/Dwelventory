@@ -311,13 +311,6 @@ public class MainActivity extends AppCompatActivity
                                 else{
                                     deletebtn.setVisibility(View.GONE);
                                 }
-//                                if (count == 0) {
-//                                    deletebtn.setVisibility(View.GONE);
-//                                } else {
-//                                    deletebtn.setVisibility(View.VISIBLE);
-//                                    tagButton.setVisibility(View.VISIBLE);
-//                                }
-
                             }
                         });
                     }
