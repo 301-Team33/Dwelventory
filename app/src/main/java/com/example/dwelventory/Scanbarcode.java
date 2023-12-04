@@ -25,11 +25,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -184,11 +186,7 @@ public class Scanbarcode extends AppCompatActivity {
                         Log.d("BARCODES", "onSuccess: " + barcodes.toString());
                         for (Barcode barcode : barcodes) {
                             String barcodeData = barcode.getRawValue();
-                            Toast.makeText(Scanbarcode.this, barcodeData, Toast.LENGTH_SHORT).show();
-                            Log.d("wtv", "onSuccess: " + barcodeData);
-                            detected_text = barcodeData;
-                            extracted_barcode_title.setText(barcodeData);
-                            //setName(barcodeData);
+                            setName(barcodeData);
 
                         }
                     })
@@ -200,33 +198,34 @@ public class Scanbarcode extends AppCompatActivity {
         }
     }
 
-    /*private void setName(String barcodeData) {
+    private void setName(String barcodeData) {
         db = FirebaseFirestore.getInstance();
-        barcodes = db.collection("barcodes");
+        DocumentReference docRef = db.collection("barcodes").document(barcodeData); // Replace with actual ID
 
-        barcodes.whereEqualTo(barcodeData, true)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        // Barcode data matches a document field
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            if (document.contains("item name")) {
-                                String itemName = document.getString("item name");
-                                // Use the retrieved item name
-                                Toast.makeText(Scanbarcode.this, "Item Name: " + itemName, Toast.LENGTH_SHORT).show();
-                                // Perform further actions with the item name
-                            }
-                        }
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        // Retrieve data from the document
+                        String itemName = document.getString("item name");
+                        Log.d("item name",itemName);
+                        detected_text = itemName;
+                        extracted_barcode_title.setText(detected_text);
+                        Toast.makeText(Scanbarcode.this, "Description Found!", Toast.LENGTH_SHORT).show();
+
                     } else {
-                        // Barcode data doesn't match any document field
-                        Toast.makeText(Scanbarcode.this, "Barcode data doesn't match any field.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Scanbarcode.this, "The Barcode you gave does not exist in our database! \n Sorry about that!", Toast.LENGTH_SHORT).show();
                     }
-                })
-                .addOnFailureListener(e -> {
-                    // Handle failures
-                    Toast.makeText(Scanbarcode.this, "Error checking barcode data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.d("Barcode Error", "setName: "+e.getMessage());
-                });
+                } else {
+                    Log.e("FirestoreError", "Error retrieving information, try snapping another photo!", task.getException());
+                    Toast.makeText(Scanbarcode.this, "Error retrieving information, try snapping another photo!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
-    }*/
+
+    }
 }
