@@ -26,31 +26,39 @@
         android:layout_height="92dp"
         android:src="@drawable/calender_filter_icon"></ImageView>
 
-    <EditText
+    <TextView
         android:id="@+id/filter_date_cal1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Start Date: mm/dd/yyyy"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="10dp"
         android:layout_marginHorizontal="40dp"
         android:layout_marginTop="7dp"
         android:layout_marginBottom="20dp"
         android:background="@color/white"
-        android:textSize="25dp"></EditText>
+        android:hint="Start Date: mm-dd-yyyy"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="10dp"
+        android:textSize="25dp"></TextView>
 
-    <EditText
+    <TextView
         android:id="@+id/filter_date_cal2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="End Date: mm/dd/yyyy"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="10dp"
         android:layout_marginHorizontal="40dp"
         android:layout_marginTop="1dp"
         android:layout_marginBottom="20dp"
         android:background="@color/white"
-        android:textSize="25dp"></EditText>
+        android:hint="End Date: mm-dd-yyyy"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="10dp"
+        android:textSize="25dp"></TextView>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Invalid date format"
+        android:textAlignment="center"
+        android:textColor="#FF0000" />
 
     <android.widget.Button
         android:id="@+id/filter_date_donebtn"
@@ -63,5 +71,7 @@
         android:textSize="25dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/tag_filter_apply"></android.widget.Button>
+
+
 
 </LinearLayout>
