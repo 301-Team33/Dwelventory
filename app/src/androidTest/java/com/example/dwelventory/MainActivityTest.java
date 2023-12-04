@@ -6,7 +6,9 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.PickerActions.setDate;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -16,6 +18,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.containsString;
 
+import android.widget.DatePicker;
 import android.widget.ListView;
 
 import androidx.test.core.app.ActivityScenario;
@@ -29,6 +32,7 @@ import com.example.dwelventory.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -238,8 +242,10 @@ public class MainActivityTest {
 
         onView(withId(R.id.filter_spinner)).perform(click());
         onData(allOf(is(instanceOf(String.class)), is("Date"))).perform(click());
-        onView(withId(R.id.filter_date_cal1)).perform(ViewActions.typeText("01/01/2038"));
-        onView(withId(R.id.filter_date_cal2)).perform(ViewActions.typeText("01/01/2039"));
+        onView(withId(R.id.filter_date_cal1)).perform(click());
+        onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(setDate(2023, 1, 1));
+        onView(withId(R.id.filter_date_cal2)).perform(click());
+        onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(setDate(2039, 1, 1));
         onView(withId(R.id.filter_date_donebtn)).perform(click());
         onView(withText("Johnson")).check(matches(isDisplayed()));
         onView(withText("Odell")).check(doesNotExist());
