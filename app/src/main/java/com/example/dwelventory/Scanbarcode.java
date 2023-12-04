@@ -43,9 +43,16 @@ import com.google.mlkit.vision.common.InputImage;
 
 import java.io.IOException;
 import java.util.List;
-
+/**
+ * This is the activity that allows the user to take a picture and scan the image for
+ * a barcode or can also take in the manual input of the barcode number. The activity
+ * searches the database and finds an associated item name if the barcode exists.
+ *
+ * @author Abhishek Kumar and Maggie Lacson
+ * @see AddEditActivity
+ * @see FirebaseFirestore
+ */
 public class Scanbarcode extends AppCompatActivity {
-
     private FirebaseFirestore db;
     private CollectionReference barcodes;
 
@@ -63,7 +70,9 @@ public class Scanbarcode extends AppCompatActivity {
     private int BACK_CODE = 11;
 
     private static final int REQUEST_CAMERA_PERMISSION = 123;
-
+    /**
+     * This sets up the blank scanning activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -72,7 +81,7 @@ public class Scanbarcode extends AppCompatActivity {
 
         imageView = findViewById(R.id.captured_img);
         Snapbtn = findViewById(R.id.snap_photo_btn);
-        Scanbtn = findViewById(R.id.scan_txt_btn);
+//        Scanbtn = findViewById(R.id.scan_txt_btn);
         Usebtn = findViewById(R.id.use_serial_no);
         Backbtn = findViewById(R.id.back_btn);
         barcode_description = findViewById(R.id.barcode_description);
@@ -126,7 +135,9 @@ public class Scanbarcode extends AppCompatActivity {
             }
         });
     }
-
+    /**
+     * This notifies the user and requests for camera permission
+     */
     private void requestCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -138,7 +149,10 @@ public class Scanbarcode extends AppCompatActivity {
             dispatchTakePictureIntent();
         }
     }
-
+    /**
+     * This handles the camera permissions of the user. Takes a picture if allowed, otherwise
+     * notifies the user they do not have access
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -152,6 +166,9 @@ public class Scanbarcode extends AppCompatActivity {
             }
         }
     }
+    /**
+     * This launches the camera activity
+     */
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         ContentValues values = new ContentValues();
@@ -161,6 +178,9 @@ public class Scanbarcode extends AppCompatActivity {
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         takePictureLauncher.launch(takePictureIntent);
     }
+    /**
+     * This handles the result from the camera activity
+     */
     private final ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
