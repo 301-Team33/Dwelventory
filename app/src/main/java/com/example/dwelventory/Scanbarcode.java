@@ -77,8 +77,7 @@ public class Scanbarcode extends AppCompatActivity {
         barcode_description = findViewById(R.id.barcode_description);
         extracted_barcode_title = findViewById(R.id.scanned_edit_txt);
 
-        /*BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
-        imagebitmap = drawable.getBitmap();*/
+
 
         Snapbtn.setOnClickListener(new View.OnClickListener() {
             @Override
