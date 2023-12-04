@@ -115,9 +115,7 @@ public class MainActivity extends AppCompatActivity
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
         FirebaseUser user = mAuth.getCurrentUser();
-
         appTitle = findViewById(R.id.app_title);
-
         if (user == null) {
             signOnAnonymously();
         } else {

@@ -46,6 +46,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
     MaterialButton tagDisplay1Button;
     MaterialButton tagDisplay2Button;
     MaterialButton tagDisplay3Button;
+    private ImageButton serial_no_cam;
+    private ImageButton barcode_scan;
     // Required inputs
     private String name;
     private Date date;
@@ -74,7 +76,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         editTagButton = findViewById(R.id.edit_tag_button);
         tagDisplay1Button = findViewById(R.id.tag_display_1);
         tagDisplay2Button = findViewById(R.id.tag_display_2);
-        tagDisplay3Button  =findViewById(R.id.tag_display_3);
+        tagDisplay3Button = findViewById(R.id.tag_display_3);
 
         tagDisplay3Button.setVisibility(View.GONE);
         tagDisplay2Button.setVisibility(View.GONE);
@@ -89,6 +91,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         commentButton = findViewById(R.id.comment_button);
         photoButton = findViewById(R.id.photo_button);
         confirmButton = findViewById(R.id.confirm_button);
+        serial_no_cam = findViewById(R.id.serial_no_cam);
+        barcode_scan = findViewById(R.id.barcode_scan_btn);
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -101,38 +105,50 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         String itemRefID = intent.getStringExtra("itemRefID");
         Log.d("itemTag", "RefID after opening activity: " + itemRefID);
 
-        try{
+        try {
             String serial = intent.getStringExtra("serialNo");
             serialNumButton.setText(serial);
-        }catch(Exception e){
-            Log.d("D","Serial Number unable to be set when returning from scan activity.");
+        } catch (Exception e) {
+            Log.d("D", "Serial Number unable to be set when returning from scan activity.");
         }
 
-        if(mode.equals("add")){
-            serialNumButton.setOnClickListener(new View.OnClickListener() {
+        if (mode.equals("add")) {
+
+            serial_no_cam = findViewById(R.id.serial_no_cam);
+            serial_no_cam.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
-                    serial_no_cam.setVisibility(View.VISIBLE);
-
-                    serial_no_cam.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent scan_intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
-                            scan_intent.putExtra("name",nameButton.getText());
-                            scan_intent.putExtra("date",dateButton.getText());
-                            Log.d("Date Test",date.toString());
-                            scan_intent.putExtra("mode", mode);
-                            scan_intent.putExtra("position", position );
-                            scan_intent.putExtra("requestCode", requestCode);
-                            //scan_intent.putExtra("previous name", prevName);
-                            scan_intent.putExtra("itemRefID", itemRefID);
-                            scan_intent.putExtra("tags",tagsToApply);
-                            startActivity(scan_intent);
-                        }
-                    });
+                    Intent scan_intent = new Intent(AddEditActivity.this, SerialNumberScan.class);
+                    scan_intent.putExtra("name", nameButton.getText());
+                    scan_intent.putExtra("date", dateButton.getText());
+                    Log.d("Date Test", date.toString());
+                    scan_intent.putExtra("mode", mode);
+                    scan_intent.putExtra("position", position);
+                    scan_intent.putExtra("requestCode", requestCode);
+                    //scan_intent.putExtra("previous name", prevName);
+                    scan_intent.putExtra("itemRefID", itemRefID);
+                    scan_intent.putExtra("tags", tagsToApply);
+                    startActivity(scan_intent);
                 }
             });
+
+            barcode_scan.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent barcode_intent = new Intent(AddEditActivity.this, Scanbarcode.class);
+                    barcode_intent.putExtra("name", nameButton.getText());
+                    barcode_intent.putExtra("date", dateButton.getText());
+                    Log.d("Date Test", date.toString());
+                    barcode_intent.putExtra("mode", mode);
+                    barcode_intent.putExtra("position", position);
+                    barcode_intent.putExtra("requestCode", requestCode);
+                    //scan_intent.putExtra("previous name", prevName);
+                    barcode_intent.putExtra("itemRefID", itemRefID);
+                    barcode_intent.putExtra("tags", tagsToApply);
+                    startActivity(barcode_intent);
+                }
+            });
+
 
             nameButton.setText(intent.getStringExtra("name"));
             makeButton.setText(intent.getStringExtra("make"));
@@ -140,7 +156,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
 
         }
 
-        if (mode.equals("edit")){
+        if (mode.equals("edit")) {
             item = (Item) intent.getParcelableExtra("item");
 
             // fill edit texts with information
@@ -150,7 +166,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             Date date = (Date) intent.getSerializableExtra("date");
             tagsToApply = intent.getParcelableArrayListExtra("tags");
             Log.d("# just opened on edit mode", String.valueOf(tagsToApply));
-            if(tagsToApply == null){
+            if (tagsToApply == null) {
                 tagsToApply = new ArrayList<>();
                 Log.d("", "onCreate: SEE HERE 1" + tagsToApply);
             }
@@ -162,19 +178,17 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             // If a Item has less than 3 Tags then the remaining unused Tag buttons will be hidden.
             int numTags = tagsToApply.size();
             int i = 0;
-            while (i <= 2 || i < numTags){
-                if (i == 3 || i == numTags){
+            while (i <= 2 || i < numTags) {
+                if (i == 3 || i == numTags) {
                     break;
                 }
-                if (i == 0){
+                if (i == 0) {
                     tagDisplay1Button.setText(tagsToApply.get(i).getTagName());
                     tagDisplay1Button.setVisibility(View.VISIBLE);
-                }
-                else if (i == 1){
+                } else if (i == 1) {
                     tagDisplay2Button.setText(tagsToApply.get(i).getTagName());
                     tagDisplay2Button.setVisibility(View.VISIBLE);
-                }
-                else if(i == 2){
+                } else if (i == 2) {
                     tagDisplay3Button.setText(tagsToApply.get(i).getTagName());
                     tagDisplay3Button.setVisibility(View.VISIBLE);
                 }
@@ -201,20 +215,37 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                     serial_no_cam.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent scan_intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
-                            scan_intent.putExtra("item",item);
-                            scan_intent.putExtra("date",date);
-                            Log.d("Date Test",date.toString());
+                            Intent scan_intent = new Intent(AddEditActivity.this, SerialNumberScan.class);
+                            scan_intent.putExtra("item", item);
+                            scan_intent.putExtra("date", date);
+                            Log.d("Date Test", date.toString());
                             scan_intent.putExtra("mode", mode);
-                            scan_intent.putExtra("position", position );
+                            scan_intent.putExtra("position", position);
                             scan_intent.putExtra("requestCode", requestCode);
                             scan_intent.putExtra("previous name", prevName);
                             scan_intent.putExtra("itemRefID", itemRefID);
-                            scan_intent.putExtra("tags",tagsToApply);
+                            scan_intent.putExtra("tags", tagsToApply);
 
                             startActivity(scan_intent);
                         }
                     });
+                }
+            });
+
+            barcode_scan.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent barcode_intent = new Intent(AddEditActivity.this, Scanbarcode.class);
+                    barcode_intent.putExtra("name", nameButton.getText());
+                    barcode_intent.putExtra("date", dateButton.getText());
+                    Log.d("Date Test", date.toString());
+                    barcode_intent.putExtra("mode", mode);
+                    barcode_intent.putExtra("position", position);
+                    barcode_intent.putExtra("requestCode", requestCode);
+                    //scan_intent.putExtra("previous name", prevName);
+                    barcode_intent.putExtra("itemRefID", itemRefID);
+                    barcode_intent.putExtra("tags", tagsToApply);
+                    startActivity(barcode_intent);
                 }
             });
         }
@@ -222,11 +253,11 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         editTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mode.equals("edit")) {
+                if (mode.equals("edit")) {
                     Log.d("", "onClick: The current tags.." + tagsToApply);
-                    TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(),tagsToApply);
+                    TagFragment newFragment = TagFragment.newInstance(mAuth.getUid(), tagsToApply);
                     newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
-                }else{
+                } else {
                     TagFragment newFragment = TagFragment.newInstance(mAuth.getUid());
                     newFragment.show(getSupportFragmentManager(), "TAG_FRAG");
                 }
@@ -259,30 +290,38 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
 
         confirmButton.setOnClickListener(v -> {
             // check for valid inputs
-            if (reqInputsValid()){
+            if (reqInputsValid()) {
                 // take info and make item object
                 Log.d("editTag", "before making the new item, date is " + date);
-                
+
                 Item item = new Item(name, date, make, model, estValue);
-                if ( tagsToApply == null){
+                if (tagsToApply == null) {
                     tagsToApply = new ArrayList<>();
-                };
+                }
+                ;
                 item.setTags(tagsToApply);
 
 
                 // put it in intent
                 Intent updatedIntent = new Intent();
-                if(item.getTags() == null){
-                  ArrayList<Tag>  emptyTagSet = new ArrayList<>();
-                  item.setTags(emptyTagSet);
+                if (item.getTags() == null) {
+                    ArrayList<Tag> emptyTagSet = new ArrayList<>();
+                    item.setTags(emptyTagSet);
                 }
+
+                if (photos == null || item.getPhotos() == null) {
+                    photos = new ArrayList<>();
+                    item.setPhotos(photos);
+                }
+
+
                 // go back to main activity
-                updatedIntent.putParcelableArrayListExtra("tags",tagsToApply);
+                updatedIntent.putParcelableArrayListExtra("tags", tagsToApply);
                 Log.d("# tag TAg hitting confirm", String.valueOf(tagsToApply));
                 updatedIntent.putExtra("item", item);
                 updatedIntent.putExtra("date", date);
                 updatedIntent.putExtra("mode", mode);
-                updatedIntent.putExtra("position", position );
+                updatedIntent.putExtra("position", position);
                 updatedIntent.putExtra("requestCode", requestCode);
                 updatedIntent.putExtra("previous name", prevName);
                 updatedIntent.putExtra("itemRefID", itemRefID);
