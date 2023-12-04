@@ -265,11 +265,13 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             if (reqInputsValid()){
                 // take info and make item object
                 Log.d("editTag", "before making the new item, date is " + date);
-                
+                ArrayList<String> unedittedPhotos = item.getPhotos();
                 Item item = new Item(name, date, make, model, estValue);
                 if ( tagsToApply == null){
                     tagsToApply = new ArrayList<>();
                 };
+                Intent intent1 = new Intent();
+
                 item.setTags(tagsToApply);
                 item.setPhotos(photos);
 
@@ -283,6 +285,13 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 if (photos == null || item.getPhotos() == null){
                     photos = new ArrayList<>();
                     item.setPhotos(photos);
+                    Log.d("statement", "ENTERED IF STATEMENT" + item.getPhotos());
+                    item.setPhotos(unedittedPhotos);
+                    Log.d("statement", "ENTERED IF STATEMENT2" + item.getPhotos());
+                }
+                if (photos.size() == 0 && unedittedPhotos != null){
+                    item.setPhotos(unedittedPhotos);
+                    Log.d("statement", "ENTERED IF STATEMENT" + item.getPhotos());
                 }
 
                 // go back to main activity
