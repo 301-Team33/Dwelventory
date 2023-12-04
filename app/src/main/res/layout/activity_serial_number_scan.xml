@@ -6,23 +6,41 @@
 
     <ImageView
         android:layout_width="300dp"
-        android:layout_height="500dp"
+        android:layout_height="300dp"
         android:id="@+id/captured_img"
         android:background="@color/caramel"
-        android:layout_centerInParent="true"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"/>
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/captured_img"
+        android:scrollbars="vertical"
+        android:scrollbarSize="10dp"
+        android:fadeScrollbars="false">
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:textColor="@color/black"
+        android:id="@+id/scanned_edit_txt"
+        android:hint="Scanned text goes here!"
+        />
+    </ScrollView>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/serialNumber"
-        android:hint="123456789"
+        android:hint="0000000"
         android:layout_centerHorizontal="true"
         android:textSize="35sp"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/snap_scan_btns"
+        android:id="@+id/snap_scan_use_btns"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="650dp">
 
@@ -58,7 +76,8 @@
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/tag_cancel_fragment"
-        android:contentDescription="Close"/>
+        android:src="@drawable/back_comback_hom_svgrepo_com"
+        android:contentDescription="Close"
+        android:id="@+id/back_btn"/>
 
 </RelativeLayout>

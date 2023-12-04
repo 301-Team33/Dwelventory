@@ -1,31 +1,24 @@
 package com.example.dwelventory;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -51,24 +44,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -104,6 +88,7 @@ public class MainActivity extends AppCompatActivity
     private boolean filterApplied = false;
 
     private TextView appTitle;
+    private ArrayList<String> photos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,8 +111,13 @@ public class MainActivity extends AppCompatActivity
             checkUsers(mAuth.getCurrentUser());
         }
 
-        assert user != null;
-        checkUsers(user);
+        while(mAuth.getCurrentUser() == null) {
+            try {
+                Thread.sleep(2000);
+            }
+            catch (InterruptedException e) {}
+        }
+        user = mAuth.getCurrentUser();
         Log.d("itemTag", "after user");
         String path = "/users/" + user.getUid() + "/items";
         // String path = "/users/rQ2PrfCOKsYkdi1bfzqvLJVZOqq1/items";
@@ -157,7 +147,7 @@ public class MainActivity extends AppCompatActivity
                         String model = doc.get("model", String.class);
                         int serial = doc.get("serialNumber", int.class);
                         int estValue = doc.get("estValue", int.class);
-                        ArrayList photos = doc.get("photos", ArrayList.class);
+                        ArrayList<String> photos = (ArrayList<String>)doc.get("photos");
                         String comment = doc.get("comment", String.class);
                         // get tags from fire base
                         ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
@@ -204,7 +194,7 @@ public class MainActivity extends AppCompatActivity
 
         int serial = 12731;
         String comment = "so cute";
-        List photos = null;
+        ArrayList<String> photos = null;
         Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings", serial, 200, comment, photos);
         Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
         ArrayList<Tag> testtag = new ArrayList<>();
@@ -529,8 +519,12 @@ public class MainActivity extends AppCompatActivity
                             // Get tags and set them to the item
                             ArrayList<Tag> tags = data.getParcelableArrayListExtra("tags");
                             ArrayList<String> stringTags = makeStringTagList(tags); // THIS IS FOR FIREBASE ONLY
+                            ArrayList<String> photoPaths = data.getStringArrayListExtra("applied_photos");
+                            Log.d("ADDEDITPHOTOS9", "BACK TO MAIN HERES APPLIED PHOTOS" + photoPaths);
                             item.setTags(tags); // set tags
+                            item.setPhotos(photoPaths);
                             Log.d("# result from ae", "after setting tags" + String.valueOf(item.getTags()));
+                            Log.d("ADDEDITPHOTOS10", "BACK TO MAIN HERES APPLIED PHOTOS" + item.getPhotos());
                             if (requestCode == ADD_ACTIVITY_CODE) {
                                 // Handle the result for adding
                                 Log.d("resultTag", "i am about to add the item");
@@ -540,13 +534,19 @@ public class MainActivity extends AppCompatActivity
                                 estTotalCost += item.getEstValue();
                                 // set item in firebase
                                 itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
+
                                 // set STRING tags to items
                                 HashMap<String, Object> map = new HashMap<>();
                                 map.put("tags", stringTags);
                                 itemsRef.document(String.valueOf(item.getItemRefID())).update(map);
+
+                                // set photo remote cloud storage paths to items
+                                HashMap<String, Object> photoMap = new HashMap<>();
+                                map.put("photos",item.getPhotos());
                                 itemAdapter.notifyDataSetChanged();
                                 Log.d("tagtag", "onCreate: tags " + item.getTags());
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
+                                Log.d("photome", "I am getting the correct photos..." + item.getPhotos());
                                 // Handle the result for editing
                                 Log.d("resultTag", "i am about to edit the item");
                                 int position = data.getIntExtra("position", -1);
@@ -560,9 +560,11 @@ public class MainActivity extends AppCompatActivity
                                 Log.d("# item in handler", "position:" + position + " " + item.getItemRefID());
                                 Log.d("# handling edit result", "after setting tags" + String.valueOf(item.getTags()));
                                 // set item in firebase
-                                itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
-                                // set STRING tags to items
 
+                                HashMap<String, Object> photoMap = new HashMap<>();
+                                itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
+
+                                // set STRING tags to items
                                 itemAdapter.notifyDataSetChanged();
                             }
                             String cost = getString(R.string.totalcost, estTotalCost);
@@ -591,6 +593,7 @@ public class MainActivity extends AppCompatActivity
             String itemRefID = itemToCopy.getItemRefID().toString();
             Log.d("itemTag", "RefID going to edit activity: " + itemRefID);
             intent.putExtra("itemRefID", itemRefID);
+            intent.putExtra("send_photos",itemToCopy.getPhotos());
             addEditActivityResultLauncher.launch(intent);
 
         });
@@ -621,11 +624,12 @@ public class MainActivity extends AppCompatActivity
         int itemSerial = item.getSerialNumber();
         int itemValue = item.getEstValue();
         String itemComment = item.getComment();
-        List itemPhotos = item.getPhotos();
+        ArrayList<String> itemPhotos = item.getPhotos();
         Log.d("mainTag", "Date is" + itemDate);
         Log.d("mainTag", "Make is " + itemMake);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment,
                 itemPhotos);
+
         return copyItem;
     }
 
@@ -701,7 +705,7 @@ public class MainActivity extends AppCompatActivity
 
     private void signOnAnonymously() {
         Log.d("NULL", "sign on");
-        Log.d("NULL1", String.valueOf(mAuth.signInAnonymously()));
+        //Log.d("NULL1", String.valueOf(mAuth.signInAnonymously()));
         mAuth.signInAnonymously().addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -886,6 +890,7 @@ public class MainActivity extends AppCompatActivity
                                     doc.getDate("date"),
                                     doc.getString("make"),
                                     doc.getString("model"),
+
                                     doc.getLong("estValue").intValue());
                             item.setSerialNumber(doc.getLong("serialNumber").intValue());
                             ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
