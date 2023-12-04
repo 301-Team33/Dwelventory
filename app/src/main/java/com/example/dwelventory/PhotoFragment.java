@@ -43,11 +43,9 @@ public class PhotoFragment extends DialogFragment {
     private FloatingActionButton gallery;
     private ArrayList<Uri> photos;
     private ArrayList<String> photoPaths;
-    private ImageView imageView;
-    private String userId;
+
     private ActivityResultLauncher<Intent> photoFragmentResultLauncher;
     private ActivityResultLauncher<Intent> cameraFragmentResultLauncher;
-    private ImageView selectedGalleryImage;
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private ArrayList<Uri> selectedImages;

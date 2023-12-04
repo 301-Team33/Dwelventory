@@ -34,6 +34,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/***
+ * A filter fragment that extends the DialogFragment Superclass so that a specified filter based
+ * On a filter options so that the user can filter out items based on specified traits. Updating the
+ * total cost accordingly.
+ * @Author
+ *      Aykhan Teymurlu
+ */
 public class FilterFragment extends DialogFragment {
     private String[] filterInput;
     private String filterOption;
@@ -62,6 +69,19 @@ public class FilterFragment extends DialogFragment {
         void onTagFilterApplied(ArrayList<Tag> tags);
         void onClearFilterApplied();
     }
+
+    /***
+     * A new instance method for creating a new dialogue fragment. This allows the fragment to be
+     * opened up with specified parameters as specified within the Bundle that is being created
+     * within it. The user can then retrieve the arguments from the bundle upon the fragment
+     * startup
+     * @param filterOption
+     *      String type to represent the filter fragment option to decide which layout needs to
+     *      be displayed. Options include date,keyword,make,tag
+     * @param userId
+     * @return
+     *      FilterFragment the specified instance for the fragment to be launched.
+     */
     public static FilterFragment newInstance(String filterOption,String userId) {
         FilterFragment fragment = new FilterFragment();
         Bundle args = new Bundle();
@@ -71,6 +91,14 @@ public class FilterFragment extends DialogFragment {
         return fragment;
     }
 
+    /***
+     * Creates the dialog for the appropiate filter fragment layout based on the mode.
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return
+     *      Dialog Fragment to be shown upon the screen upon creation
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {

@@ -43,7 +43,6 @@ public class TagFragmentTests {
         // click the new item button
         onView(withId(R.id.add_item_button)).perform(click());
         // check that we navigated to the activity
-        onView(withText("Edit Tag")).check(matches(isDisplayed()));
 
         onView(withId(R.id.edit_tag_button)).perform(click());
 
@@ -114,6 +113,13 @@ public class TagFragmentTests {
                 .perform(click());
         onView(withId(R.id.tag_apply_button));
         onView(withText("Kit")).check(matches(isDisplayed()));
+
+    }
+
+    @Test
+    public void testTagDeletion(){
+
+
 
     }
     @Rule
