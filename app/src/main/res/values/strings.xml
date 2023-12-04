@@ -5,7 +5,7 @@
 
 
     <string name="tag_hint">New Tag Name</string>
-    <string name="tag_confirm">Confirm</string>
+    <string name="tag_confirm">Apply</string>
     <string name="tag_remove_toast">Tag Deleted</string>
     <string name="tag_create_toast">Tag Created</string>
     <string name="invalid_tag_toast">Invalid Tag</string>

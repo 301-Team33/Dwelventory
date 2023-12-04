@@ -135,8 +135,6 @@ public class TagFragment extends DialogFragment{
         deletePrompt.setVisibility(View.GONE);
 
 
-
-
         Bundle bundle = getArguments();
         userId = bundle.getString("user_id"); // Get the UserID to load the appropriate
         tagsCurrentApply = new ArrayList<>(); // Current Tags associated with an Item if the item is being editted
@@ -187,6 +185,7 @@ public class TagFragment extends DialogFragment{
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 itemIndex = position; // get the index of the item we want to delete
+                view.setBackgroundColor(getResources().getColor(R.color.selected,null));
                 deletePrompt.setText("Delete: " + tagDataList.get(position).getTagName() + "?" );
                 // if the bundle contains the deletion mode, then we will allow the deletion UI
                 // to be visible, allowing for possible deletion.
@@ -205,6 +204,7 @@ public class TagFragment extends DialogFragment{
                 if(tagsToApply == null || tagsToApply.contains(tagDataList.get(position)) == false){
                     // This is the case where the tag was not already selected so we add it to the
                     // Potential selected tags.
+                    tagApplyButton.setBackgroundColor(getResources().getColor(R.color.green, null));
                     view.setBackgroundColor(getResources().getColor(R.color.selected,null));
                     tagsToApply.add(tagDataList.get(position));
                 }else{
@@ -212,6 +212,9 @@ public class TagFragment extends DialogFragment{
                     // deselect it, removing it from the set of tags that need to be applied!
                     view.setBackgroundColor(getResources().getColor(R.color.gray,null));
                     tagsToApply.remove(tagDataList.get(position));
+                    if ( tagsToApply.isEmpty()  ){
+                        tagApplyButton.setBackgroundColor(getResources().getColor(R.color.selected, null));
+                    }
                 }
             }
         });
@@ -299,7 +302,6 @@ public class TagFragment extends DialogFragment{
                     tagArrayAdapter.notifyDataSetChanged();
                     produceTagToast(R.string.tag_create_toast);
                 }
-
             }
         });
 
@@ -309,7 +311,6 @@ public class TagFragment extends DialogFragment{
             public void onClick(View v) {
                 if (tagsToApply.size() == 0){
                     produceTagToast(R.string.no_tags_selected);
-                    listener.onTagApplyAction(tagsToApply);
                 }else {
                     listener.onTagApplyAction(tagsToApply);
                 }
