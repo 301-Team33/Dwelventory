@@ -40,8 +40,10 @@ public class SerialNumberScan extends AppCompatActivity {
     private EditText Scanned_Edit_txt;
     private ImageView imageView;
     private Bitmap imagebitmap;
-
     private String detected_text;
+    private int BACK_CODE = 11;
+    private int SERIAL_OK = 17;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,7 +138,7 @@ public class SerialNumberScan extends AppCompatActivity {
                     Intent intent_new = new Intent(SerialNumberScan.this,AddEditActivity.class);
                     String serial_as_string = Serial_no.getText().toString();
                     intent_new.putExtra("serialNo", serial_as_string);
-                    setResult(17, intent_new);
+                    setResult(SERIAL_OK, intent_new);
                     finish();
                 }
             }
@@ -148,7 +150,7 @@ public class SerialNumberScan extends AppCompatActivity {
                 Intent intent_new = new Intent(SerialNumberScan.this,AddEditActivity.class);
                 String serial_as_string = Serial_no.getText().toString();
                 intent_new.putExtra("serialNo", serial_as_string);
-                setResult(17, intent_new);
+                setResult(BACK_CODE, intent_new);
                 finish();
             }
         });
