@@ -1,5 +1,7 @@
 package com.example.dwelventory;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -52,7 +54,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
     private String make;
     private String model;
     private int estValue;
-
+    private int serial;
+    private String comment;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private CollectionReference usersRef;
@@ -61,6 +64,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
     private ArrayList<Tag> tagsToApply;
 //    private String comment;
     private String prevName;
+    private ActivityResultLauncher<Intent> scanActivityResultLauncher;
+
     /**
      * This sets up the activity. Either blank if the user is adding an item
      * or with the item's information loaded into the text boxes if the user
@@ -128,14 +133,30 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                             //scan_intent.putExtra("previous name", prevName);
                             scan_intent.putExtra("itemRefID", itemRefID);
                             scan_intent.putExtra("tags",tagsToApply);
-                            startActivity(scan_intent);
+                            scanActivityResultLauncher.launch(scan_intent); // <--- MAGGIE
+
+//                            startActivity(scan_intent);
                         }
                     });
                 }
             });
 
-            nameButton.setText(intent.getStringExtra("name"));
-            makeButton.setText(intent.getStringExtra("make"));
+            scanActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        Log.d("AE ScanTag EDIT MODE", "scan activity opened");
+                        Log.d("AE ScanTag EDIT MODE", "activity result code: "+ result.getResultCode());
+                        if (result.getResultCode() == 17){
+                            Log.d("AE ScanTag EDIT MODE", "result code from scan is 17");
+
+                            Intent data = result.getData();
+                            String serial = data.getStringExtra("serialNo");
+//                            String serial = intent.getStringExtra("serialNo");
+//                            Log.d("AE ScanTag EDIT MODE", "tried to set the following text" + serial);
+                            serialNumButton.setText(serial);
+                            Log.d("AE ScanTag EDIT MODE", "tried to set the following text" + serial);
+                        }
+
+                    });
 
 
         }
@@ -211,12 +232,29 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                             scan_intent.putExtra("previous name", prevName);
                             scan_intent.putExtra("itemRefID", itemRefID);
                             scan_intent.putExtra("tags",tagsToApply);
+                            scanActivityResultLauncher.launch(scan_intent); // <--- MAGGIE
 
-                            startActivity(scan_intent);
+//                            startActivity(scan_intent);
                         }
                     });
                 }
             });
+            scanActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        Log.d("AE ScanTag EDIT MODE", "scan activity opened");
+                        Log.d("AE ScanTag EDIT MODE", "activity result code: "+ result.getResultCode());
+                        if (result.getResultCode() == 17){
+                            Log.d("AE ScanTag EDIT MODE", "result code from scan is 17");
+
+                            Intent data = result.getData();
+                            String serial = data.getStringExtra("serialNo");
+//                            String serial = intent.getStringExtra("serialNo");
+//                            Log.d("AE ScanTag EDIT MODE", "tried to set the following text" + serial);
+                            serialNumButton.setText(serial);
+                            Log.d("AE ScanTag EDIT MODE", "tried to set the following text" + serial);
+                        }
+
+                    });
         }
 
         editTagButton.setOnClickListener(new View.OnClickListener() {
@@ -268,7 +306,13 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                     tagsToApply = new ArrayList<>();
                 };
                 item.setTags(tagsToApply);
-
+                if (!serialNumButton.getText().toString().isEmpty()){
+                    // if there is a serial number
+                    item.setSerialNumber(serial);
+                }
+                if (!comment.isEmpty()){
+                    item.setComment(comment);
+                }
 
                 // put it in intent
                 Intent updatedIntent = new Intent();
@@ -347,7 +391,14 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         else{
             estValue = Integer.parseInt(ev);
         }
-        // All inputs valid!!!
+        // All required inputs valid!!!
+        // set default optional inputs
+        String serial_string = serialNumButton.getText().toString();
+        if (!serial_string.isEmpty()){
+            serial = Integer.parseInt(serial_string);
+        }
+        comment = commentButton.getText().toString();
+
         return valid;
     }
     /**

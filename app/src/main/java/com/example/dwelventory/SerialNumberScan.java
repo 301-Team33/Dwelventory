@@ -126,8 +126,10 @@ public class SerialNumberScan extends AppCompatActivity {
                 String final_serial_no = Scanned_Edit_txt.getText().toString();
                 final_serial_no = stripString(final_serial_no);
                 final_serial_no = removeText(final_serial_no);
-                Serial_no.setText(final_serial_no);
-                Toast.makeText(SerialNumberScan.this, "All numerical values detected from the text has been used to set!", Toast.LENGTH_LONG).show();
+                if (checkIntConvertible(final_serial_no)){
+                    Serial_no.setText(final_serial_no);
+                    Toast.makeText(SerialNumberScan.this, "All numerical values detected from the text has been used to set!", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -139,7 +141,9 @@ public class SerialNumberScan extends AppCompatActivity {
 
                 if(intent_prev.getStringExtra("mode").equals("edit")){
                     Item item = intent_prev.getParcelableExtra("item");
-                    item.setSerialNumber(Integer.parseInt(Serial_no.getText().toString()));
+                    String serial_as_string = Serial_no.getText().toString();
+                    item.setSerialNumber(Integer.parseInt(serial_as_string));
+
                     Date date = (Date) intent_prev.getSerializableExtra("date");
                     Log.d("Date test",date.toString());
                     String mode = intent_prev.getStringExtra("mode");
@@ -157,7 +161,11 @@ public class SerialNumberScan extends AppCompatActivity {
                     intent_new.putExtra("itemRefID",itemRefID);
                     //intent_new.putExtra("tags",tagstoApply);
                     intent_new.putExtra("previous name",prev_name);
-                    startActivity(intent_new);
+                    intent_new.putExtra("serialNo", serial_as_string);
+
+                    setResult(17, intent_new);
+                    finish();
+//                    startActivity(intent_new);
 
                 }else if(intent_prev.getStringExtra("mode").equals("add")){
                     //To be completed
@@ -178,12 +186,20 @@ public class SerialNumberScan extends AppCompatActivity {
 
         return result.toString();
     }
-
     private String stripString(String finalSerialNo) {
         // Remove all whitespace and newlines from the string
         return finalSerialNo.replaceAll("\\s", "");
     }
-
+    private boolean checkIntConvertible(String serial_string){
+        try {
+            int intValue = Integer.parseInt(serial_string);
+        } catch (NumberFormatException e){
+            Scanned_Edit_txt.setError("Serial Number is too large");
+            Scanned_Edit_txt.requestFocus();
+            return false;
+        }
+        return true;
+    }
 
     private void dispatchTakePictureIntent(){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
