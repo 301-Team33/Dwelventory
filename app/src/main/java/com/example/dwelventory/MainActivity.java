@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity
                         String model = doc.get("model", String.class);
                         int serial = doc.get("serialNumber", int.class);
                         int estValue = doc.get("estValue", int.class);
-                        ArrayList photos = doc.get("photos", ArrayList.class);
+                        ArrayList<String> photos = (ArrayList<String>)doc.get("photos");
                         String comment = doc.get("comment", String.class);
                         // get tags from fire base
                         ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
@@ -501,8 +501,12 @@ public class MainActivity extends AppCompatActivity
                             // Get tags and set them to the item
                             ArrayList<Tag> tags = data.getParcelableArrayListExtra("tags");
                             ArrayList<String> stringTags = makeStringTagList(tags); // THIS IS FOR FIREBASE ONLY
+                            ArrayList<String> photoPaths = data.getStringArrayListExtra("applied_photos");
+                            Log.d("ADDEDITPHOTOS9", "BACK TO MAIN HERES APPLIED PHOTOS" + photoPaths);
                             item.setTags(tags); // set tags
+                            item.setPhotos(photoPaths);
                             Log.d("# result from ae", "after setting tags" + String.valueOf(item.getTags()));
+                            Log.d("ADDEDITPHOTOS10", "BACK TO MAIN HERES APPLIED PHOTOS" + item.getPhotos());
                             if (requestCode == ADD_ACTIVITY_CODE) {
                                 // Handle the result for adding
                                 Log.d("resultTag", "i am about to add the item");
@@ -520,9 +524,11 @@ public class MainActivity extends AppCompatActivity
 
                                 // set photo remote cloud storage paths to items
                                 HashMap<String, Object> photoMap = new HashMap<>();
+                                map.put("photos",item.getPhotos());
                                 itemAdapter.notifyDataSetChanged();
                                 Log.d("tagtag", "onCreate: tags " + item.getTags());
                             } else if (requestCode == EDIT_ACTIVITY_CODE) {
+                                Log.d("photome", "I am getting the correct photos..." + item.getPhotos());
                                 // Handle the result for editing
                                 Log.d("resultTag", "i am about to edit the item");
                                 int position = data.getIntExtra("position", -1);
@@ -536,7 +542,10 @@ public class MainActivity extends AppCompatActivity
                                 Log.d("# item in handler", "position:" + position + " " + item.getItemRefID());
                                 Log.d("# handling edit result", "after setting tags" + String.valueOf(item.getTags()));
                                 // set item in firebase
+
+                                HashMap<String, Object> photoMap = new HashMap<>();
                                 itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
+
                                 // set STRING tags to items
                                 itemAdapter.notifyDataSetChanged();
                             }
@@ -566,6 +575,7 @@ public class MainActivity extends AppCompatActivity
             String itemRefID = itemToCopy.getItemRefID().toString();
             Log.d("itemTag", "RefID going to edit activity: " + itemRefID);
             intent.putExtra("itemRefID", itemRefID);
+            intent.putExtra("send_photos",itemToCopy.getPhotos());
             addEditActivityResultLauncher.launch(intent);
 
         });
@@ -601,6 +611,7 @@ public class MainActivity extends AppCompatActivity
         Log.d("mainTag", "Make is " + itemMake);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment,
                 itemPhotos);
+
         return copyItem;
     }
 
@@ -861,6 +872,7 @@ public class MainActivity extends AppCompatActivity
                                     doc.getDate("date"),
                                     doc.getString("make"),
                                     doc.getString("model"),
+
                                     doc.getLong("estValue").intValue());
                             item.setSerialNumber(doc.getLong("serialNumber").intValue());
                             ArrayList<String> tags = (ArrayList<String>) doc.get("tags");

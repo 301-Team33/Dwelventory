@@ -4,14 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/beige">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Photos"
+        android:textColor="@color/white"
+        android:textAllCaps="true"
+        android:textStyle="bold"
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textSize="35sp"
         android:paddingVertical="20dp"
         android:background="@color/beige">
 
@@ -47,7 +51,6 @@
                 android:backgroundTint="@color/beige"/>
         </LinearLayout>
 
-
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/camera_button"
             android:layout_width="wrap_content"
@@ -58,7 +61,14 @@
             android:backgroundTint="@color/beige"
             android:layout_marginRight="40dp"
             />
-
     </LinearLayout>
+
+    <Button
+        android:id="@+id/confirmButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirm"
+        android:backgroundTint="@color/green"
+        android:layout_gravity="center"/>
 
 </LinearLayout>
