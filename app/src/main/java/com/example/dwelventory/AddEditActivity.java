@@ -54,6 +54,9 @@ public class AddEditActivity extends AppCompatActivity
     MaterialButton tagDisplay1Button;
     MaterialButton tagDisplay2Button;
     MaterialButton tagDisplay3Button;
+    private ImageButton serial_no_cam;
+    private ImageButton barcode_scan;
+
     ImageButton backButton;
     // Required inputs
     private String name;
@@ -106,6 +109,8 @@ public class AddEditActivity extends AppCompatActivity
         commentButton = findViewById(R.id.comment_button);
         photoButton = findViewById(R.id.photo_button);
         confirmButton = findViewById(R.id.confirm_button);
+        serial_no_cam = findViewById(R.id.serial_no_cam);
+        barcode_scan = findViewById(R.id.barcode_scan_btn);
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -263,11 +268,11 @@ public class AddEditActivity extends AppCompatActivity
                 if (mode.equals("edit")) {
                     unedittedPhotos = item.getPhotos();
                 }
+
                 Item item = new Item(name, date, make, model, estValue);
                 if (tagsToApply == null) {
                     tagsToApply = new ArrayList<>();
                 }
-                ;
                 Intent intent1 = new Intent();
 
                 item.setTags(tagsToApply);
