@@ -25,6 +25,7 @@ import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -146,17 +147,18 @@ public class SerialNumberScan extends AppCompatActivity {
                     Log.d("ScanTag EDIT MODE", "0");
                     String serial_as_string = Serial_no.getText().toString();
                     Log.d("ScanTag EDIT MODE", "0.1 " + serial_as_string);
-                    int serial_as_int = -1;
-                    try {
-                        serial_as_int = Integer.parseInt(serial_as_string);
-                        Log.d("ScanTag EDIT MODE", "0.2 " + serial_as_int);
-                        item.setSerialNumber(serial_as_int);
-                        Log.d("ScanTag EDIT MODE", "0.2.1: item.getserial is " + item.getSerialNumber());
-
-
-                    } catch (Exception e){
-                        Log.d("ScanTag EDIT MODE", "fucking failed bc of " + e);
-                    }
+                    item.setSerialNumber(new BigInteger(serial_as_string));
+//                    int serial_as_int = -1;
+//                    try {
+//                        serial_as_int = Integer.parseInt(serial_as_string);
+//                        Log.d("ScanTag EDIT MODE", "0.2 " + serial_as_int);
+//                        item.setSerialNumber(serial_as_int);
+//                        Log.d("ScanTag EDIT MODE", "0.2.1: item.getserial is " + item.getSerialNumber());
+//
+//
+//                    } catch (Exception e){
+//                        Log.d("ScanTag EDIT MODE", "fucking failed bc of " + e);
+//                    }
 
                     Date date = (Date) intent_prev.getSerializableExtra("date");
                     Log.d("Date test",date.toString());

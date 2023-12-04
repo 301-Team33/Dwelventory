@@ -6,6 +6,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 /**
@@ -28,7 +30,8 @@ public class Item implements Parcelable {
     private String make;
     private String model;
     // serial number optional
-    private int serialNumber;
+//    private int serialNumber;
+    private BigInteger serialNumber;
     private int estValue;
     // comment optional ??? ask ta
     private String comment;
@@ -58,6 +61,16 @@ public class Item implements Parcelable {
         this.estValue = estValue;
 //        this.selected = false;
     }
+    public Item(String description, Date date, String make, String model, BigInteger serial, int estValue, String comment ) {
+        this.description = description;
+        this.date = date;
+        this.make = make;
+        this.model = model;
+        this.serialNumber = serial;
+        this.estValue = estValue;
+        this.comment = comment;
+//        this.selected = false;
+    }
     /**
      * The full constructor of all the Item attributes the user can access in the AddEdit Activity
      * Does not include tags as a parameter, tags are set after initialization
@@ -71,7 +84,7 @@ public class Item implements Parcelable {
      * @param photos (List) a list containing the photos associated with the item
      * */
     // full constructor
-    public Item(String description, Date date, String make, String model, int serialNumber, int estValue, String comment, List photos) {
+    public Item(String description, Date date, String make, String model, BigInteger serialNumber, int estValue, String comment, List photos) {
         this.description = description;
         this.date = date;
         this.make = make;
@@ -91,7 +104,11 @@ public class Item implements Parcelable {
         description = in.readString();
         make = in.readString();
         model = in.readString();
-        serialNumber = in.readInt();
+        try {
+            serialNumber = new BigInteger(in.readString());
+        } catch (Exception e){
+            Log.d("Item Class", "fuck "+e);
+        }
         estValue = in.readInt();
         comment = in.readString();
         selected = in.readByte() != 0;
@@ -170,14 +187,14 @@ public class Item implements Parcelable {
      * Gets the item's serial number
      * @return serialNumber (int) the int value of the serial number associated with the item
      * */
-    public int getSerialNumber() {
+    public BigInteger getSerialNumber() {
         return serialNumber;
     }
     /**
      * Sets the item's serial number
      * @param serialNumber (int) the int value of the serial number associated with the item
      * */
-    public void setSerialNumber(int serialNumber) {
+    public void setSerialNumber(BigInteger serialNumber) {
         this.serialNumber = serialNumber;
     }
     /**
@@ -283,7 +300,7 @@ public class Item implements Parcelable {
         dest.writeString(description);
         dest.writeString(make);
         dest.writeString(model);
-        dest.writeInt(serialNumber);
+        dest.writeString(serialNumber.toString());
         dest.writeInt(estValue);
         dest.writeString(comment);
         dest.writeByte((byte) (selected ? 1 : 0));

@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +55,9 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
     private String make;
     private String model;
     private int estValue;
+    // optional inputs
+    private BigInteger serial;
+    private String comment;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -295,11 +299,19 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
 
         confirmButton.setOnClickListener(v -> {
             // check for valid inputs
+            Log.d("editTag", "before reqs valid");
             if (reqInputsValid()){
                 // take info and make item object
                 Log.d("editTag", "before making the new item, date is " + date);
-                
-                Item item = new Item(name, date, make, model, estValue);
+                try {
+                    Item item = new Item(name, date, make, model, serial, estValue, comment);
+                    Log.d("editTag", "item was successfully created?");
+                    Log.d("editTag", item.getDescription());
+                    Log.d("editTag", item.getSerialNumber().toString());
+                } catch (Exception e){
+                    Log.d("editTag", "failure bc of "+e);
+                }
+//                Item item = new Item(name, date, make, model, estValue); OLD ONE
                 if ( tagsToApply == null){
                     tagsToApply = new ArrayList<>();
                 };
@@ -383,7 +395,20 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         else{
             estValue = Integer.parseInt(ev);
         }
-        // All inputs valid!!!
+        Log.d("editTag", "before serial string");
+        // All REQUIRED inputs valid!!!
+        String serial_string = serialNumButton.getText().toString();
+        Log.d("editTag", "before converting to big int"+serial_string);
+        if (!serial_string.isEmpty()){
+            serial = new BigInteger(serial_string);
+        }
+        try{
+            comment = commentButton.getText().toString();
+        } catch (Exception e){
+            Log.d("editTag", "comment failure bc of "+e);
+        }
+//        Log.d("editTag", "comment is"+comment);
+//        Log.d("editTag", "before return     "+ serial_string+comment+valid);
         return valid;
     }
     /**

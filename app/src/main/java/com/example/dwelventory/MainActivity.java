@@ -40,6 +40,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.lang.reflect.Array;
+import java.math.BigInteger;
 import java.util.HashMap;
 
 import android.os.Bundle;
@@ -155,13 +156,17 @@ public class MainActivity extends AppCompatActivity
                         Date date = doc.get("date", Date.class);
                         String make = doc.get("make", String.class);
                         String model = doc.get("model", String.class);
-                        int serial = doc.get("serialNumber", int.class);
+                        // get STRING val from firebase
+                        String serial_string = doc.get("serialNumber", String.class);
+                        BigInteger serial = new BigInteger(serial_string);
+//                        BigInteger serial = doc.get("serialNumber", BigInteger.class);
                         int estValue = doc.get("estValue", int.class);
                         ArrayList photos = doc.get("photos", ArrayList.class);
                         String comment = doc.get("comment", String.class);
-                        // get tags from fire base
+                        // get STRING tags from fire base
                         ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
                         Log.d("result", tags.toString());
+                        // turn string tags into TAG tags for item constructor
                         ArrayList<Tag> realTags = makeTagList(tags);
                         Item item = new Item(name, date, make, model, serial, estValue, comment, photos);
                         item.setTags(realTags);
@@ -202,19 +207,19 @@ public class MainActivity extends AppCompatActivity
             throw new RuntimeException(e);
         }
 
-        int serial = 12731;
-        String comment = "so cute";
-        List photos = null;
-        Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings", serial, 200, comment, photos);
-        Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
-        ArrayList<Tag> testtag = new ArrayList<>();
-        ArrayList<Tag> practiceTags = new ArrayList<>();
-        practiceTags.add(new Tag("Tag1"));
-        practiceTags.add(new Tag("Tag2"));
-        item1.setTags(practiceTags);
-        item2.setTags(testtag);
-        dataList.add(item1);
-        dataList.add(item2);
+//        BigInteger serial = 12731;
+//        String comment = "so cute";
+//        List photos = null;
+//        Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings", serial, 200, comment, photos);
+//        Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
+//        ArrayList<Tag> testtag = new ArrayList<>();
+//        ArrayList<Tag> practiceTags = new ArrayList<>();
+//        practiceTags.add(new Tag("Tag1"));
+//        practiceTags.add(new Tag("Tag2"));
+//        item1.setTags(practiceTags);
+//        item2.setTags(testtag);
+//        dataList.add(item1);
+//        dataList.add(item2);
 
         itemAdapter = new ItemList(this, dataList);
         ListView itemList = findViewById(R.id.item_list);
@@ -511,7 +516,7 @@ public class MainActivity extends AppCompatActivity
                             // Get tags and set them to the item
                             ArrayList<Tag> tags = data.getParcelableArrayListExtra("tags");
                             ArrayList<String> stringTags = makeStringTagList(tags); // THIS IS FOR FIREBASE ONLY
-                            item.setTags(tags); // set tags
+                            item.setTags(tags); // set TAG tags
                             Log.d("# result from ae", "after setting tags" + String.valueOf(item.getTags()));
                             if (requestCode == ADD_ACTIVITY_CODE) {
                                 // Handle the result for adding
@@ -600,7 +605,7 @@ public class MainActivity extends AppCompatActivity
         Date itemDate = item.getDate();
         String itemMake = item.getMake();
         String itemModel = item.getModel();
-        int itemSerial = item.getSerialNumber();
+        BigInteger itemSerial = item.getSerialNumber();
         int itemValue = item.getEstValue();
         String itemComment = item.getComment();
         List itemPhotos = item.getPhotos();
@@ -869,7 +874,9 @@ public class MainActivity extends AppCompatActivity
                                     doc.getString("make"),
                                     doc.getString("model"),
                                     doc.getLong("estValue").intValue());
-                            item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                            String serial_string = doc.getString("serialNumber");
+                            item.setSerialNumber(new BigInteger(serial_string));
+//                            item.setSerialNumber(doc.getLong("serialNumber").intValue());
                             ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
                             ArrayList<Tag> realTags = makeTagList(tags);
                             item.setTags(realTags);
@@ -920,7 +927,9 @@ public class MainActivity extends AppCompatActivity
                                         doc.getString("make"),
                                         doc.getString("model"),
                                         doc.getLong("estValue").intValue());
-                                item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                String serial_string = doc.getString("serialNumber");
+                                item.setSerialNumber(new BigInteger(serial_string));
+//                                item.setSerialNumber(doc.getLong("serialNumber").intValue());
                                 ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
                                 ArrayList<Tag> realTags = makeTagList(tags);
                                 item.setTags(realTags);
@@ -966,7 +975,9 @@ public class MainActivity extends AppCompatActivity
                                             doc.getString("make"),
                                             doc.getString("model"),
                                             doc.getLong("estValue").intValue());
-                                    item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                    String serial_string = doc.getString("serialNumber");
+                                    item.setSerialNumber(new BigInteger(serial_string));
+//                                    item.setSerialNumber(doc.getLong("serialNumber").intValue());
                                     ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
                                     ArrayList<Tag> realTags = makeTagList(tags);
                                     item.setTags(realTags);
@@ -1029,7 +1040,9 @@ public class MainActivity extends AppCompatActivity
                                         doc.getString("make"),
                                         doc.getString("model"),
                                         doc.getLong("estValue").intValue());
-                                item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                                String serial_string = doc.getString("serialNumber");
+                                item.setSerialNumber(new BigInteger(serial_string));
+//                                item.setSerialNumber(doc.getLong("serialNumber").intValue());
                                 item.setItemRefID(UUID.fromString(doc.getId()));
                                 ArrayList<Tag> itemTags = makeTagList(docTags);
                                 item.setTags(itemTags);
@@ -1068,7 +1081,9 @@ public class MainActivity extends AppCompatActivity
                                 doc.getString("make"),
                                 doc.getString("model"),
                                 doc.getLong("estValue").intValue());
-                        item.setSerialNumber(doc.getLong("serialNumber").intValue());
+                        String serial_string = doc.getString("serialNumber");
+                        item.setSerialNumber(new BigInteger(serial_string));
+//                        item.setSerialNumber(doc.getLong("serialNumber").intValue());
                         item.setItemRefID(UUID.fromString(doc.getId()));
                         ArrayList<String> stringTags = (ArrayList<String>)doc.get("tags");
                         ArrayList<Tag> itemTags = makeTagList(stringTags);
