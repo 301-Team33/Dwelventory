@@ -909,11 +909,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * This method queries the database to filter based on make. Once retrieved from
-     * database,
-     * it updates dataList and notifies the adapter about changes.
+     * This method saves user input for filtering by item makes and calls a function to apply the filter.
      *
-     * @param makeInput This is the make types to filter by, specified by the user.
+     * @param makeInput
+     *          User input item makes to filter by
      */
     @Override
     public void onMakeFilterApplied(ArrayList<String> makeInput) {
@@ -922,13 +921,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * This method queries the database to find items added within the given date
-     * range. Once
-     * retrieved from database, it updates dataList and notifies the adapter about
-     * changes.
+     * This method saves user input for filtering by date and calls a function to apply the filter.
      *
-     * @param start earliest date that an items date can be
-     * @param end   latest date that an items date can be
+     * @param start
+     *          User input start date
+     * @param end
+     *          User input end date
      */
     @Override
     public void onDateFilterApplied(Date start, Date end) {
@@ -939,66 +937,23 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * This method queries the database to find items containing given keywords.
-     * Once
-     * retrieved from database, it updates dataList and notifies the adapter about
-     * changes.
+     * This method saves user input for filtering by description and calls a function to
+     * apply the filter.
      *
-     * @param keywords holds user input keywords to filter by
+     * @param keywords
+     *          User input item description to filter by
      */
     @Override
     public void onKeywordFilterApplied(ArrayList<String> keywords) {
         keyword_input_saved = keywords;
         applyActiveFilters();
-//        dataList.clear();
-//        itemAdapter.notifyDataSetChanged();
-//        setTotal(dataList);
-//        AtomicInteger pendingQueries = new AtomicInteger(keywords.size());
-//        estTotalCost = 0;
-//        for (String keyword : keywords) {
-//            itemsRef.whereEqualTo("description", keyword).get()
-//                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                            pendingQueries.decrementAndGet();
-//                            if (task.isSuccessful()) {
-//                                for (QueryDocumentSnapshot doc : task.getResult()) {
-//
-//                                    Item item = new Item(
-//                                            doc.getString("description"),
-//                                            doc.getDate("date"),
-//                                            doc.getString("make"),
-//                                            doc.getString("model"),
-//                                            doc.getLong("estValue").intValue());
-//                                    item.setSerialNumber(doc.getLong("serialNumber").intValue());
-//                                    ArrayList<String> tags = (ArrayList<String>) doc.get("tags");
-//                                    ArrayList<Tag> realTags = makeTagList(tags);
-//                                    item.setTags(realTags);
-//                                    item.setItemRefID(UUID.fromString(doc.getId()));
-//                                    dataList.add(item);
-//                                    estTotalCost += doc.getLong("estValue").intValue();
-//                                }
-//                            }
-//                            if (pendingQueries.get() == 0) {
-//                                // Now that all asynchronous queries are done, notify the adapter
-//                                itemAdapter.notifyDataSetChanged();
-//                                setTotal(dataList);
-//                            }
-//                        }
-//                    });
-//        }
-
     }
 
     /**
-     * This method queries the database to find items containing specified tags.
-     * Once
-     * retrieved from database, it updates dataList and notifies the adapter about
-     * changes.
-     *
-     * NOT FINISHED YET. NOT PART OF HALFWAY CHECKPOINT.
+     * This method saves user input for filtering by tags and calls a function to apply the filter.
      *
      * @param filterTags
+     *          User input tags to filter by
      */
     @Override
     public void onTagFilterApplied(ArrayList<Tag> filterTags) {
@@ -1009,8 +964,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * This function is run when the use clicks on the "Clear Filter" option. It
-     * retrieves all
-     * items from firebase and restores them in the data list to display on screen.
+     * retrieves all items from firebase and restores them in the data list to display on screen.
      */
     public void onClearFilterApplied() {
         estTotalCost = 0;
@@ -1021,8 +975,7 @@ public class MainActivity extends AppCompatActivity
         keyword_input_saved.clear();
         tag_input_saved.clear();
         itemAdapter.notifyDataSetChanged();
-        final CountDownLatch latch = new CountDownLatch(1);
-//        AtomicInteger pendingQueriesMake = new AtomicInteger(itemsRef.count());
+
         itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -1057,6 +1010,7 @@ public class MainActivity extends AppCompatActivity
         });
         itemAdapter.notifyDataSetChanged();
     }
+
     private ArrayList<Item> filterByMake(ArrayList<Item> items, ArrayList<String> makes) {
         ArrayList<Item> filteredItems = new ArrayList<>();
         for (Item item : items) {
@@ -1113,7 +1067,7 @@ public class MainActivity extends AppCompatActivity
         return filteredItems;
     }
 
-    public void applyActiveFilters() {
+    private void applyActiveFilters() {
         ArrayList<Item> filteredList = new ArrayList<>(dataList); // Start with the full list
 
         // Apply each filter only if it's active (not empty or null)
