@@ -65,8 +65,6 @@ public class SerialNumberScan extends AppCompatActivity {
         Scanned_Edit_txt = findViewById(R.id.scanned_edit_txt);
         Backbtn = findViewById(R.id.back_btn);
 
-
-
         Snapbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,58 +75,62 @@ public class SerialNumberScan extends AppCompatActivity {
         Scanbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-                int rotationdegree = 0;
-                InputImage image = InputImage.fromBitmap(imagebitmap,rotationdegree);
-                Task<Text> result =
-                        recognizer.process(image)
-                                .addOnSuccessListener(new OnSuccessListener<Text>() {
-                                    @Override
-                                    public void onSuccess(Text visionText) {
-                                        // Task completed successfully
-                                        // ...
-                                        StringBuilder recognizedText = new StringBuilder();
+                if (imagebitmap != null) {
+                    TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+                    int rotationdegree = 0;
+                    InputImage image = InputImage.fromBitmap(imagebitmap, rotationdegree);
+                    Task<Text> result =
+                            recognizer.process(image)
+                                    .addOnSuccessListener(new OnSuccessListener<Text>() {
+                                        @Override
+                                        public void onSuccess(Text visionText) {
+                                            // Task completed successfully
+                                            // ...
+                                            StringBuilder recognizedText = new StringBuilder();
 
-                                        // Process each block of text
-                                        List<Text.TextBlock> blocks = visionText.getTextBlocks();
-                                        for (Text.TextBlock block : blocks) {
-                                            List<Text.Line> lines = block.getLines();
+                                            // Process each block of text
+                                            List<Text.TextBlock> blocks = visionText.getTextBlocks();
+                                            for (Text.TextBlock block : blocks) {
+                                                List<Text.Line> lines = block.getLines();
 
-                                            // Process each line of text
-                                            for (Text.Line line : lines) {
-                                                List<Text.Element> elements = line.getElements();
+                                                // Process each line of text
+                                                for (Text.Line line : lines) {
+                                                    List<Text.Element> elements = line.getElements();
 
-                                                // Process each element of text (word/character)
-                                                for (Text.Element element : elements) {
-                                                    // Append recognized text to StringBuilder
-                                                    recognizedText.append(element.getText()).append(" ");
+                                                    // Process each element of text (word/character)
+                                                    for (Text.Element element : elements) {
+                                                        // Append recognized text to StringBuilder
+                                                        recognizedText.append(element.getText()).append(" ");
+                                                    }
+
+                                                    recognizedText.append("\n"); // Append new line for each line of text
                                                 }
-
-                                                recognizedText.append("\n"); // Append new line for each line of text
                                             }
+
+                                            // Now you have the complete recognized text
+                                            detected_text = recognizedText.toString();
+                                            // Use the recognized text as needed (e.g., set it to a TextView)
+                                            //Serial_no.setText(finalRecognizedText);
+                                            Toast.makeText(SerialNumberScan.this, "Scanned!", Toast.LENGTH_SHORT).show();
+                                            Scanned_Edit_txt.setText(detected_text);
+
+
                                         }
+                                    })
+                                    .addOnFailureListener(
+                                            new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    // Task failed with an exception
+                                                    // ...
+                                                    Log.d("Failed Scan", "Failed Scan: " + e.getMessage());
+                                                    Toast.makeText(SerialNumberScan.this, "Failed Scan: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
 
-                                        // Now you have the complete recognized text
-                                        detected_text = recognizedText.toString();
-                                        // Use the recognized text as needed (e.g., set it to a TextView)
-                                        //Serial_no.setText(finalRecognizedText);
-                                        Toast.makeText(SerialNumberScan.this, "Scanned!", Toast.LENGTH_SHORT).show();
-                                        Scanned_Edit_txt.setText(detected_text);
-
-
-                                    }
-                                })
-                                .addOnFailureListener(
-                                        new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                // Task failed with an exception
-                                                // ...
-                                                Log.d("Failed Scan","Failed Scan: "+e.getMessage());
-                                                Toast.makeText(SerialNumberScan.this, "Failed Scan: "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-
+                }else{
+                    Toast.makeText(SerialNumberScan.this, "Snap a picture first!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         

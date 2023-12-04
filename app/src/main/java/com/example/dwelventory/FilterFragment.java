@@ -69,6 +69,8 @@ public class FilterFragment extends DialogFragment {
         void onTagFilterApplied(ArrayList<Tag> tags);
         void onClearFilterApplied();
     }
+
+
     public static FilterFragment newInstance(String filterOption,String userId) {
         FilterFragment fragment = new FilterFragment();
         Bundle args = new Bundle();
@@ -78,6 +80,14 @@ public class FilterFragment extends DialogFragment {
         return fragment;
     }
 
+    /**
+     * This method will check which filter option was used and will pop up its dialog.
+     * Fetches and stores user input for that filter and calls the appropriate function for it.
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -297,7 +307,9 @@ public class FilterFragment extends DialogFragment {
         }
         else if("Clear Filter".equals(filterOption)){
             listener.onClearFilterApplied();
-            return builder.create();
+            Dialog dialog = new Dialog(getContext());
+            dialog.setOnShowListener(dialogInterface -> dismiss());
+            return dialog;
         }
         else {
             builder.setTitle("Error")
@@ -306,6 +318,13 @@ public class FilterFragment extends DialogFragment {
             return builder.create();
         }
     }
+
+    /**
+     * Sets up Date Picker Dialog for filtering by date
+     *
+     * @param dateTextView
+     *          Reference to text view user clicks to input date
+     */
     private void showDatePickerDialog(TextView dateTextView) {
         final View dialogView = View.inflate(getActivity(), R.layout.date_picker, null);
         final DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.datePicker);
@@ -323,6 +342,11 @@ public class FilterFragment extends DialogFragment {
                 .show();
     }
 
+    /**
+     * Update
+     * @param editText
+     * @param myCalendar
+     */
     private void updateLabel(TextView editText, Calendar myCalendar) {
         String myFormat = "MM-dd-yyyy"; // Desired date format
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
