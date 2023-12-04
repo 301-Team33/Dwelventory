@@ -31,6 +31,7 @@ android {
 }
 
 dependencies {
+
     implementation("com.google.firebase:firebase-auth:22.3.0")
     implementation("com.google.firebase:firebase-firestore:24.9.1")
     implementation("com.google.firebase:firebase-storage:20.3.0")
@@ -55,6 +56,7 @@ dependencies {
     androidTestImplementation("org.mockito:mockito-android:5.7.0")
     androidTestImplementation("androidx.test:runner:1.4.0")
     androidTestImplementation("androidx.test:rules:1.4.0")
+    androidTestImplementation ("androidx.test.espresso:espresso-contrib:3.4.0")
     compileOnly(files("${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"))
     implementation("androidx.camera:camera-core:1.3.0")
     implementation("androidx.camera:camera-camera2:1.0.0-alpha26")

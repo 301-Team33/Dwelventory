@@ -311,6 +311,7 @@ public class MainActivity extends AppCompatActivity
                 deletebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
                         for (int j = 0; j < itemAdapter.getCount(); j++) {
                             View view_temp = finalItemList.getChildAt(j);
                             if (view_temp != null) {

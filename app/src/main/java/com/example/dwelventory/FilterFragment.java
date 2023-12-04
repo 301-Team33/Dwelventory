@@ -297,7 +297,9 @@ public class FilterFragment extends DialogFragment {
         }
         else if("Clear Filter".equals(filterOption)){
             listener.onClearFilterApplied();
-            return builder.create();
+            Dialog dialog = new Dialog(getContext());
+            dialog.setOnShowListener(dialogInterface -> dismiss());
+            return dialog;
         }
         else {
             builder.setTitle("Error")
