@@ -32,19 +32,6 @@
         android:backgroundTint="@color/darkBrown"
         android:layout_marginHorizontal="16dp"/>
 
-    <ImageButton
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/barcode_scan_btn"
-        android:src="@drawable/camera_svgrepo_com"
-        app:layout_constraintTop_toBottomOf="@+id/top_border"
-        app:layout_constraintLeft_toRightOf="@id/confirm_button"
-        android:layout_marginLeft="75dp"
-        android:layout_marginTop="50dp"
-        android:backgroundTint="@color/darkBrown"
-        android:contentDescription="ScanSerialNumber"
-        android:visibility="visible"/>
-
     <EditText
         android:id="@+id/date_button"
         android:layout_width="match_parent"
@@ -128,7 +115,7 @@
         android:layout_marginTop="15dp"
         android:backgroundTint="@color/darkBrown"
         android:contentDescription="ScanSerialNumber"
-        android:visibility="visible"/>
+        android:visibility="gone"/>
 
     <EditText
         android:id="@+id/estimated_val_button"
