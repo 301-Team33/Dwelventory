@@ -101,7 +101,7 @@ public class ItemList extends ArrayAdapter<Item> {
                             item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
-                                    Glide.with(context).load(uri).into(image);
+                                    Glide.with(context.getApplicationContext()).load(uri).into(image);
                                 }
                             });
                         }
