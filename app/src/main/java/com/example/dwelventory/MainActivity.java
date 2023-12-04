@@ -293,35 +293,59 @@ public class MainActivity extends AppCompatActivity
                             View view_temp = finalItemList.getChildAt(j);
                             if (view_temp != null) {
                                 CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                                checkBox.setChecked(false);
                                 checkBox.setVisibility(View.GONE);
+                                getSelectedCount(selected_count);
                             }
                         }
+                        select_All.setChecked(false);
                     }
                 });
 
                 deletebtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        for (int j = 0; j < itemAdapter.getCount(); j++) {
+                        Log.d("delete all", "before loop: "+String.valueOf(itemAdapter.getCount()));
+                        int total = itemAdapter.getCount() + 1;
+                        for (int j = 0; j < total ; j++) {
                             View view_temp = finalItemList.getChildAt(j);
                             if (view_temp != null) {
                                 CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                                // checkBox.setVisibility(View.GONE);
-                                if (checkBox.isChecked()) {
+                                if ( select_All.isChecked() ){   // if select all is selected delete all the children at 0
                                     // get item and its id
-                                    Item deleteItem = dataList.get(j);
+                                    Item deleteItem = dataList.get(0);
+                                    Log.d("delete all", "going to delete: "+deleteItem.getDescription());
                                     UUID refId = deleteItem.getItemRefID();
                                     // remove from list
-                                    finalItemAdapter.remove(dataList.get(j));
-                                    finalItemAdapter.notifyDataSetChanged();
+                                    finalItemAdapter.remove(dataList.get(0));
+//                                    finalItemAdapter.notifyDataSetChanged();
                                     checkBox.setChecked(false);
                                     // remove from firebase
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     String path = "/users/" + user.getUid() + "/items/" + refId.toString();
                                     DocumentReference itemDocRef = db.document(path);
                                     itemDocRef.delete();
+                                    getSelectedCount(selected_count);
+                                }
+                                else if (checkBox.isChecked()) {
+                                    // get item and its id
+                                    Item deleteItem = dataList.get(j);
+                                    Log.d("delete all", "going to delete: "+deleteItem.getDescription());
+                                    UUID refId = deleteItem.getItemRefID();
+                                    // remove from list
+                                    finalItemAdapter.remove(dataList.get(j));
+//                                    finalItemAdapter.notifyDataSetChanged();
+                                    checkBox.setChecked(false);
+                                    // remove from firebase
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    String path = "/users/" + user.getUid() + "/items/" + refId.toString();
+                                    DocumentReference itemDocRef = db.document(path);
+                                    itemDocRef.delete();
+                                    getSelectedCount(selected_count);
+
                                 }
                             }
+
                         }
 
                         finalItemAdapter.notifyDataSetChanged();
