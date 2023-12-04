@@ -54,6 +54,9 @@ public class AddEditActivity extends AppCompatActivity
     MaterialButton tagDisplay1Button;
     MaterialButton tagDisplay2Button;
     MaterialButton tagDisplay3Button;
+    private ImageButton serial_no_cam;
+    private ImageButton barcode_scan;
+
     ImageButton backButton;
     // Required inputs
     private String name;
@@ -106,6 +109,8 @@ public class AddEditActivity extends AppCompatActivity
         commentButton = findViewById(R.id.comment_button);
         photoButton = findViewById(R.id.photo_button);
         confirmButton = findViewById(R.id.confirm_button);
+        serial_no_cam = findViewById(R.id.serial_no_cam);
+        barcode_scan = findViewById(R.id.barcode_scan_btn);
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -129,7 +134,6 @@ public class AddEditActivity extends AppCompatActivity
             public void onClick(View view) {
                 ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
                 serial_no_cam.setVisibility(View.VISIBLE);
-
                 serial_no_cam.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -158,6 +162,26 @@ public class AddEditActivity extends AppCompatActivity
                     }
 
                 });
+
+        if (mode.equals("add")) {
+
+            barcode_scan.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent barcode_intent = new Intent(AddEditActivity.this, Scanbarcode.class);
+                    barcode_intent.putExtra("name", nameButton.getText());
+                    barcode_intent.putExtra("date", dateButton.getText());
+                    Log.d("Date Test", date.toString());
+                    barcode_intent.putExtra("mode", mode);
+                    barcode_intent.putExtra("position", position);
+                    barcode_intent.putExtra("requestCode", requestCode);
+                    // scan_intent.putExtra("previous name", prevName);
+                    barcode_intent.putExtra("itemRefID", itemRefID);
+                    barcode_intent.putExtra("tags", tagsToApply);
+                    startActivity(barcode_intent);
+                }
+            });
+        }
 
         if (mode.equals("edit")) {
             item = (Item) intent.getParcelableExtra("item");
@@ -214,6 +238,22 @@ public class AddEditActivity extends AppCompatActivity
             commentButton.setText(item.getComment());
             Log.d("please king julien (in ae)", String.valueOf(item.getSerialNumber()));
 
+            barcode_scan.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent barcode_intent = new Intent(AddEditActivity.this, Scanbarcode.class);
+                    barcode_intent.putExtra("name", nameButton.getText());
+                    barcode_intent.putExtra("date", dateButton.getText());
+                    Log.d("Date Test", date.toString());
+                    barcode_intent.putExtra("mode", mode);
+                    barcode_intent.putExtra("position", position);
+                    barcode_intent.putExtra("requestCode", requestCode);
+                    // scan_intent.putExtra("previous name", prevName);
+                    barcode_intent.putExtra("itemRefID", itemRefID);
+                    barcode_intent.putExtra("tags", tagsToApply);
+                    startActivity(barcode_intent);
+                }
+            });
         }
 
         // END IF EDIT //
@@ -263,6 +303,7 @@ public class AddEditActivity extends AppCompatActivity
                 if (mode.equals("edit")) {
                     unedittedPhotos = item.getPhotos();
                 }
+
                 Item item = new Item(name, date, make, model, estValue);
                 if (tagsToApply == null) {
                     tagsToApply = new ArrayList<>();
