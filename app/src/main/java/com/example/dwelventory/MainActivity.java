@@ -356,10 +356,10 @@ public class MainActivity extends AppCompatActivity
                             View view_temp = finalItemList.getChildAt(j);
                             if (view_temp != null) {
                                 CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                                if ( select_All.isChecked() ){   // if select all is selected delete all the children at 0
+                                if (select_All.isChecked()) {   // if select all is selected delete all the children at 0
                                     // get item and its id
                                     Item deleteItem = dataList.get(0);
-                                    Log.d("delete all", "going to delete: "+deleteItem.getDescription());
+                                    Log.d("delete all", "going to delete: " + deleteItem.getDescription());
                                     UUID refId = deleteItem.getItemRefID();
                                     // remove from list
                                     finalItemAdapter.remove(dataList.get(0));
@@ -371,11 +371,10 @@ public class MainActivity extends AppCompatActivity
                                     DocumentReference itemDocRef = db.document(path);
                                     itemDocRef.delete();
                                     getSelectedCount(selected_count);
-                                }
-                                else if (checkBox.isChecked()) {
+                                } else if (checkBox.isChecked()) {
                                     // get item and its id
                                     Item deleteItem = dataList.get(j);
-                                    Log.d("delete all", "going to delete: "+deleteItem.getDescription());
+                                    Log.d("delete all", "going to delete: " + deleteItem.getDescription());
                                     UUID refId = deleteItem.getItemRefID();
                                     // remove from list
                                     finalItemAdapter.remove(dataList.get(j));
@@ -393,7 +392,7 @@ public class MainActivity extends AppCompatActivity
 
                             clearCheckboxes();
 
-
+                        }
                         select_All.setChecked(false);
                         finalItemAdapter.notifyDataSetChanged();
                     }
