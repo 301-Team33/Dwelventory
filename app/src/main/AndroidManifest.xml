@@ -28,9 +28,6 @@
             android:name=".SerialNumberScan"
             android:exported="false" />
         <activity
-            android:name=".CameraActivity"
-            android:exported="false"/>
-        <activity
             android:name=".AddEditActivity"
             android:exported="false" />
         <activity
