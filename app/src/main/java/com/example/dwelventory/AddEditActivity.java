@@ -8,6 +8,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
@@ -64,6 +66,11 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
     private ArrayList<Tag> tagsToApply;
 //    private String comment;
     private String prevName;
+    private ActivityResultLauncher<Intent> scanActivityResultLauncher;
+    private ActivityResultLauncher<Intent> barcodeActivityResultLauncher;
+
+    private int EXIST_CODE = 33;
+    private int DOES_NOT_EXIST_CODE = 363;
     /**
      * This sets up the activity. Either blank if the user is adding an item
      * or with the item's information loaded into the text boxes if the user
@@ -113,6 +120,24 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         } catch (Exception e) {
             Log.d("D", "Serial Number unable to be set when returning from scan activity.");
         }
+        barcode_scan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent barcode_intent = new Intent(AddEditActivity.this, Scanbarcode.class);
+                barcodeActivityResultLauncher.launch(barcode_intent); // <-- MAGGIE
+            }
+        });
+        barcodeActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    Log.d("AE barcodeTag EDIT MODE", "activity result code: " + result.getResultCode());
+                    if (result.getResultCode() == 25) {
+                        Intent data = result.getData();
+//                        String name = data.getStringExtra("name");
+                        String name = "KING JULIEN";
+                        nameButton.setText(name);
+                    }
+                });
+
 
         if (mode.equals("add")) {
 
@@ -133,29 +158,6 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                     startActivity(scan_intent);
                 }
             });
-
-            barcode_scan.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent barcode_intent = new Intent(AddEditActivity.this, Scanbarcode.class);
-                    barcode_intent.putExtra("name", nameButton.getText());
-                    barcode_intent.putExtra("date", dateButton.getText());
-                    Log.d("Date Test", date.toString());
-                    barcode_intent.putExtra("mode", mode);
-                    barcode_intent.putExtra("position", position);
-                    barcode_intent.putExtra("requestCode", requestCode);
-                    //scan_intent.putExtra("previous name", prevName);
-                    barcode_intent.putExtra("itemRefID", itemRefID);
-                    barcode_intent.putExtra("tags", tagsToApply);
-                    startActivity(barcode_intent);
-                }
-            });
-
-
-            nameButton.setText(intent.getStringExtra("name"));
-            makeButton.setText(intent.getStringExtra("make"));
-
-
         }
 
         if (mode.equals("edit")) {
@@ -236,22 +238,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                 }
             });
 
-            barcode_scan.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent barcode_intent = new Intent(AddEditActivity.this, Scanbarcode.class);
-                    barcode_intent.putExtra("name", nameButton.getText());
-                    barcode_intent.putExtra("date", dateButton.getText());
-                    Log.d("Date Test", date.toString());
-                    barcode_intent.putExtra("mode", mode);
-                    barcode_intent.putExtra("position", position);
-                    barcode_intent.putExtra("requestCode", requestCode);
-                    //scan_intent.putExtra("previous name", prevName);
-                    barcode_intent.putExtra("itemRefID", itemRefID);
-                    barcode_intent.putExtra("tags", tagsToApply);
-                    startActivity(barcode_intent);
-                }
-            });
+
         }
 
         // END IF EDIT //
