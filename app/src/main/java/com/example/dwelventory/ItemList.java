@@ -112,7 +112,6 @@ public class ItemList extends ArrayAdapter<Item> {
 
         // Get the checkbox and set its state based on the item's selection status
         CheckBox checkBox = view.findViewById(R.id.checkbox);
-//        checkBox.setChecked(item.isSelected());
 
         return view;
     }

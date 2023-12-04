@@ -59,10 +59,7 @@ public class TagListEditor {
     public ArrayList<Tag> checkMultipleItemTagAddition(ArrayList<Tag> currentTags, ArrayList<Tag> tagsToAdd){
         // First check all tags. any tags that Are currently not in current tags need to be
         // added from tagsToAdd
-//        if ((currentTags==null) || (currentTags.size()==0)){
-//            currentTags = new ArrayList<>();
-//            currentTags = tagsToAdd;
-//        }
+//
         ArrayList<Tag> uniqueAdditionTags = new ArrayList<>();
         HashSet<String> tagSet = new HashSet<>();
         for (Tag t : currentTags) {
