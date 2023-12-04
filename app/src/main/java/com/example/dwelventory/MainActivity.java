@@ -92,6 +92,8 @@ public class MainActivity extends AppCompatActivity
     private int ADD_ACTIVITY_CODE = 8;
     private int EDIT_ACTIVITY_CODE = 18;
     private int ADD_EDIT_CODE_OK = 818;
+    private int EXIST_CODE = 33;
+    private int DOES_NOT_EXIST_CODE = 363;
     private Spinner sortSpinner;
 //    private FloatingActionButton addButton;
     private ImageButton addButton;
@@ -201,20 +203,6 @@ public class MainActivity extends AppCompatActivity
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
-        int serial = 12731;
-        String comment = "so cute";
-        List photos = null;
-        Item item1 = new Item("Billy", date1, "Pygmy Goat", "Caramel w/ Black Markings", serial, 200, comment, photos);
-        Item item2 = new Item("Jinora", date2, "Pygmy Goat", "Caramel w/ Black Markings", 200);
-        ArrayList<Tag> testtag = new ArrayList<>();
-        ArrayList<Tag> practiceTags = new ArrayList<>();
-        practiceTags.add(new Tag("Tag1"));
-        practiceTags.add(new Tag("Tag2"));
-        item1.setTags(practiceTags);
-        item2.setTags(testtag);
-        dataList.add(item1);
-        dataList.add(item2);
 
         itemAdapter = new ItemList(this, dataList);
         ListView itemList = findViewById(R.id.item_list);
@@ -505,6 +493,15 @@ public class MainActivity extends AppCompatActivity
                             // Get and set date bc its weird
                             Date date = (Date) data.getSerializableExtra("date");
                             item.setDate(date);
+                            // Get and set optional parameters
+                            int serialCode = data.getIntExtra("serialCode", -1);
+                            if (serialCode == EXIST_CODE){
+                                int serial = Integer.parseInt(data.getStringExtra("serialNo"));
+                                item.setSerialNumber(serial);
+                            } else if (serialCode == DOES_NOT_EXIST_CODE){
+                                Log.d("please king julien", "no serial code attached to item");
+                                Log.d("please king julien", String.valueOf(item.getSerialNumber()));
+                            }
                             // Request code for handling
                             int requestCode = data.getIntExtra("requestCode", -1);
                             Log.d("resultTag", "request code: " + requestCode);
@@ -542,6 +539,7 @@ public class MainActivity extends AppCompatActivity
                                 Log.d("# item in handler", "position:" + position + " " + item.getItemRefID());
                                 Log.d("# handling edit result", "after setting tags" + String.valueOf(item.getTags()));
                                 // set item in firebase
+                                Log.d("please king julien", String.valueOf(item.getSerialNumber()));
                                 itemsRef.document(String.valueOf(item.getItemRefID())).set(item.toMap());
                                 // set STRING tags to items
 
@@ -606,6 +604,7 @@ public class MainActivity extends AppCompatActivity
         List itemPhotos = item.getPhotos();
         Log.d("mainTag", "Date is" + itemDate);
         Log.d("mainTag", "Make is " + itemMake);
+//        Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemValue);
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment,
                 itemPhotos);
         return copyItem;

@@ -65,6 +65,8 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
 //    private String comment;
     private String prevName;
     private ActivityResultLauncher<Intent> scanActivityResultLauncher;
+    private int EXIST_CODE = 33;
+    private int DOES_NOT_EXIST_CODE = 363;
 
     /**
      * This sets up the activity. Either blank if the user is adding an item
@@ -112,54 +114,40 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
         }catch(Exception e){
             Log.d("D","Serial Number unable to be set when returning from scan activity.");
         }
+        serialNumButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
+                serial_no_cam.setVisibility(View.VISIBLE);
 
-        if(mode.equals("add")){
-            serialNumButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
-                    serial_no_cam.setVisibility(View.VISIBLE);
-
-                    serial_no_cam.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent scan_intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
-                            scan_intent.putExtra("name",nameButton.getText());
-                            scan_intent.putExtra("date",dateButton.getText());
-                            Log.d("Date Test",date.toString());
-                            scan_intent.putExtra("mode", mode);
-                            scan_intent.putExtra("position", position );
-                            scan_intent.putExtra("requestCode", requestCode);
-                            //scan_intent.putExtra("previous name", prevName);
-                            scan_intent.putExtra("itemRefID", itemRefID);
-                            scan_intent.putExtra("tags",tagsToApply);
-                            scanActivityResultLauncher.launch(scan_intent); // <--- MAGGIE
-
-//                            startActivity(scan_intent);
+                serial_no_cam.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent scan_intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
+                        if (mode.equals("edit")){
+                            scan_intent.putExtra("mode", "edit");
+                            scan_intent.putExtra("serialNo", serialNumButton.getText().toString());
                         }
-                    });
-                }
-            });
+                        scanActivityResultLauncher.launch(scan_intent); // <--- MAGGIE
+                    }
+                });
+            }
+        });
 
-            scanActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                    result -> {
-                        Log.d("AE ScanTag EDIT MODE", "scan activity opened");
-                        Log.d("AE ScanTag EDIT MODE", "activity result code: "+ result.getResultCode());
-                        if (result.getResultCode() == 17){
-                            Log.d("AE ScanTag EDIT MODE", "result code from scan is 17");
+        scanActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    Log.d("AE ScanTag EDIT MODE", "scan activity opened");
+                    Log.d("AE ScanTag EDIT MODE", "activity result code: "+ result.getResultCode());
+                    if (result.getResultCode() == 17){
+                        Log.d("AE ScanTag EDIT MODE", "result code from scan is 17");
 
-                            Intent data = result.getData();
-                            String serial = data.getStringExtra("serialNo");
-//                            String serial = intent.getStringExtra("serialNo");
-//                            Log.d("AE ScanTag EDIT MODE", "tried to set the following text" + serial);
-                            serialNumButton.setText(serial);
-                            Log.d("AE ScanTag EDIT MODE", "tried to set the following text" + serial);
-                        }
+                        Intent data = result.getData();
+                        String serial = data.getStringExtra("serialNo");
+                        serialNumButton.setText(serial);
+                        Log.d("AE ScanTag EDIT MODE", "tried to set the following text" + serial);
+                    }
 
-                    });
-
-
-        }
+                });
 
         if (mode.equals("edit")){
             item = (Item) intent.getParcelableExtra("item");
@@ -212,50 +200,10 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
             serialNumButton.setText(String.valueOf(item.getSerialNumber()));
             estValButton.setText(String.valueOf(item.getEstValue()));
             commentButton.setText(item.getComment());
+            Log.d("please king julien (in ae)", String.valueOf(item.getSerialNumber()));
 
-            serialNumButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ImageButton serial_no_cam = findViewById(R.id.serial_no_cam);
-                    serial_no_cam.setVisibility(View.VISIBLE);
-
-                    serial_no_cam.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent scan_intent  = new Intent(AddEditActivity.this, SerialNumberScan.class);
-                            scan_intent.putExtra("item",item);
-                            scan_intent.putExtra("date",date);
-                            Log.d("Date Test",date.toString());
-                            scan_intent.putExtra("mode", mode);
-                            scan_intent.putExtra("position", position );
-                            scan_intent.putExtra("requestCode", requestCode);
-                            scan_intent.putExtra("previous name", prevName);
-                            scan_intent.putExtra("itemRefID", itemRefID);
-                            scan_intent.putExtra("tags",tagsToApply);
-                            scanActivityResultLauncher.launch(scan_intent); // <--- MAGGIE
-
-//                            startActivity(scan_intent);
-                        }
-                    });
-                }
-            });
-            scanActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                    result -> {
-                        Log.d("AE ScanTag EDIT MODE", "scan activity opened");
-                        Log.d("AE ScanTag EDIT MODE", "activity result code: "+ result.getResultCode());
-                        if (result.getResultCode() == 17){
-                            Log.d("AE ScanTag EDIT MODE", "result code from scan is 17");
-
-                            Intent data = result.getData();
-                            String serial = data.getStringExtra("serialNo");
-//                            String serial = intent.getStringExtra("serialNo");
-//                            Log.d("AE ScanTag EDIT MODE", "tried to set the following text" + serial);
-                            serialNumButton.setText(serial);
-                            Log.d("AE ScanTag EDIT MODE", "tried to set the following text" + serial);
-                        }
-
-                    });
         }
+
 
         editTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -306,13 +254,7 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                     tagsToApply = new ArrayList<>();
                 };
                 item.setTags(tagsToApply);
-                if (!serialNumButton.getText().toString().isEmpty()){
-                    // if there is a serial number
-                    item.setSerialNumber(serial);
-                }
-                if (!comment.isEmpty()){
-                    item.setComment(comment);
-                }
+
 
                 // put it in intent
                 Intent updatedIntent = new Intent();
@@ -320,6 +262,21 @@ public class AddEditActivity extends AppCompatActivity implements TagFragment.On
                   ArrayList<Tag>  emptyTagSet = new ArrayList<>();
                   item.setTags(emptyTagSet);
                 }
+                String serial_as_string = serialNumButton.getText().toString();
+                if (!serial_as_string.isEmpty()){
+                    // if there is a serial number
+                    updatedIntent.putExtra("serialNo", serial_as_string);
+                    updatedIntent.putExtra("serialCode", EXIST_CODE);
+//                    item.setSerialNumber(serial);
+                } else{
+                    updatedIntent.putExtra("serialCode", DOES_NOT_EXIST_CODE);
+                }
+                if (!comment.isEmpty()){
+                    item.setComment(comment);
+                }
+
+
+
                 // go back to main activity
                 updatedIntent.putParcelableArrayListExtra("tags",tagsToApply);
                 Log.d("# tag TAg hitting confirm", String.valueOf(tagsToApply));

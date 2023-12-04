@@ -55,6 +55,8 @@ public class SerialNumberScan extends AppCompatActivity {
         Scanned_Edit_txt = findViewById(R.id.scanned_edit_txt);
         Backbtn = findViewById(R.id.back_btn);
 
+
+
         Snapbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,6 +131,11 @@ public class SerialNumberScan extends AppCompatActivity {
                 if (checkIntConvertible(final_serial_no)){
                     Serial_no.setText(final_serial_no);
                     Toast.makeText(SerialNumberScan.this, "All numerical values detected from the text has been used to set!", Toast.LENGTH_LONG).show();
+                    Intent intent_new = new Intent(SerialNumberScan.this,AddEditActivity.class);
+                    String serial_as_string = Serial_no.getText().toString();
+                    intent_new.putExtra("serialNo", serial_as_string);
+                    setResult(17, intent_new);
+                    finish();
                 }
             }
         });
@@ -136,40 +143,11 @@ public class SerialNumberScan extends AppCompatActivity {
         Backbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent_prev = getIntent();
                 Intent intent_new = new Intent(SerialNumberScan.this,AddEditActivity.class);
-
-                if(intent_prev.getStringExtra("mode").equals("edit")){
-                    Item item = intent_prev.getParcelableExtra("item");
-                    String serial_as_string = Serial_no.getText().toString();
-                    item.setSerialNumber(Integer.parseInt(serial_as_string));
-
-                    Date date = (Date) intent_prev.getSerializableExtra("date");
-                    Log.d("Date test",date.toString());
-                    String mode = intent_prev.getStringExtra("mode");
-                    int position = intent_prev.getIntExtra("position",-1);
-                    int request_code = intent_prev.getIntExtra("requestCode",-1);
-                    String itemRefID = intent_prev.getStringExtra("itemRefID");
-                    ArrayList<Tag> tagstoApply = intent_prev.getParcelableArrayListExtra("tags");
-                    String prev_name = intent_prev.getStringExtra("previous name");
-
-                    intent_new.putExtra("item",item);
-                    intent_new.putExtra("date",date);
-                    intent_new.putExtra("mode",mode);
-                    intent_new.putExtra("position",position);
-                    intent_new.putExtra("requestCode",request_code);
-                    intent_new.putExtra("itemRefID",itemRefID);
-                    //intent_new.putExtra("tags",tagstoApply);
-                    intent_new.putExtra("previous name",prev_name);
-                    intent_new.putExtra("serialNo", serial_as_string);
-
-                    setResult(17, intent_new);
-                    finish();
-//                    startActivity(intent_new);
-
-                }else if(intent_prev.getStringExtra("mode").equals("add")){
-                    //To be completed
-                }
+                String serial_as_string = Serial_no.getText().toString();
+                intent_new.putExtra("serialNo", serial_as_string);
+                setResult(17, intent_new);
+                finish();
             }
         });
 
