@@ -246,19 +246,19 @@ public class MainActivity extends AppCompatActivity
                 return count;
             }
 
-            public void clearCheckboxes(){
-                for (int j = 0; j < itemAdapter.getCount(); j++) {
-                    View view_temp = finalItemList.getChildAt(j);
-                    if (view_temp != null) {
-                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                        if (checkBox.isChecked()) {
-                            checkBox.setChecked(false);
-                        }
-                    }
-                }
-                CheckBox select_All = findViewById(R.id.selectAll_checkbox);
-                select_All.setChecked(false);
-            }
+//            public void clearCheckboxes(){
+//                for (int j = 0; j < itemAdapter.getCount(); j++) {
+//                    View view_temp = finalItemList.getChildAt(j);
+//                    if (view_temp != null) {
+//                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+//                        if (checkBox.isChecked()) {
+//                            checkBox.setChecked(false);
+//                        }
+//                    }
+//                }
+//                CheckBox select_All = findViewById(R.id.selectAll_checkbox);
+//                select_All.setChecked(false);
+//            }
 
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -395,7 +395,7 @@ public class MainActivity extends AppCompatActivity
                         }
 
 
-                        }
+
                         select_All.setChecked(false);
                         finalItemAdapter.notifyDataSetChanged();
                     }
@@ -452,7 +452,7 @@ public class MainActivity extends AppCompatActivity
         // final FloatingActionButton addButton = findViewById(R.id.add_item_button);
         final ImageButton addButton = findViewById(R.id.add_item_button);
 
-        // *** ONE FILTER AT A TIME FOR NOW ***
+
         Spinner filterSpinner = findViewById(R.id.filter_spinner);
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
                 this,
@@ -464,6 +464,19 @@ public class MainActivity extends AppCompatActivity
         filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                for(int i = 0 ; i < finalItemList.getCount(); i++){
+                    if(finalItemList.getChildAt(0) != null){
+                        View view2 = finalItemList.getChildAt(i);
+                        CheckBox temp_checkbox = view2.findViewById(R.id.checkbox);
+                        temp_checkbox.setVisibility(View.INVISIBLE);
+                    }
+                }
+                RelativeLayout rl = findViewById(R.id.selectMultipleitems);
+                rl.setVisibility(View.GONE);
+                appTitle.setVisibility(View.VISIBLE);
+                addButton.setVisibility(View.VISIBLE);
+
+
                 if (position > 0 && !(initialSpinnerCheck)) {
                     String filter = parent.getItemAtPosition(position).toString();
                     FilterFragment filterFrag = FilterFragment.newInstance(filter, mAuth.getUid());
@@ -989,6 +1002,9 @@ public class MainActivity extends AppCompatActivity
      * retrieves all items from firebase and restores them in the data list to display on screen.
      */
     public void onClearFilterApplied() {
+        View view = finalItemList.getChildAt(0);
+        CheckBox temp_checkbox = view.findViewById(R.id.checkbox);
+        temp_checkbox.setVisibility(View.INVISIBLE);
         estTotalCost = 0;
         dataList.clear();
         make_input_saved.clear();
@@ -1023,6 +1039,7 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void run() {
                             setTotal(dataList);
+                            clearCheckboxes();
                             itemAdapter.notifyDataSetChanged();
                         }
                     });
@@ -1030,9 +1047,17 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-        itemAdapter.notifyDataSetChanged();
+//        itemAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Filters the datalist depending on the users make filtering input
+     * @param items
+     *          list of current items in data list
+     * @param makes
+     *          List of user input for filtering by make
+     * @return
+     */
     private ArrayList<Item> filterByMake(ArrayList<Item> items, ArrayList<String> makes) {
         ArrayList<Item> filteredItems = new ArrayList<>();
         for (Item item : items) {
@@ -1043,6 +1068,16 @@ public class MainActivity extends AppCompatActivity
         return filteredItems;
     }
 
+    /**
+     * Filters the datalist depending on the users date filtering input
+     * @param items
+     *          list of current items in data list
+     * @param start
+     *          User input for start date
+     * @param end
+     *          User input for end date
+     * @return
+     */
     private ArrayList<Item> filterByDate(ArrayList<Item> items, Date start, Date end) {
         ArrayList<Item> filteredItems = new ArrayList<>();
         for (Item item : items) {
@@ -1054,6 +1089,14 @@ public class MainActivity extends AppCompatActivity
         return filteredItems;
     }
 
+    /**
+     * Filters the datalist depending on the users item description filtering input
+     * @param items
+     *          list of current items in data list
+     * @param keywords
+     *          List of user input for filtering by description
+     * @return
+     */
     private ArrayList<Item> filterByKeyword(ArrayList<Item> items, ArrayList<String> keywords) {
         ArrayList<Item> filteredItems = new ArrayList<>();
         for (Item item : items) {
@@ -1064,6 +1107,14 @@ public class MainActivity extends AppCompatActivity
         return filteredItems;
     }
 
+    /**
+     * Filters the datalist depending on the users tags filtering input
+     * @param items
+     *          list of current items in data list
+     * @param tags
+     *          List of user input for filtering by tags
+     * @return
+     */
     private ArrayList<Item> filterByTags(ArrayList<Item> items, ArrayList<Tag> tags) {
         ArrayList<Item> filteredItems = new ArrayList<>();
 
@@ -1088,9 +1139,26 @@ public class MainActivity extends AppCompatActivity
         }
         return filteredItems;
     }
+    public void clearCheckboxes(){
+        for (int j = 0; j < itemAdapter.getCount(); j++) {
+            View view_temp = finalItemList.getChildAt(j);
+            if (view_temp != null) {
+                CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                if (checkBox.isChecked()) {
+                    checkBox.setChecked(false);
+                }
+            }
+        }
+        CheckBox select_All = findViewById(R.id.selectAll_checkbox);
+        select_All.setChecked(false);
+    }
 
+    /**
+     * Applies all current filters to the dataList and updates it.
+     */
     private void applyActiveFilters() {
         ArrayList<Item> filteredList = new ArrayList<>(dataList); // Start with the full list
+        clearCheckboxes();
 
         // Apply each filter only if it's active (not empty or null)
         if (!make_input_saved.isEmpty()) {
@@ -1109,6 +1177,7 @@ public class MainActivity extends AppCompatActivity
         // Update the adapter with the filtered list
         itemAdapter.clear();
         itemAdapter.addAll(filteredList);
+
         itemAdapter.notifyDataSetChanged();
         setTotal(filteredList); // Update total cost based on the filtered list
 
