@@ -270,6 +270,10 @@ public class MainActivity extends AppCompatActivity
                 CheckBox select_All = findViewById(R.id.selectAll_checkbox);
                 addButton.setVisibility(View.GONE);
                 appTitle.setVisibility(View.GONE);
+                deletebtn.setVisibility(View.GONE);
+                tagButton.setVisibility(View.VISIBLE);
+                select_All.setChecked(false);
+
 
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
@@ -280,12 +284,24 @@ public class MainActivity extends AppCompatActivity
                             @Override
                             public void onClick(View view) {
                                 int count = getSelectedCount(selected_count);
-                                if (count == 0) {
-                                    deletebtn.setVisibility(View.GONE);
-                                } else {
+                                if (count == 1 || select_All.isChecked()){
                                     deletebtn.setVisibility(View.VISIBLE);
-                                    tagButton.setVisibility(View.VISIBLE);
+                                } else if(count == itemAdapter.getCount()){
+                                    select_All.setChecked(true);
+                                    deletebtn.setVisibility(View.VISIBLE);
+                                } else if (count != itemAdapter.getCount()){
+                                    select_All.setChecked(false);
+                                    deletebtn.setVisibility(View.GONE);
                                 }
+                                else{
+                                    deletebtn.setVisibility(View.GONE);
+                                }
+//                                if (count == 0) {
+//                                    deletebtn.setVisibility(View.GONE);
+//                                } else {
+//                                    deletebtn.setVisibility(View.VISIBLE);
+//                                    tagButton.setVisibility(View.VISIBLE);
+//                                }
 
                             }
                         });
@@ -302,9 +318,13 @@ public class MainActivity extends AppCompatActivity
                             View view_temp = finalItemList.getChildAt(j);
                             if (view_temp != null) {
                                 CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                                checkBox.setChecked(false);
                                 checkBox.setVisibility(View.GONE);
+                                getSelectedCount(selected_count);
                             }
                         }
+                        select_All.setChecked(false);
+                        deletebtn.setVisibility(View.GONE);
                     }
                 });
 
@@ -312,28 +332,49 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onClick(View view) {
 
-                        for (int j = 0; j < itemAdapter.getCount(); j++) {
+                        Log.d("delete all", "before loop: "+String.valueOf(itemAdapter.getCount()));
+                        int total = itemAdapter.getCount() + 1;
+                        for (int j = 0; j < total ; j++) {
                             View view_temp = finalItemList.getChildAt(j);
                             if (view_temp != null) {
                                 CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-                                // checkBox.setVisibility(View.GONE);
-                                if (checkBox.isChecked()) {
+                                if ( select_All.isChecked() ){   // if select all is selected delete all the children at 0
                                     // get item and its id
-                                    Item deleteItem = dataList.get(j);
+                                    Item deleteItem = dataList.get(0);
+                                    Log.d("delete all", "going to delete: "+deleteItem.getDescription());
                                     UUID refId = deleteItem.getItemRefID();
                                     // remove from list
-                                    finalItemAdapter.remove(dataList.get(j));
-                                    finalItemAdapter.notifyDataSetChanged();
+                                    finalItemAdapter.remove(dataList.get(0));
+//                                    finalItemAdapter.notifyDataSetChanged();
                                     checkBox.setChecked(false);
                                     // remove from firebase
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     String path = "/users/" + user.getUid() + "/items/" + refId.toString();
                                     DocumentReference itemDocRef = db.document(path);
                                     itemDocRef.delete();
+                                    getSelectedCount(selected_count);
+                                }
+                                else if (checkBox.isChecked()) {
+                                    // get item and its id
+                                    Item deleteItem = dataList.get(j);
+                                    Log.d("delete all", "going to delete: "+deleteItem.getDescription());
+                                    UUID refId = deleteItem.getItemRefID();
+                                    // remove from list
+                                    finalItemAdapter.remove(dataList.get(j));
+//                                    finalItemAdapter.notifyDataSetChanged();
+                                    checkBox.setChecked(false);
+                                    // remove from firebase
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    String path = "/users/" + user.getUid() + "/items/" + refId.toString();
+                                    DocumentReference itemDocRef = db.document(path);
+                                    itemDocRef.delete();
+                                    getSelectedCount(selected_count);
+
                                 }
                             }
-                        }
 
+                        }
+                        select_All.setChecked(false);
                         finalItemAdapter.notifyDataSetChanged();
                     }
                 });
