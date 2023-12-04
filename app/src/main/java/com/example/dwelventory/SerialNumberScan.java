@@ -28,7 +28,13 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+/**
+ * This is the activity that allows the user to take a picture and scan the image for
+ * a serial number or can also take in the manual input of the serial number.
+ *
+ * @author Abhishek Kumar and Maggie Lacson
+ * @see AddEditActivity
+ */
 public class SerialNumberScan extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -43,7 +49,9 @@ public class SerialNumberScan extends AppCompatActivity {
     private String detected_text;
     private int BACK_CODE = 11;
     private int SERIAL_OK = 17;
-
+    /**
+     * This sets up the blank scanning activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,7 +164,12 @@ public class SerialNumberScan extends AppCompatActivity {
         });
 
     }
-
+    /**
+     * This turns the scanned text to be only then number values
+     *
+     * @param finalSerialNo (String) the string value of the serial number to be processed
+     * @return result (String) the string value of the serial number, still needs further processing
+     */
     private String removeText(String finalSerialNo) {
         StringBuilder result = new StringBuilder();
 
@@ -165,13 +178,23 @@ public class SerialNumberScan extends AppCompatActivity {
                 result.append(c);
             }
         }
-
         return result.toString();
     }
+    /**
+     * This checks strips the string of all whitespace and newlines
+     *
+     * @param finalSerialNo (String) the string value of the serial integer containing whitespace
+     */
     private String stripString(String finalSerialNo) {
         // Remove all whitespace and newlines from the string
         return finalSerialNo.replaceAll("\\s", "");
     }
+    /**
+     * This checks that the serial number can be stored in firebase as an int
+     *
+     * @param serial_string (String) string value of the serial integer
+     * @return true or false whether or not the int is valid
+     */
     private boolean checkIntConvertible(String serial_string){
         try {
             int intValue = Integer.parseInt(serial_string);
@@ -182,7 +205,9 @@ public class SerialNumberScan extends AppCompatActivity {
         }
         return true;
     }
-
+    /**
+     * This takes the picture from which the serial number is scanned
+     */
     private void dispatchTakePictureIntent(){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try{
@@ -192,15 +217,11 @@ public class SerialNumberScan extends AppCompatActivity {
             Toast.makeText(this, "Failed: "+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
-            Bundle extras = data.getExtras();
-            imagebitmap = (Bitmap) extras.get("data");
-            imageView.setImageBitmap(imagebitmap);
-        }
-    }
+
+    /**
+     * This handles the result from the camera activity and sets the image view
+     * to the picture that was taken.
+     */
     private final ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
