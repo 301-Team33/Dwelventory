@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
@@ -68,6 +69,7 @@ public class AddEditActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private CollectionReference usersRef;
+    private CollectionReference barcodeRef;
     private Item item;
 
     private ArrayList<Tag> tagsToApply;
@@ -110,6 +112,7 @@ public class AddEditActivity extends AppCompatActivity
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
+        barcodeRef = db.collection("barcodes");
 
         Intent intent = getIntent();
         String mode = intent.getStringExtra("mode");
@@ -150,10 +153,18 @@ public class AddEditActivity extends AppCompatActivity
                     Log.d("AE ScanTag EDIT MODE", "activity result code: " + result.getResultCode());
                     if (result.getResultCode() == 17) {
                         Log.d("AE ScanTag EDIT MODE", "result code from scan is 17");
-
                         Intent data = result.getData();
                         String serial = data.getStringExtra("serialNo");
                         serialNumButton.setText(serial);
+                        // check if number is in database, fill description text view if it is
+                        DocumentReference docRef = barcodeRef.document(serial);
+                        
+
+
+
+
+
+
                         Log.d("AE ScanTag EDIT MODE", "tried to set the following text" + serial);
                     }
 
