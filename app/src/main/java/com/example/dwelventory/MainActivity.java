@@ -270,6 +270,10 @@ public class MainActivity extends AppCompatActivity
                 CheckBox select_All = findViewById(R.id.selectAll_checkbox);
                 addButton.setVisibility(View.GONE);
                 appTitle.setVisibility(View.GONE);
+                deletebtn.setVisibility(View.GONE);
+                tagButton.setVisibility(View.VISIBLE);
+                select_All.setChecked(false);
+
 
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
@@ -280,12 +284,24 @@ public class MainActivity extends AppCompatActivity
                             @Override
                             public void onClick(View view) {
                                 int count = getSelectedCount(selected_count);
-                                if (count == 0) {
-                                    deletebtn.setVisibility(View.GONE);
-                                } else {
+                                if (count == 1 || select_All.isChecked()){
                                     deletebtn.setVisibility(View.VISIBLE);
-                                    tagButton.setVisibility(View.VISIBLE);
+                                } else if(count == itemAdapter.getCount()){
+                                    select_All.setChecked(true);
+                                    deletebtn.setVisibility(View.VISIBLE);
+                                } else if (count != itemAdapter.getCount()){
+                                    select_All.setChecked(false);
+                                    deletebtn.setVisibility(View.GONE);
                                 }
+                                else{
+                                    deletebtn.setVisibility(View.GONE);
+                                }
+//                                if (count == 0) {
+//                                    deletebtn.setVisibility(View.GONE);
+//                                } else {
+//                                    deletebtn.setVisibility(View.VISIBLE);
+//                                    tagButton.setVisibility(View.VISIBLE);
+//                                }
 
                             }
                         });
@@ -308,6 +324,7 @@ public class MainActivity extends AppCompatActivity
                             }
                         }
                         select_All.setChecked(false);
+                        deletebtn.setVisibility(View.GONE);
                     }
                 });
 
@@ -356,7 +373,7 @@ public class MainActivity extends AppCompatActivity
                             }
 
                         }
-
+                        select_All.setChecked(false);
                         finalItemAdapter.notifyDataSetChanged();
                     }
                 });
