@@ -32,17 +32,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.lang.reflect.Array;
 import java.util.HashMap;
-
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -52,12 +42,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 /***
  * The startup activity for Dwelventory
@@ -81,7 +70,7 @@ public class MainActivity extends AppCompatActivity
     private int EXIST_CODE = 33;
     private int DOES_NOT_EXIST_CODE = 363;
     private Spinner sortSpinner;
-    // private FloatingActionButton addButton;
+
     private ImageButton addButton;
     private TextView totalCost;
     private boolean reverseOrder;
@@ -97,7 +86,6 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<String> make_input_saved = new ArrayList<String>();
     private ArrayList<Tag> tag_input_saved = new ArrayList<Tag>();
     private boolean filterApplied = false;
-
     private ArrayList<String> photos;
 
 
@@ -129,7 +117,7 @@ public class MainActivity extends AppCompatActivity
         user = mAuth.getCurrentUser();
         Log.d("itemTag", "after user");
         String path = "/users/" + user.getUid() + "/items";
-        // String path = "/users/rQ2PrfCOKsYkdi1bfzqvLJVZOqq1/items";
+
         Log.d("itemTag", "path:" + path);
         itemsRef = db.collection(path);
         dataList = new ArrayList<>();
@@ -145,7 +133,6 @@ public class MainActivity extends AppCompatActivity
                     dataList.clear();
                     for (QueryDocumentSnapshot doc : value) {
                         Log.d("itemTag", "size of value is " + value.size());
-                        // Log.d("itemTag", user.getUid());
                         String storedRefID = doc.getId();
                         Log.d("itemTag", String.format("Item(%s) fetched", storedRefID));
                         Log.d("itemTag", "added default");
@@ -182,8 +169,6 @@ public class MainActivity extends AppCompatActivity
         String text = getString(R.string.totalcost, estTotalCost);
         totalCost.setText(text);
         addButton = findViewById(R.id.add_item_button);
-
-        // ArrayList<Item> dataList = new ArrayList<>();
 
         // fake data
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
@@ -246,19 +231,6 @@ public class MainActivity extends AppCompatActivity
                 return count;
             }
 
-//            public void clearCheckboxes(){
-//                for (int j = 0; j < itemAdapter.getCount(); j++) {
-//                    View view_temp = finalItemList.getChildAt(j);
-//                    if (view_temp != null) {
-//                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
-//                        if (checkBox.isChecked()) {
-//                            checkBox.setChecked(false);
-//                        }
-//                    }
-//                }
-//                CheckBox select_All = findViewById(R.id.selectAll_checkbox);
-//                select_All.setChecked(false);
-//            }
 
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -311,12 +283,6 @@ public class MainActivity extends AppCompatActivity
                                 else{
                                     deletebtn.setVisibility(View.GONE);
                                 }
-//                                if (count == 0) {
-//                                    deletebtn.setVisibility(View.GONE);
-//                                } else {
-//                                    deletebtn.setVisibility(View.VISIBLE);
-//                                    tagButton.setVisibility(View.VISIBLE);
-//                                }
 
                             }
                         });
@@ -363,7 +329,6 @@ public class MainActivity extends AppCompatActivity
                                     UUID refId = deleteItem.getItemRefID();
                                     // remove from list
                                     finalItemAdapter.remove(dataList.get(0));
-//                                    finalItemAdapter.notifyDataSetChanged();
                                     checkBox.setChecked(false);
                                     // remove from firebase
                                     FirebaseUser user = mAuth.getCurrentUser();
@@ -378,7 +343,6 @@ public class MainActivity extends AppCompatActivity
                                     UUID refId = deleteItem.getItemRefID();
                                     // remove from list
                                     finalItemAdapter.remove(dataList.get(j));
-//                                    finalItemAdapter.notifyDataSetChanged();
                                     checkBox.setChecked(false);
                                     // remove from firebase
                                     FirebaseUser user = mAuth.getCurrentUser();
@@ -440,13 +404,7 @@ public class MainActivity extends AppCompatActivity
         itemList = finalItemList;
         itemAdapter = finalItemAdapter;
         itemList.setAdapter(itemAdapter);
-        // itemAdapter.notifyDataSetChanged();
 
-        // final FloatingActionButton addButton = findViewById(R.id.add_item_button);
-
-        // Code fragment below is for filtering
-
-        // final FloatingActionButton addButton = findViewById(R.id.add_item_button);
         final ImageButton addButton = findViewById(R.id.add_item_button);
 
 
@@ -710,7 +668,7 @@ public class MainActivity extends AppCompatActivity
         ArrayList<String> itemPhotos = item.getPhotos();
         Log.d("mainTag", "Date is" + itemDate);
         Log.d("mainTag", "Make is " + itemMake);
-        // Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemValue);
+
         Item copyItem = new Item(itemName, itemDate, itemMake, itemModel, itemSerial, itemValue, itemComment,
                 itemPhotos);
 
