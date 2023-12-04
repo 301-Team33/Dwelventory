@@ -246,12 +246,27 @@ public class MainActivity extends AppCompatActivity
                 return count;
             }
 
+            public void clearCheckboxes(){
+                for (int j = 0; j < itemAdapter.getCount(); j++) {
+                    View view_temp = finalItemList.getChildAt(j);
+                    if (view_temp != null) {
+                        CheckBox checkBox = view_temp.findViewById(R.id.checkbox);
+                        if (checkBox.isChecked()) {
+                            checkBox.setChecked(false);
+                        }
+                    }
+                }
+                CheckBox select_All = findViewById(R.id.selectAll_checkbox);
+                select_All.setChecked(false);
+            }
+
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 /*
                  * View checkBoxLayout = view.findViewById(R.id.checkbox);
                  * checkBoxLayout.setVisibility(View.VISIBLE);
                  */
+                clearCheckboxes();
 
                 for (int j = 0; j < itemAdapter.getCount(); j++) {
                     View view_temp = finalItemList.getChildAt(j);
@@ -323,8 +338,11 @@ public class MainActivity extends AppCompatActivity
                                 getSelectedCount(selected_count);
                             }
                         }
+                        clearCheckboxes();
+
                         select_All.setChecked(false);
                         deletebtn.setVisibility(View.GONE);
+
                     }
                 });
 
@@ -372,6 +390,10 @@ public class MainActivity extends AppCompatActivity
 
                                 }
                             }
+
+                            clearCheckboxes();
+                        }
+
 
                         }
                         select_All.setChecked(false);
