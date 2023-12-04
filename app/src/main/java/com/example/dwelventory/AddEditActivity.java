@@ -148,8 +148,8 @@ public class AddEditActivity extends AppCompatActivity
                     Log.d("AE barcodeTag EDIT MODE", "activity result code: " + result.getResultCode());
                     if (result.getResultCode() == 25) {
                         Intent data = result.getData();
-                        // String name = data.getStringExtra("name");
-                        String name = "KING JULIEN";
+                         String name = data.getStringExtra("barcode name");
+//                        String name = "KING JULIEN";
                         nameButton.setText(name);
                     }
                 });
@@ -174,7 +174,6 @@ public class AddEditActivity extends AppCompatActivity
                         Intent data = result.getData();
                         String serial = data.getStringExtra("serialNo");
                         serialNumButton.setText(serial);
-
                     }
 
                 });

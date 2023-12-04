@@ -72,7 +72,6 @@ public class Scanbarcode extends AppCompatActivity {
 
         imageView = findViewById(R.id.captured_img);
         Snapbtn = findViewById(R.id.snap_photo_btn);
-        Scanbtn = findViewById(R.id.scan_txt_btn);
         Usebtn = findViewById(R.id.use_serial_no);
         Backbtn = findViewById(R.id.back_btn);
         barcode_description = findViewById(R.id.barcode_description);
@@ -84,7 +83,10 @@ public class Scanbarcode extends AppCompatActivity {
         Snapbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                requestCameraPermission();
+                Log.d("permissions", "before request");
+//                requestCameraPermission();
+                dispatchTakePictureIntent();
+                Log.d("permissions", "after request");
             }
         });
 
@@ -112,6 +114,7 @@ public class Scanbarcode extends AppCompatActivity {
                 barcode_description.setText(detected_text);
                 Toast.makeText(Scanbarcode.this, "Description has been set!", Toast.LENGTH_SHORT).show();
                 Intent intent_new = new Intent(Scanbarcode.this,AddEditActivity.class);
+                intent_new.putExtra("barcode name", detected_text);
                 setResult(BARCODE_OK, intent_new);
                 finish();
             }
@@ -128,13 +131,15 @@ public class Scanbarcode extends AppCompatActivity {
     }
 
     private void requestCameraPermission() {
+        Log.d("permissions", "in request");
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-
+            Log.d("permissions", "calling for request");
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.CAMERA},
                     REQUEST_CAMERA_PERMISSION);
         } else {
+            Log.d("permissions", "in else request");
             dispatchTakePictureIntent();
         }
     }
@@ -145,6 +150,7 @@ public class Scanbarcode extends AppCompatActivity {
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            Log.d("permissions", "request code is request_permission");
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 dispatchTakePictureIntent();
             } else {
@@ -159,7 +165,11 @@ public class Scanbarcode extends AppCompatActivity {
         values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera");
         imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        takePictureLauncher.launch(takePictureIntent);
+        try{
+            takePictureLauncher.launch(takePictureIntent);
+        } catch (Exception e){
+            Toast.makeText(this, "Failed: "+e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
     private final ActivityResultLauncher<Intent> takePictureLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
