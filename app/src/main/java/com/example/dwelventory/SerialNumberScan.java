@@ -136,32 +136,64 @@ public class SerialNumberScan extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent_prev = getIntent();
                 Intent intent_new = new Intent(SerialNumberScan.this,AddEditActivity.class);
+                Log.d("ScanTag EDIT MODE", "back btn clicked");
 
-                if(intent_prev.getStringExtra("mode").equals("edit")){
+
+
+                if  (intent_prev.getStringExtra("mode").equals("edit")){
+                    Log.d("ScanTag EDIT MODE", "MADE IT IN the back button!! intent prev mode: "+intent_prev.getStringExtra("mode"));
                     Item item = intent_prev.getParcelableExtra("item");
-                    item.setSerialNumber(Integer.parseInt(Serial_no.getText().toString()));
+                    Log.d("ScanTag EDIT MODE", "0");
+                    String serial_as_string = Serial_no.getText().toString();
+                    Log.d("ScanTag EDIT MODE", "0.1 " + serial_as_string);
+                    int serial_as_int = -1;
+                    try {
+                        serial_as_int = Integer.parseInt(serial_as_string);
+                        Log.d("ScanTag EDIT MODE", "0.2 " + serial_as_int);
+                        item.setSerialNumber(serial_as_int);
+                        Log.d("ScanTag EDIT MODE", "0.2.1: item.getserial is " + item.getSerialNumber());
+
+
+                    } catch (Exception e){
+                        Log.d("ScanTag EDIT MODE", "fucking failed bc of " + e);
+                    }
+
                     Date date = (Date) intent_prev.getSerializableExtra("date");
                     Log.d("Date test",date.toString());
+                    Log.d("ScanTag EDIT MODE", "1");
                     String mode = intent_prev.getStringExtra("mode");
                     int position = intent_prev.getIntExtra("position",-1);
                     int request_code = intent_prev.getIntExtra("requestCode",-1);
                     String itemRefID = intent_prev.getStringExtra("itemRefID");
                     ArrayList<Tag> tagstoApply = intent_prev.getParcelableArrayListExtra("tags");
                     String prev_name = intent_prev.getStringExtra("previous name");
-
+                    Log.d("ScanTag EDIT MODE", "2");
                     intent_new.putExtra("item",item);
                     intent_new.putExtra("date",date);
                     intent_new.putExtra("mode",mode);
                     intent_new.putExtra("position",position);
                     intent_new.putExtra("requestCode",request_code);
                     intent_new.putExtra("itemRefID",itemRefID);
+                    intent_new.putExtra("serialNo", serial_as_string);
+                    
+                    Log.d("ScanTag EDIT MODE", "3 " + serial_as_string);
                     //intent_new.putExtra("tags",tagstoApply);
                     intent_new.putExtra("previous name",prev_name);
-                    startActivity(intent_new);
+//                    startActivity(intent_new); THIS WAS ABHIS
+                    Log.d("ScanTag EDIT MODE", "setting the result");
+                    setResult(17, intent_new);
+                    Log.d("ScanTag EDIT MODE", "finishing scanActivity...");
+                    finish();
+                    Log.d("ScanTag EDIT MODE", "right after finish");
 
-                }else if(intent_prev.getStringExtra("mode").equals("add")){
+
+
+                }
+                else if(intent_prev.getStringExtra("mode").equals("add")){
                     //To be completed
                 }
+                Log.d("ScanTag EDIT MODE", "passed through the if statements");
+
             }
         });
 
