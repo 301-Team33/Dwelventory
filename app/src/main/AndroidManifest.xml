@@ -32,9 +32,9 @@
         <activity
             android:name=".SerialNumberScan"
             android:exported="false" />
-        <activity
+        <!--<activity
             android:name=".CameraActivity"
-            android:exported="false" />
+            android:exported="false" />-->
         <activity
             android:name=".AddEditActivity"
             android:exported="false" />
