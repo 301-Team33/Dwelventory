@@ -1021,6 +1021,8 @@ public class MainActivity extends AppCompatActivity
                         item.setItemRefID(UUID.fromString(doc.getId()));
                         ArrayList<String> stringTags = (ArrayList<String>) doc.get("tags");
                         ArrayList<Tag> itemTags = makeTagList(stringTags);
+                        ArrayList<String> photos = (ArrayList<String>) doc.get("photos");
+                        item.setPhotos(photos);
                         item.setTags(itemTags);
                         dataList.add(item);
                         estTotalCost += doc.getLong("estValue").intValue();
