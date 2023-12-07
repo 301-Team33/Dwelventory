@@ -352,22 +352,23 @@ public class MainActivity extends AppCompatActivity
                                 if (select_All.isChecked()) {   // if select all is selected delete all the children at 0
                                     // get item and its id
                                     Item deleteItem = dataList.get(0);
-                                    Log.d("delete all", "going to delete: " + deleteItem.getDescription());
+                                    Log.d("delete ALL", "going to delete: " + deleteItem.getDescription());
                                     UUID refId = deleteItem.getItemRefID();
                                     // remove from list
                                     finalItemAdapter.remove(dataList.get(0));
 //                                    finalItemAdapter.notifyDataSetChanged();
                                     checkBox.setChecked(false);
                                     // remove from firebase
+                                    Log.d("delete ALL", "1 going to delete: " + deleteItem.getDescription());
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     String path = "/users/" + user.getUid() + "/items/" + refId.toString();
                                     DocumentReference itemDocRef = db.document(path);
                                     itemDocRef.delete();
                                     getSelectedCount(selected_count);
-                                } else if (checkBox.isChecked()) {
+                                } else if (checkBox.isChecked() && (!select_All.isChecked())) {
                                     // get item and its id
                                     Item deleteItem = dataList.get(j);
-                                    Log.d("delete all", "going to delete: " + deleteItem.getDescription());
+                                    Log.d("delete one", "going to delete: " + deleteItem.getDescription());
                                     UUID refId = deleteItem.getItemRefID();
                                     // remove from list
                                     finalItemAdapter.remove(dataList.get(j));
@@ -383,7 +384,7 @@ public class MainActivity extends AppCompatActivity
                                 }
                             }
 
-                            clearCheckboxes();
+//                            clearCheckboxes();
 
                         }
                         select_All.setChecked(false);
