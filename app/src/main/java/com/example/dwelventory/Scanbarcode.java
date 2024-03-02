@@ -68,7 +68,6 @@ public class Scanbarcode extends AppCompatActivity {
     private String detected_text;
     private int BARCODE_OK = 25;
     private int BACK_CODE = 11;
-
     private static final int REQUEST_CAMERA_PERMISSION = 123;
 
     /**
